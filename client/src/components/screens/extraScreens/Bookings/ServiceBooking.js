@@ -214,10 +214,15 @@ const ServiceBooking = () => {
     if (isButtonEnabled) {
       setLoading(true);
       try {
-        const user = authInstance.currentUser;
-        if (user) {
+        const token = await AsyncStorage.getItem('token');
+        console.log('Token retrieved:', token);
+        if (!token) {
+          throw new Error('User token not found');
+        }
+
+        
           const bookingData = {
-            userId: user.uid,
+            
             serviceName: service_name,
             serviceBasePrice: service_price,
             name: name,
@@ -238,23 +243,25 @@ const ServiceBooking = () => {
             ],
             totalPrice: totalPrice,
             timestamp: Date.now(),
-            status: 'pending', // Set initial status to 'pending'
+            status: 'pending', 
           };
 
-          // Make the POST request to your backend
-          const response = await axios.post(
-            'http://localhost:5000/api/service-booking',
-            bookingData,
-          );
+          
+          const response = await axios.post('http://10.0.2.2:5000/api/service-booking', bookingData, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          
 
           if (response.status === 201) {
-            // Show success modal if the booking was created successfully
+            
             setShowSuccessModal(true);
             setTimeout(() => {
               setShowSuccessModal(false);
             }, 3000);
 
-            // Reset form fields
+            
             setBatteryCleaning('');
             setChainLubricants('');
             setHeadLightAdjustment('');
@@ -262,7 +269,7 @@ const ServiceBooking = () => {
             setBatteryCleaning('');
             setBreakCheck('');
           }
-        }
+        
       } catch (error) {
         console.error('Error submitting booking:', error);
 
