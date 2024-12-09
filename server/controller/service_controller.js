@@ -1,4 +1,4 @@
-const Service = require('../model/service_model');
+const Service = require("../model/service_model");
 
 const createService = async (req, res) => {
   try {
@@ -12,23 +12,22 @@ const createService = async (req, res) => {
     });
 
     await service.save();
-    res.status(201).json({ message: 'Service created successfully', service });
+    res.status(201).json({ message: "Service created successfully", service });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create service' });
+    res.status(500).json({ error: "Failed to create service" });
   }
 };
-  const getAllServices = async (req, res) => {
-    try {
-      const services = await Service.find();
-      res.status(200).json(services);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch services' });
-    }
-  };
-  
 
+const getAllServices = async (req, res) => {
+  try {
+    const services = await Service.find();
+    res.status(200).json(services);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch services" });
+  }
+};
 
 module.exports = {
-    createService,
-    getAllServices,
-  };
+  createService,
+  getAllServices,
+};

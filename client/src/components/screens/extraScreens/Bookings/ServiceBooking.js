@@ -15,6 +15,7 @@ import {
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import {COLORS, FONTS} from '../../../constants/Constants';
+import {Picker} from '@react-native-picker/picker';
 import CustomModal from '../../../utils/Modals/CustomModal';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,6 +43,7 @@ const ServiceBooking = () => {
   const [breakCheck, setBreakCheck] = useState('');
   const [batteryCleaning, setBatteryCleaning] = useState('');
   const [mirrorAdjustment, setMirrorAdjustment] = useState('');
+  const [dropoff, setDropOff] = useState('');
 
   const [nameError, setNameError] = useState('');
   const [cellError, setCellError] = useState('');
@@ -220,56 +222,54 @@ const ServiceBooking = () => {
           throw new Error('User token not found');
         }
 
-        
-          const bookingData = {
-            
-            serviceName: service_name,
-            serviceBasePrice: service_price,
-            name: name,
-            cell: cell,
-            address: address,
-            comments: comments,
-            bikeModel: bikeModel,
-            bikeName: bikeName,
-            bikeCompanyName: bikeCompanyName,
-            bikeRegNumber: bikeRegNumber,
-            additionalServices: [
-              ...(chainLubricants ? ['Chain Lubrication'] : []),
-              ...(tirePressure ? ['Tire Pressure Check'] : []),
-              ...(headLightAdjustment ? ['Headlight Adjustment'] : []),
-              ...(breakCheck ? ['Brake Light Check'] : []),
-              ...(batteryCleaning ? ['Battery Terminal Cleaning'] : []),
-              ...(mirrorAdjustment ? ['Mirror Adjustment'] : []),
-            ],
-            totalPrice: totalPrice,
-            timestamp: Date.now(),
-            status: 'pending', 
-          };
+        const bookingData = {
+          serviceName: service_name,
+          serviceBasePrice: service_price,
+          name: name,
+          cell: cell,
+          address: address,
+          comments: comments,
+          bikeModel: bikeModel,
+          bikeName: bikeName,
+          bikeCompanyName: bikeCompanyName,
+          bikeRegNumber: bikeRegNumber,
+          additionalServices: [
+            ...(chainLubricants ? ['Chain Lubrication'] : []),
+            ...(tirePressure ? ['Tire Pressure Check'] : []),
+            ...(headLightAdjustment ? ['Headlight Adjustment'] : []),
+            ...(breakCheck ? ['Brake Light Check'] : []),
+            ...(batteryCleaning ? ['Battery Terminal Cleaning'] : []),
+            ...(mirrorAdjustment ? ['Mirror Adjustment'] : []),
+          ],
+          totalPrice: totalPrice,
+          dropOff: dropoff,
+          timestamp: Date.now(),
+          status: 'pending',
+        };
 
-          
-          const response = await axios.post('http://10.0.2.2:5000/api/service-booking', bookingData, {
+        const response = await axios.post(
+          'http://10.0.2.2:5000/api/service-booking',
+          bookingData,
+          {
             headers: {
-              'Authorization': `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
-          });
-          
+          },
+        );
 
-          if (response.status === 201) {
-            
-            setShowSuccessModal(true);
-            setTimeout(() => {
-              setShowSuccessModal(false);
-            }, 3000);
+        if (response.status === 201) {
+          setShowSuccessModal(true);
+          setTimeout(() => {
+            setShowSuccessModal(false);
+          }, 3000);
 
-            
-            setBatteryCleaning('');
-            setChainLubricants('');
-            setHeadLightAdjustment('');
-            setTirePressure('');
-            setBatteryCleaning('');
-            setBreakCheck('');
-          }
-        
+          setBatteryCleaning('');
+          setChainLubricants('');
+          setHeadLightAdjustment('');
+          setTirePressure('');
+          setBatteryCleaning('');
+          setBreakCheck('');
+        }
       } catch (error) {
         console.error('Error submitting booking:', error);
 
@@ -281,6 +281,10 @@ const ServiceBooking = () => {
         setLoading(false);
       }
     }
+  };
+
+  const handleDropOffChange = value => {
+    setDropOff(value);
   };
 
   return (
@@ -667,6 +671,32 @@ const ServiceBooking = () => {
                   });
                 },
               )}
+            </View>
+          </View>
+
+          <View style={styles.roleContainer}>
+            <Text
+              style={[
+                styles.label,
+                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+              ]}>
+              Drop Off Point
+            </Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={dropoff}
+                style={[
+                  styles.picker,
+                  {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                ]}
+                onValueChange={handleDropOffChange}>
+                <Picker.Item label="Select Drop Off Point" value="" />
+                <Picker.Item label="Home Service" value="Home Service" />
+                <Picker.Item
+                  label="Drop-off at a service center"
+                  value="Drop-off at a service center"
+                />
+              </Picker>
             </View>
           </View>
 

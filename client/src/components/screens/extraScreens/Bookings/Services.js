@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
 
   headerTitleText: {
-    fontSize: width * 0.09,
+    fontSize: width * 0.06,
     color: COLORS.dark,
     fontFamily: FONTS.bold,
   },

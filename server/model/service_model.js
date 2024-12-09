@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const serviceSchema = new mongoose.Schema({
   name: {
@@ -6,27 +6,32 @@ const serviceSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+
   description: {
     type: String,
     required: true,
   },
+
   cost: {
     type: Number,
     required: true,
     min: 0,
   },
+
   category: {
-    type: String, 
+    type: String,
     required: true,
   },
+
   availability: {
-    type: Boolean, 
+    type: Boolean,
     default: true,
   },
+  
   createdAt: {
     type: Date,
-    default: Date.now, 
+    default: Date.now,
   },
 });
 
-module.exports = mongoose.model('Service', serviceSchema);
+module.exports = mongoose.model("Service", serviceSchema);
