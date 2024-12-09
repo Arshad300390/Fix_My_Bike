@@ -59,10 +59,26 @@ const getUserBookings = async (req, res, next) => {
   try {
     const userId = req.userId;
 
-    const bookings = await Booking.find({ userId }); 
+    const bookings = await Booking.find({ userId, status : 'pending' }); 
 
     if (!bookings.length) {
       return next(new HttpError("No bookings found for this user.", 404));
+    }
+
+    res.status(200).json({ Bookings: bookings });
+  } catch (error) {
+    return next(new HttpError("Error fetching bookings!", 500));
+  }
+};
+
+const getUserBookingHistory = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+
+    const bookings = await Booking.find({ userId, status : 'done' }); 
+
+    if (!bookings.length) {
+      return next(new HttpError("No bookings history found for this user.", 404));
     }
 
     res.status(200).json({ Bookings: bookings });
@@ -109,6 +125,7 @@ const deleteBooking = async (req, res) => {
 module.exports = {
   createBooking,
   getUserBookings,
+  getUserBookingHistory,
   getBookingById,
   updateBookingStatus,
   deleteBooking,

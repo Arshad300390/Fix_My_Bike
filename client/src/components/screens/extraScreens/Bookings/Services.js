@@ -6,6 +6,7 @@ import {
   Text,
   Dimensions,
   useColorScheme,
+  ScrollView,
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
@@ -31,15 +32,21 @@ const Services = () => {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
           method: 'GET',
-          url: 'http://10.0.2.2:5000/api/service/getAllServices',
+          url: 'http://10.0.2.2:5000/api/service-History',
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log('Fetched Data:', response.data);
-        setServices(response.data);
+        const bookings = response.data.Bookings;
+        if (bookings && bookings.length > 0) {
+          console.log('Fetched bookings history:', bookings);
+        setServices(bookings);
+        }else{
+          console.log('No booking history yet.');
+          setServices([]);
+        }
       } catch (error) {
-        console.error('Error fetching services:', error.message);
+        console.error('Error fetching services history:', error.message);
       } finally {
         setLoading(false);
       }
@@ -48,31 +55,40 @@ const Services = () => {
     fetchServices();
   }, []);
 
-  const renderServiceItem = ({item}) => (
-    <View style={styles.serviceCard}>
-      <Text style={styles.serviceName}>{item.name}</Text>
-      <Text style={styles.serviceDescription}>{item.description}</Text>
-      <Text style={styles.serviceCost}>Cost: ${item.cost}</Text>
+  const renderBookingItem = ({item}) => (
+    <View style={styles.bookingCard}>
+      <Text style={styles.bookingServiceName}>Service Name: {item.serviceName}</Text>
+      <Text style={styles.bookingDetails}>Bike Name: {item.bikeName}</Text>
+      {/* <Text style={styles.bookingDetails}>Bike Model: {item.bikeModel}</Text>
+      <Text style={styles.bookingDetails}>Bike Company: {item.bikeCompanyName}</Text>
+      <Text style={styles.bookingDetails}>Bike Reg Number: {item.bikeRegNumber}</Text>
+      <Text style={styles.bookingDetails}>Address: {item.address}</Text>
+      <Text style={styles.bookingDetails}>Cell: {item.cell}</Text> */}
+      <Text style={styles.bookingDetails}>Comments: {item.comments}</Text>
+      <Text style={styles.bookingDetails}>Total Price: ${item.totalPrice}</Text>
+      <Text style={styles.bookingStatus}>Status: {item.status}</Text>
+      <Text style={styles.bookingTimestamp}>Date: {new Date(item.timestamp).toLocaleString()}</Text> 
     </View>
   );
+
 
   return (
     <SafeAreaView
       style={[
         styles.primaryContainer,
         {
-          backgroundColor: colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
+          backgroundColor:
+            colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
         },
-      ]}
-    >
+      ]}>
       <View
         style={[
           styles.headerContainer,
           {
-            backgroundColor: colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
+            backgroundColor:
+              colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
           },
-        ]}
-      >
+        ]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather
             name="chevron-left"
@@ -87,22 +103,30 @@ const Services = () => {
           style={[
             styles.headerTitleText,
             {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
-          ]}
-        >
-         Service Packages
+          ]}>
+          My Booking History.
         </Text>
-        
+        {/* <Text
+          style={[
+            styles.headerDescriptionText,
+            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+          ]}>
+          Here is your all service bookings!
+        </Text> */}
       </View>
 
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.primary} />
       ) : (
+        <ScrollView >
         <FlatList
           data={services}
+          scrollEnabled={false}
           keyExtractor={(item) => item._id.toString()}
-          renderItem={renderServiceItem}
+          renderItem={renderBookingItem}
           contentContainerStyle={styles.bookingContainer}
         />
+        </ScrollView>
       )}
     </SafeAreaView>
   );
@@ -152,7 +176,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 
-  serviceCard: {
+  bookingCard: {
     padding: 15,
     borderRadius: 8,
     marginVertical: 10,
@@ -164,18 +188,18 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  serviceName: {
+  bookingServiceName: {
     fontSize: width * 0.05,
     fontFamily: FONTS.bold,
   },
 
-  serviceDescription: {
+  bookingDetails: {
     fontSize: width * 0.04,
     fontFamily: FONTS.medium,
     marginVertical: 5,
   },
 
-  serviceCost: {
+  bookingStatus: {
     fontSize: width * 0.045,
     fontFamily: FONTS.semiBold,
   },

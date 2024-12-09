@@ -9,6 +9,7 @@ router.post('/service-booking', authMiddleware, bookingController.createBooking)
 
 router.get('/service-bookings', authMiddleware, bookingController.getUserBookings);
 
+router.get('/service-History', authMiddleware, bookingController.getUserBookingHistory);
 
 router.get('/service-booking/:id', authMiddleware, bookingController.getBookingById);
 

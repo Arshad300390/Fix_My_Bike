@@ -278,7 +278,7 @@ const Profile = () => {
                       fontSize: width * 0.045,
                       marginLeft: 10,
                     }}>
-                    Services:{' '}
+                    Services History:{' '}
                   </Text>
                 </View>
               </View>

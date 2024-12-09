@@ -36,8 +36,14 @@ const Bookings = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log('Fetched booking:', response.data);
-        setBookings(response.data.Bookings);
+        const bookings = response.data.Bookings;
+        if (bookings && bookings.length > 0) {
+          console.log('Fetched bookings:', bookings);
+          setBookings(bookings);
+        } else {
+          console.log('No bookings yet.');
+          setBookings([]); 
+        }
       } catch (error) {
         console.error('Error fetching bookings:', error.message);
       } finally {
@@ -52,11 +58,11 @@ const Bookings = () => {
     <View style={styles.bookingCard}>
       <Text style={styles.bookingServiceName}>Service Name: {item.serviceName}</Text>
       <Text style={styles.bookingDetails}>Bike Name: {item.bikeName}</Text>
-      <Text style={styles.bookingDetails}>Bike Model: {item.bikeModel}</Text>
+      {/* <Text style={styles.bookingDetails}>Bike Model: {item.bikeModel}</Text>
       <Text style={styles.bookingDetails}>Bike Company: {item.bikeCompanyName}</Text>
       <Text style={styles.bookingDetails}>Bike Reg Number: {item.bikeRegNumber}</Text>
       <Text style={styles.bookingDetails}>Address: {item.address}</Text>
-      <Text style={styles.bookingDetails}>Cell: {item.cell}</Text>
+      <Text style={styles.bookingDetails}>Cell: {item.cell}</Text> */}
       <Text style={styles.bookingDetails}>Comments: {item.comments}</Text>
       <Text style={styles.bookingDetails}>Total Price: ${item.totalPrice}</Text>
       <Text style={styles.bookingStatus}>Status: {item.status}</Text>
@@ -113,6 +119,7 @@ const Bookings = () => {
         <ScrollView >
         <FlatList
           data={bookings}
+          scrollEnabled={false}
           keyExtractor={(item) => item._id.toString()}
           renderItem={renderBookingItem}
           contentContainerStyle={styles.bookingContainer}
