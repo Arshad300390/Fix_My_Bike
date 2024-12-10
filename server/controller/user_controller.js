@@ -72,6 +72,7 @@ const login = async (req, res, next) => {
       if (err) {
         return next(new HttpError("Error Generating Token!", 500));
       }
+      console.log(token);
       res.json({ message: "Login Successfully", token });
     });
   } catch (err) {
@@ -90,7 +91,7 @@ const getUsers = async (req, res, next) => {
     }
 
     const users = await User.find({
-      role: userType === "customer" ? "mechanic" : "customer",
+      role: userType === "customer" ? "customer" :"mechanic",
     }).select("full_name email phone_number role");
 
     res.json({ User: { ...user.toObject(), users } });

@@ -1,83 +1,8 @@
-// import React from 'react';
-// import { View, Text, StyleSheet, Dimensions } from 'react-native';
-// import { COLORS, FONTS } from '../../constants/Constants';
-
-// const { width, height } = Dimensions.get('window');
-
-// const ServiceHistoryCard = ({ item }) => {
-//   return (
-//     <View style={styles.card}>
-//       <Text style={styles.serviceName}>Service: {item.serviceName}</Text>
-//       <Text style={styles.details}>Bike: {item.bikeName}</Text>
-//       <Text style={styles.details}>Comments: {item.comments}</Text>
-//       <Text style={styles.price}>Total Price: ${item.totalPrice}</Text>
-//       <Text
-//         style={[
-//           styles.status,
-//           { color: item.status === 'done' ? COLORS.success : COLORS.warning },
-//         ]}
-//       >
-//         Status: {item.status}
-//       </Text>
-//       <Text style={styles.timestamp}>
-//         Date: {new Date(item.timestamp).toLocaleString()}
-//       </Text>
-//     </View>
-//   );
-// };
-
-// export default ServiceHistoryCard;
-
-// const styles = StyleSheet.create({
-//   card: {
-//     width: width * 0.9,
-//     borderRadius: 12,
-//     backgroundColor: COLORS.lightDark,
-//     padding: 15,
-//     marginBottom: height * 0.03,
-//     shadowColor: COLORS.black,
-//     shadowOffset: { width: 0, height: 3 },
-//     shadowOpacity: 0.2,
-//     shadowRadius: 5,
-//     elevation: 5,
-//   },
-//   serviceName: {
-//     fontSize: width * 0.05,
-//     fontFamily: FONTS.bold,
-//     color: COLORS.primary,
-//     marginBottom: 10,
-//   },
-//   details: {
-//     fontSize: width * 0.04,
-//     fontFamily: FONTS.regular,
-//     color: COLORS.white,
-//     marginBottom: 5,
-//   },
-//   price: {
-//     fontSize: width * 0.045,
-//     fontFamily: FONTS.medium,
-//     color: COLORS.primary,
-//     marginTop: 10,
-//   },
-//   status: {
-//     fontSize: width * 0.045,
-//     fontFamily: FONTS.medium,
-//     marginTop: 10,
-//   },
-//   timestamp: {
-//     fontSize: width * 0.035,
-//     fontFamily: FONTS.light,
-//     color: COLORS.grey,
-//     marginTop: 5,
-//   },
-// });
-
-
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS, FONTS } from '../../constants/Constants';
+import { COLORS } from '../../constants/Constants';
 
-const ServiceHistoryCard = ({ item }) => {
+const ServiceHistoryCard = ({ item, role, onEdit }) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -101,7 +26,11 @@ const ServiceHistoryCard = ({ item }) => {
       <Text style={styles.timestamp}>
         Date: {new Date(item.timestamp).toLocaleString()}
       </Text>
-
+      {role === 'mechanic' && (
+        <TouchableOpacity style={styles.editButton} onPress={onEdit}>
+          <Text style={styles.editButtonText}>Edit</Text>
+        </TouchableOpacity>
+      )}
       {/* Conditional rendering for additional information */}
       {expanded && (
         <View style={styles.additionalInfo}>
@@ -110,7 +39,6 @@ const ServiceHistoryCard = ({ item }) => {
           <Text style={styles.details}>Bike Registration: {item.bikeRegNumber}</Text>
           <Text style={styles.details}>Service Location: {item.dropOff}</Text>
           <Text style={styles.details}>Address: {item.address}</Text>
-          
         </View>
       )}
     </TouchableOpacity>
@@ -159,6 +87,19 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: COLORS.lightGray,
+  },
+  editButton: {
+    marginTop: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.primary,
+    borderRadius: 5,
+    alignSelf: 'flex-end', // Position the button on the right side
+  },
+  editButtonText: {
+    color: COLORS.white,
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 

@@ -38,6 +38,7 @@ const BottomNavigator = () => {
         component={Home}
         options={{
           tabBarLabel: 'Home',
+          // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
             <View style={styles.imageContainer}>
               <Image
@@ -61,6 +62,7 @@ const BottomNavigator = () => {
         component={Profile}
         options={{
           tabBarLabel: 'Profile',
+          // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
             <View style={styles.imageContainer}>
               <Image

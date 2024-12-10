@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -12,22 +12,23 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
-import {COLORS, FONTS} from '../../../constants/Constants';
-import {Picker} from '@react-native-picker/picker';
+import { COLORS, FONTS } from '../../../constants/Constants';
+import { Picker } from '@react-native-picker/picker';
 import CustomModal from '../../../utils/Modals/CustomModal';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const ServiceBooking = () => {
   const route = useRoute();
-  const service_name = route.params?.service_name;
-  const service_price = route.params?.service_price;
+  const { booking } = route.params;
+  //  const service_name = route.params?.service_name;
+  //  const service_price = route.params?.service_price;
 
-  const [totalPrice, setTotalPrice] = useState(service_price);
+  const [totalPrice, setTotalPrice] = useState(booking.service_price);
   const [name, setName] = useState('');
   const [cell, setCell] = useState('');
   const [address, setAddress] = useState('');
@@ -176,14 +177,14 @@ const ServiceBooking = () => {
         <Text
           style={[
             styles.optionText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           {label}
         </Text>
         <Text
           style={[
             styles.optionPrice,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           {`(Rs.${price})`}
         </Text>
@@ -195,22 +196,22 @@ const ServiceBooking = () => {
     const basePrice = parseFloat(service_price) || 0;
     let additionalCost = 0;
 
-    const {chain, tire, headlight, brake, battery, mirror} =
+    const { chain, tire, headlight, brake, battery, mirror } =
       updatedServiceState;
 
-    if (chain) {additionalCost += 50;}
-    if (tire) {additionalCost += 30;}
-    if (headlight) {additionalCost += 40;}
-    if (brake) {additionalCost += 35;}
-    if (battery) {additionalCost += 60;}
-    if (mirror) {additionalCost += 25;}
+    if (chain) { additionalCost += 50; }
+    if (tire) { additionalCost += 30; }
+    if (headlight) { additionalCost += 40; }
+    if (brake) { additionalCost += 35; }
+    if (battery) { additionalCost += 60; }
+    if (mirror) { additionalCost += 25; }
 
     setTotalPrice(basePrice + additionalCost);
   };
 
   useEffect(() => {
     setIsButtonEnabled(isValidInput());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, cell, address, comments]);
 
   const handleServiceBooking = async () => {
@@ -319,7 +320,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Service Name
             </Text>
@@ -333,7 +334,7 @@ const ServiceBooking = () => {
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.gray : COLORS.dark
               }
-              value={service_name}
+              value={booking.serviceName}
               editable={false}
             />
           </View>
@@ -342,7 +343,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Service Base Price
             </Text>
@@ -356,7 +357,7 @@ const ServiceBooking = () => {
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.gray : COLORS.dark
               }
-              value={service_price}
+              value={booking.serviceBasePrice.toString()}
               editable={false}
             />
           </View>
@@ -365,7 +366,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               User Information!
             </Text>
@@ -375,7 +376,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Name
             </Text>
@@ -402,7 +403,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Cell
             </Text>
@@ -418,7 +419,7 @@ const ServiceBooking = () => {
                 colorScheme === 'dark' ? COLORS.gray : COLORS.dark
               }
               keyboardType="number-pad"
-              value={cell}
+              value={booking.cell}
               onChangeText={handleCellChange}
             />
             {cellError && cellError ? (
@@ -430,7 +431,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Address
             </Text>
@@ -445,7 +446,7 @@ const ServiceBooking = () => {
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.gray : COLORS.dark
               }
-              value={address}
+              value={booking.address}
               onChangeText={handleAddressChange}
             />
             {addressError && addressError ? (
@@ -457,7 +458,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Vehicle Information!
             </Text>
@@ -467,20 +468,20 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Model
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Bike Model"
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
-              value={bikeModel}
+              value={booking.bikeModel}
               onChangeText={setBikeModel}
             />
           </View>
@@ -489,20 +490,20 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Name
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Bike Name"
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
-              value={bikeName}
+              value={booking.bikeName}
               onChangeText={setBikeName}
             />
           </View>
@@ -511,20 +512,20 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Company Name
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Bike Company Name"
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
-              value={bikeCompanyName}
+              value={booking.bikeCompanyName}
               onChangeText={setBikeCompanyName}
             />
           </View>
@@ -533,20 +534,20 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Registration Number
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Registration Number"
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
-              value={bikeRegNumber}
+              value={booking.bikeRegNumber}
               onChangeText={setBikeRegNumber}
             />
           </View>
@@ -679,7 +680,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Drop Off Point
             </Text>
@@ -688,7 +689,7 @@ const ServiceBooking = () => {
                 selectedValue={dropoff}
                 style={[
                   styles.picker,
-                  {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                  { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
                 ]}
                 onValueChange={handleDropOffChange}>
                 <Picker.Item label="Select Drop Off Point" value="" />
@@ -705,7 +706,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Comments
             </Text>
@@ -731,7 +732,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Total Price
             </Text>
@@ -745,7 +746,7 @@ const ServiceBooking = () => {
               placeholderTextColor={
                 colorScheme === 'dark' ? COLORS.gray : COLORS.dark
               }
-              value={`Rs. ${totalPrice}`}
+              value={`Rs. ${booking.totalPrice}`}
               editable={false}
             />
           </View>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {
   StyleSheet,
   Text,
@@ -17,15 +18,18 @@ import { COLORS, FONTS } from '../constants/Constants';
 import LogoutModal from '../utils/Modals/LogoutModal';
 import DeleteAccountModal from '../utils/Modals/DeleteAccountModal';
 import CustomModal from '../utils/Modals/CustomModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
 
 const Profile = () => {
+  
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
-
+  const [role, setRole] = useState();
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
 
@@ -36,6 +40,27 @@ const Profile = () => {
   const handleDeleteAccountModal = () => {
     setShowDeleteAccountModal(true);
   };
+
+  useEffect(() => {
+    fetchUser =  async()=>{
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const response = await axios({
+          method: 'GET',
+          url: 'http://10.0.2.2:5000/api/users/get-users',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setRole(response.data.User.role);
+      } catch (error) {
+        console.error('Error fetching user role:', error.message);
+      } 
+    }
+    fetchUser();
+  },[])
+
+
 
   return (
     <SafeAreaView
@@ -138,7 +163,8 @@ const Profile = () => {
               </View>
             </View>
           </View>
-
+          {role === 'customer' ? (
+            <>
           <View
             style={[
               styles.vehicleCard,
@@ -297,8 +323,64 @@ const Profile = () => {
               </View>
             </View>
           </View>
+          </>
+          ):(
+            <>
+             <View
+            style={[
+              styles.bookingsCard,
+              {
+                backgroundColor:
+                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+              },
+            ]}>
+            <View style={styles.bookingsContainer}>
+              <View style={styles.leftContainer}>
+                <View style={styles.iconContainer}>
+                  <Feather
+                    name="book"
+                    size={25}
+                    style={[
+                      styles.icon,
+                      {
+                        color:
+                          colorScheme === 'dark'
+                            ? COLORS.white
+                            : COLORS.primary,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                      fontSize: width * 0.045,
+                      marginLeft: 10,
+                    }}>
+                    Bookings:{' '}
+                  </Text>
+                </View>
+              </View>
 
-
+              <View style={styles.rightContainer}>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('My_Bookings')}>
+                    <Feather
+                      name="chevron-right"
+                      size={30}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+            </>
+          )
+        }
           <View
             style={[
               styles.customerCareCard,

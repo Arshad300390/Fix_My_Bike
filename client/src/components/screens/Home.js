@@ -263,7 +263,7 @@ const Home = () => {
               ({role})
             </Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile', {role})}>
             <View style={styles.rightContainer}>
               <View style={styles.imgContainer}>
                 {image ? (

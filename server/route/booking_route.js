@@ -10,6 +10,12 @@ router.post(
 );
 
 router.get(
+  "/bookings",
+  authMiddleware,
+  bookingController.getAllUserBookings
+);
+
+router.get(
   "/service-bookings",
   authMiddleware,
   bookingController.getUserBookings

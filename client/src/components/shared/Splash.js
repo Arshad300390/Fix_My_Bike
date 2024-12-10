@@ -43,7 +43,6 @@ const Splash = () => {
               },
             },
           );
-
           if (response.status === 200) {
             navigation.replace('Main');
           } else {
