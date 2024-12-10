@@ -12,6 +12,8 @@ export const COLORS = {
   lightGray: '#D0D5DD',
   lightDark: '#1C2333',
   googleButton: '#ffffff',
+  success: '#28a745',
+  warning: '#ffc107',
 };
 
 export const FONTS = {

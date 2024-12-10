@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,13 +11,13 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
-import {COLORS, FONTS} from '../../../constants/Constants';
+import { COLORS, FONTS } from '../../../constants/Constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const {width, height} = Dimensions.get('window');
+import ServicesHistoryContainer from '../../../utils/ServiceHistoryCard/ServiceHistoryCard';
+const { width, height } = Dimensions.get('window');
 
 const Services = () => {
   const navigation = useNavigation();
@@ -40,8 +40,8 @@ const Services = () => {
         const bookings = response.data.Bookings;
         if (bookings && bookings.length > 0) {
           console.log('Fetched bookings history:', bookings);
-        setServices(bookings);
-        }else{
+          setServices(bookings);
+        } else {
           console.log('No booking history yet.');
           setServices([]);
         }
@@ -55,21 +55,6 @@ const Services = () => {
     fetchServices();
   }, []);
 
-  const renderBookingItem = ({item}) => (
-    <View style={styles.bookingCard}>
-      <Text style={styles.bookingServiceName}>Service Name: {item.serviceName}</Text>
-      <Text style={styles.bookingDetails}>Bike Name: {item.bikeName}</Text>
-      {/* <Text style={styles.bookingDetails}>Bike Model: {item.bikeModel}</Text>
-      <Text style={styles.bookingDetails}>Bike Company: {item.bikeCompanyName}</Text>
-      <Text style={styles.bookingDetails}>Bike Reg Number: {item.bikeRegNumber}</Text>
-      <Text style={styles.bookingDetails}>Address: {item.address}</Text>
-      <Text style={styles.bookingDetails}>Cell: {item.cell}</Text> */}
-      <Text style={styles.bookingDetails}>Comments: {item.comments}</Text>
-      <Text style={styles.bookingDetails}>Total Price: ${item.totalPrice}</Text>
-      <Text style={styles.bookingStatus}>Status: {item.status}</Text>
-      <Text style={styles.bookingTimestamp}>Date: {new Date(item.timestamp).toLocaleString()}</Text> 
-    </View>
-  );
 
 
   return (
@@ -102,32 +87,28 @@ const Services = () => {
         <Text
           style={[
             styles.headerTitleText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           My Booking History.
         </Text>
-        {/* <Text
-          style={[
-            styles.headerDescriptionText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
-          ]}>
-          Here is your all service bookings!
-        </Text> */}
       </View>
-
-      {loading ? (
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      ) : (
-        <ScrollView >
-        <FlatList
-          data={services}
-          scrollEnabled={false}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={renderBookingItem}
-          contentContainerStyle={styles.bookingContainer}
-        />
-        </ScrollView>
-      )}
+      {
+        loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color={COLORS.white} />
+          </View>
+        ) : (
+          <FlatList
+            data={services}
+            scrollEnabled={false}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => (
+              <ServicesHistoryContainer item={item} />
+            )}
+            contentContainerStyle={styles.bookingContainer}
+          />
+        )
+      }
     </SafeAreaView>
   );
 };
@@ -176,31 +157,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 
-  bookingCard: {
-    padding: 15,
-    borderRadius: 8,
-    marginVertical: 10,
-    backgroundColor: COLORS.white,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-
-  bookingServiceName: {
-    fontSize: width * 0.05,
-    fontFamily: FONTS.bold,
-  },
-
-  bookingDetails: {
-    fontSize: width * 0.04,
-    fontFamily: FONTS.medium,
-    marginVertical: 5,
-  },
-
-  bookingStatus: {
-    fontSize: width * 0.045,
-    fontFamily: FONTS.semiBold,
+  
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

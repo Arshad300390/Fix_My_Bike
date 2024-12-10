@@ -16,7 +16,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {COLORS, FONTS} from '../../../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-
+import ServicesContainer from '../../../utils/ServiceHistoryCard/ServiceHistoryCard';
 const {width, height} = Dimensions.get('window');
 
 const Bookings = () => {
@@ -54,22 +54,6 @@ const Bookings = () => {
     fetchBookings();
   }, []);
 
-  const renderBookingItem = ({item}) => (
-    <View style={styles.bookingCard}>
-      <Text style={styles.bookingServiceName}>Service Name: {item.serviceName}</Text>
-      <Text style={styles.bookingDetails}>Bike Name: {item.bikeName}</Text>
-      {/* <Text style={styles.bookingDetails}>Bike Model: {item.bikeModel}</Text>
-      <Text style={styles.bookingDetails}>Bike Company: {item.bikeCompanyName}</Text>
-      <Text style={styles.bookingDetails}>Bike Reg Number: {item.bikeRegNumber}</Text>
-      <Text style={styles.bookingDetails}>Address: {item.address}</Text>
-      <Text style={styles.bookingDetails}>Cell: {item.cell}</Text> */}
-      <Text style={styles.bookingDetails}>Comments: {item.comments}</Text>
-      <Text style={styles.bookingDetails}>Total Price: ${item.totalPrice}</Text>
-      <Text style={styles.bookingStatus}>Status: {item.status}</Text>
-      <Text style={styles.bookingTimestamp}>Date: {new Date(item.timestamp).toLocaleString()}</Text> 
-    </View>
-  );
-
   return (
     <SafeAreaView
       style={[
@@ -104,13 +88,7 @@ const Bookings = () => {
           ]}>
           My Bookings.
         </Text>
-        {/* <Text
-          style={[
-            styles.headerDescriptionText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
-          ]}>
-          Here is your all service bookings!
-        </Text> */}
+        
       </View>
 
       {loading ? (
@@ -118,12 +96,14 @@ const Bookings = () => {
       ) : (
         <ScrollView >
         <FlatList
-          data={bookings}
-          scrollEnabled={false}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={renderBookingItem}
-          contentContainerStyle={styles.bookingContainer}
-        />
+            data={bookings}
+            scrollEnabled={false}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => (
+              <ServicesContainer item={item} />
+            )}
+            contentContainerStyle={styles.bookingContainer}
+          />
         </ScrollView>
       )}
     </SafeAreaView>
@@ -161,44 +141,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold,
   },
 
-  headerDescriptionText: {
-    color: COLORS.dark,
-    fontSize: width * 0.042,
-    fontFamily: FONTS.medium,
-    left: width * 0.01,
-  },
-
   bookingContainer: {
     flex: 1,
     paddingHorizontal: width * 0.05,
     paddingVertical: 10,
   },
 
-  bookingCard: {
-    padding: 15,
-    borderRadius: 8,
-    marginVertical: 10,
-    backgroundColor: COLORS.white,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
 
-  bookingServiceName: {
-    fontSize: width * 0.05,
-    fontFamily: FONTS.bold,
-  },
-
-  bookingDetails: {
-    fontSize: width * 0.04,
-    fontFamily: FONTS.medium,
-    marginVertical: 5,
-  },
-
-  bookingStatus: {
-    fontSize: width * 0.045,
-    fontFamily: FONTS.semiBold,
-  },
+ 
 });

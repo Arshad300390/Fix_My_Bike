@@ -73,7 +73,7 @@ const getUserBookingHistory = async (req, res, next) => {
   try {
     const userId = req.userId;
 
-    const bookings = await Booking.find({ userId, status: "done" });
+    const bookings = await Booking.find({ userId, status: { $regex: /^done$/i } });
 
     if (!bookings.length) {
       return next(
