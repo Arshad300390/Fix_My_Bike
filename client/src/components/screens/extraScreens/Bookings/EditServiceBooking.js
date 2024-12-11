@@ -25,6 +25,7 @@ const { width, height } = Dimensions.get('window');
 const ServiceBooking = () => {
   const route = useRoute();
   const { booking } = route.params;
+  console.log(booking);
   //  const service_name = route.params?.service_name;
   //  const service_price = route.params?.service_price;
 
@@ -45,7 +46,7 @@ const ServiceBooking = () => {
   const [batteryCleaning, setBatteryCleaning] = useState('');
   const [mirrorAdjustment, setMirrorAdjustment] = useState('');
   const [dropoff, setDropOff] = useState('');
-
+  const [status, setStatus] = useState('');
   const [nameError, setNameError] = useState('');
   const [cellError, setCellError] = useState('');
   const [addressError, setAddressError] = useState('');
@@ -114,6 +115,32 @@ const ServiceBooking = () => {
       colorScheme === 'dark' ? 'light-content' : 'dark-content',
     );
   }, [colorScheme]);
+
+  useEffect(() => {
+    if (booking?.additionalServices && Array.isArray(booking.additionalServices)) {
+      setChainLubricants(
+        booking.additionalServices.includes('Chain Lubrication') ? 'Chain Lubrication' : ''
+      );
+      setTirePressure(
+        booking.additionalServices.includes('Tire Pressure Check') ? 'Tire Pressure Check' : ''
+      );
+      setHeadLightAdjustment(
+        booking.additionalServices.includes('Headlight Adjustment') ? 'Headlight Adjustment' : ''
+      );
+      setBreakCheck(
+        booking.additionalServices.includes('Brake Light Check') ? 'Brake Light Check' : ''
+      );
+      setBatteryCleaning(
+        booking.additionalServices.includes('Battery Terminal Cleaning') ? 'Battery Terminal Cleaning' : ''
+      );
+      setMirrorAdjustment(
+        booking.additionalServices.includes('Mirror Adjustment') ? 'Mirror Adjustment' : ''
+      );
+
+    }
+  }, [booking]);
+
+
 
   const isValidInput = () => {
     const namePattern = /^[a-zA-Z\s]*$/;
@@ -193,7 +220,7 @@ const ServiceBooking = () => {
   );
 
   const calculateTotalPrice = updatedServiceState => {
-    const basePrice = parseFloat(service_price) || 0;
+    const basePrice = parseFloat(booking.service_price) || 0;
     let additionalCost = 0;
 
     const { chain, tire, headlight, brake, battery, mirror } =
@@ -210,7 +237,7 @@ const ServiceBooking = () => {
   };
 
   useEffect(() => {
-    setIsButtonEnabled(isValidInput());
+    setIsButtonEnabled(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, cell, address, comments]);
 
@@ -225,16 +252,16 @@ const ServiceBooking = () => {
         }
 
         const bookingData = {
-          serviceName: service_name,
-          serviceBasePrice: service_price,
-          name: name,
-          cell: cell,
-          address: address,
-          comments: comments,
-          bikeModel: bikeModel,
-          bikeName: bikeName,
-          bikeCompanyName: bikeCompanyName,
-          bikeRegNumber: bikeRegNumber,
+          serviceName: booking.serviceName,
+          serviceBasePrice: booking.serviceBasePrice,
+          name: booking.name,
+          cell: booking.cell,
+          address: booking.address,
+          comments: booking.comments,
+          bikeModel: booking.bikeModel,
+          bikeName: booking.bikeName,
+          bikeCompanyName: booking.bikeCompanyName,
+          bikeRegNumber: booking.bikeRegNumber,
           additionalServices: [
             ...(chainLubricants ? ['Chain Lubrication'] : []),
             ...(tirePressure ? ['Tire Pressure Check'] : []),
@@ -248,7 +275,8 @@ const ServiceBooking = () => {
           timestamp: Date.now(),
           status: 'pending',
         };
-
+        console.log('services b',booking.additionalServices);
+        console.log('booking data',bookingData);
         const response = await axios.post(
           'http://10.0.2.2:5000/api/service-booking',
           bookingData,
@@ -269,7 +297,6 @@ const ServiceBooking = () => {
           setChainLubricants('');
           setHeadLightAdjustment('');
           setTirePressure('');
-          setBatteryCleaning('');
           setBreakCheck('');
         }
       } catch (error) {
@@ -288,7 +315,9 @@ const ServiceBooking = () => {
   const handleDropOffChange = value => {
     setDropOff(value);
   };
-
+const handleStatusChange = value => {
+  setStatus(value);
+}
   return (
     <SafeAreaView
       style={[
@@ -392,7 +421,8 @@ const ServiceBooking = () => {
                 colorScheme === 'dark' ? COLORS.gray : COLORS.dark
               }
               value={name}
-              onChangeText={handleNameChange}
+              // onChangeText={handleNameChange}
+              editable={false}
             />
             {nameError && nameError ? (
               <Text style={styles.errorText}>{nameError}</Text>
@@ -420,7 +450,8 @@ const ServiceBooking = () => {
               }
               keyboardType="number-pad"
               value={booking.cell}
-              onChangeText={handleCellChange}
+              // onChangeText={handleCellChange}
+              editable={false}
             />
             {cellError && cellError ? (
               <Text style={styles.errorText}>{cellError}</Text>
@@ -447,7 +478,8 @@ const ServiceBooking = () => {
                 colorScheme === 'dark' ? COLORS.gray : COLORS.dark
               }
               value={booking.address}
-              onChangeText={handleAddressChange}
+              // onChangeText={handleAddressChange}
+              editable={false}
             />
             {addressError && addressError ? (
               <Text style={styles.errorText}>{addressError}</Text>
@@ -482,7 +514,8 @@ const ServiceBooking = () => {
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
               value={booking.bikeModel}
-              onChangeText={setBikeModel}
+              // onChangeText={setBikeModel}
+              editable={false}
             />
           </View>
 
@@ -504,7 +537,8 @@ const ServiceBooking = () => {
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
               value={booking.bikeName}
-              onChangeText={setBikeName}
+              // onChangeText={setBikeName}
+              editable={false}
             />
           </View>
 
@@ -526,7 +560,8 @@ const ServiceBooking = () => {
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
               value={booking.bikeCompanyName}
-              onChangeText={setBikeCompanyName}
+              //onChangeText={setBikeCompanyName}
+              editable={false}
             />
           </View>
 
@@ -548,7 +583,8 @@ const ServiceBooking = () => {
                 colorScheme === 'dark' ? COLORS.white : COLORS.dark
               }
               value={booking.bikeRegNumber}
-              onChangeText={setBikeRegNumber}
+              // onChangeText={setBikeRegNumber}
+              editable={false}
             />
           </View>
 
@@ -569,12 +605,20 @@ const ServiceBooking = () => {
               {renderAdditionalServices(
                 'Chain Lubrication',
                 50,
-                chainLubricants,
+                booking.additionalServices.includes('Chain Lubrication'),
                 () => {
-                  const newState = !chainLubricants;
-                  setChainLubricants(newState);
+                  const serviceName = 'Chain Lubrication';
+                  let newState = [...booking.additionalServices];
+                  if (newState.includes(serviceName)) {
+                    newState = newState.filter(service => service !== serviceName);
+                  } else {
+                    newState.push(serviceName);
+                  }
+                  setChainLubricants(newState.includes(serviceName));
+                  booking.additionalServices = newState;
+
                   calculateTotalPrice({
-                    chain: newState,
+                    chain: newState.includes(serviceName),
                     tire: tirePressure,
                     headlight: headLightAdjustment,
                     brake: breakCheck,
@@ -587,13 +631,21 @@ const ServiceBooking = () => {
               {renderAdditionalServices(
                 'Tire Pressure Check',
                 30,
-                tirePressure,
+                booking.additionalServices.includes('Tire Pressure Check'),
                 () => {
-                  const newState = !tirePressure;
-                  setTirePressure(newState);
+                  const serviceName = 'Tire Pressure Check';
+                  let newState = [...booking.additionalServices];
+                  if (newState.includes(serviceName)) {
+                    newState = newState.filter(service => service !== serviceName);
+                  } else {
+                    newState.push(serviceName);
+                  }
+                  setTirePressure(newState.includes(serviceName));
+                  booking.additionalServices = newState;
+
                   calculateTotalPrice({
                     chain: chainLubricants,
-                    tire: newState,
+                    tire: newState.includes(serviceName),
                     headlight: headLightAdjustment,
                     brake: breakCheck,
                     battery: batteryCleaning,
@@ -605,14 +657,22 @@ const ServiceBooking = () => {
               {renderAdditionalServices(
                 'Headlight Adjustment',
                 40,
-                headLightAdjustment,
+                booking.additionalServices.includes('Headlight Adjustment'),
                 () => {
-                  const newState = !headLightAdjustment;
-                  setHeadLightAdjustment(newState);
+                  const serviceName = 'Headlight Adjustment';
+                  let newState = [...booking.additionalServices];
+                  if (newState.includes(serviceName)) {
+                    newState = newState.filter(service => service !== serviceName);
+                  } else {
+                    newState.push(serviceName);
+                  }
+                  setHeadLightAdjustment(newState.includes(serviceName)); // Fixed to match boolean state logic
+                  booking.additionalServices = newState;
+
                   calculateTotalPrice({
                     chain: chainLubricants,
                     tire: tirePressure,
-                    headlight: newState,
+                    headlight: newState.includes(serviceName),
                     brake: breakCheck,
                     battery: batteryCleaning,
                     mirror: mirrorAdjustment,
@@ -623,15 +683,22 @@ const ServiceBooking = () => {
               {renderAdditionalServices(
                 'Brake Light Check',
                 35,
-                breakCheck,
+                booking.additionalServices.includes('Brake Light Check'),
                 () => {
-                  const newState = !breakCheck;
-                  setBreakCheck(newState);
+                  const serviceName = 'Brake Light Check';
+                  let newState = [...booking.additionalServices];
+                  if (newState.includes(serviceName)) {
+                    newState = newState.filter(service => service !== serviceName);
+                  } else {
+                    newState.push(serviceName);
+                  }
+                  setBreakCheck(newState.includes(serviceName));
+                  booking.additionalServices = newState;
                   calculateTotalPrice({
                     chain: chainLubricants,
                     tire: tirePressure,
                     headlight: headLightAdjustment,
-                    brake: newState,
+                    brake: newState.includes(serviceName),
                     battery: batteryCleaning,
                     mirror: mirrorAdjustment,
                   });
@@ -641,16 +708,24 @@ const ServiceBooking = () => {
               {renderAdditionalServices(
                 'Battery Terminal Cleaning',
                 60,
-                batteryCleaning,
+                booking.additionalServices.includes('Battery Terminal Cleaning'),
                 () => {
-                  const newState = !batteryCleaning;
-                  setBatteryCleaning(newState);
+                  const serviceName = 'Battery Terminal Cleaning';
+                  let newState = [...booking.additionalServices];
+                  if (newState.includes(serviceName)) {
+                    newState = newState.filter(service => service !== serviceName);
+                  } else {
+                    newState.push(serviceName);
+                  }
+                  setBatteryCleaning(newState.includes(serviceName));
+                  booking.additionalServices = newState;
+
                   calculateTotalPrice({
                     chain: chainLubricants,
                     tire: tirePressure,
                     headlight: headLightAdjustment,
                     brake: breakCheck,
-                    battery: newState,
+                    battery: newState.includes(serviceName),
                     mirror: mirrorAdjustment,
                   });
                 },
@@ -659,21 +734,30 @@ const ServiceBooking = () => {
               {renderAdditionalServices(
                 'Mirror Adjustment',
                 25,
-                mirrorAdjustment,
+                booking.additionalServices.includes('Mirror Adjustment'),
                 () => {
-                  const newState = !mirrorAdjustment;
-                  setMirrorAdjustment(newState);
+                  const serviceName = 'Mirror Adjustment';
+                  let newState = [...booking.additionalServices];
+                  if (newState.includes(serviceName)) {
+                    newState = newState.filter(service => service !== serviceName);
+                  } else {
+                    newState.push(serviceName);
+                  }
+                  setMirrorAdjustment(newState.includes(serviceName));
+                  booking.additionalServices = newState;
+
                   calculateTotalPrice({
                     chain: chainLubricants,
                     tire: tirePressure,
                     headlight: headLightAdjustment,
                     brake: breakCheck,
                     battery: batteryCleaning,
-                    mirror: newState,
+                    mirror: newState.includes(serviceName),
                   });
                 },
               )}
             </View>
+
           </View>
 
           <View style={styles.roleContainer}>
@@ -686,7 +770,7 @@ const ServiceBooking = () => {
             </Text>
             <View style={styles.pickerContainer}>
               <Picker
-                selectedValue={dropoff}
+                selectedValue={dropoff || booking.dropOff}
                 style={[
                   styles.picker,
                   { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
@@ -723,10 +807,41 @@ const ServiceBooking = () => {
               }
               multiline={true}
               numberOfLines={6}
-              value={comments}
+              value={booking.comments}
               onChangeText={setComments}
             />
           </View>
+
+          <View style={styles.roleContainer}>
+            <Text
+              style={[
+                styles.label,
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+              ]}>
+              Status
+            </Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={status || booking.status}
+                style={[
+                  styles.picker,
+                  { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+                ]}
+                onValueChange={handleStatusChange}>
+                <Picker.Item label="Booking Status" value="" />
+                <Picker.Item label="Pending" value="pending" />
+                <Picker.Item
+                  label="In Progress"
+                  value="in progress"
+                />
+                <Picker.Item
+                  label="Completed"
+                  value="completed"
+                />
+              </Picker>
+            </View>
+          </View>
+
 
           <View style={styles.inputFieldContainer}>
             <Text

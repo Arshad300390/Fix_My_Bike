@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -13,15 +13,15 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {COLORS, FONTS} from '../constants/Constants';
+import { COLORS, FONTS } from '../constants/Constants';
 import Feather from 'react-native-vector-icons/Feather';
 import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import ServicesContainer from '../utils/ServicesCard/ServicesCard';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const Home = () => {
   const [image, setImage] = useState('');
@@ -236,14 +236,14 @@ const Home = () => {
               <Text
                 style={[
                   styles.greeting,
-                  {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                  { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
                 ]}>
                 Hello,
               </Text>
               <Text
                 style={[
                   styles.name,
-                  {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                  { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
                 ]}>
                 {name}
               </Text>
@@ -251,23 +251,23 @@ const Home = () => {
             <Text
               style={[
                 styles.description,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Have A Nice Day!
             </Text>
             <Text
               style={[
                 styles.description,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               ({role})
             </Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile', {role})}>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile', { role })}>
             <View style={styles.rightContainer}>
               <View style={styles.imgContainer}>
                 {image ? (
-                  <Image source={{uri: image}} style={styles.img} />
+                  <Image source={{ uri: image }} style={styles.img} />
                 ) : (
                   <Image source={imgPlaceHolder} style={styles.img} />
                 )}
@@ -275,77 +275,80 @@ const Home = () => {
             </View>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.searchContainer}>
-          <View
-            style={[
-              styles.searchBarContainer,
-              {borderColor: searchBorderColor},
-            ]}>
-            <Feather
-              name="search"
-              size={width * 0.045}
-              color={colorScheme === 'dark' ? COLORS.white : COLORS.dark}
-              style={styles.searchIcon}
-            />
-            <TextInput
-              style={[
-                styles.searchInputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
-              ]}
-              placeholder="Search!"
-              placeholderTextColor={
-                colorScheme === 'dark' ? COLORS.gray : COLORS.lightGray
-              }
-              onFocus={() => setSearchBorderColor(COLORS.primary)}
-              onBlur={() => setSearchBorderColor(COLORS.lightGray)}
-              value={searchQuery}
-              onChangeText={handleSearch}
-            />
-          </View>
-        </View>
-
-        <View style={styles.homeContainer}>
-          <View style={styles.serviceContainer}>
-            {isSearching ? (
-              <View style={styles.loaderContainer}>
-                <ActivityIndicator
-                  size="large"
-                  color={
-                    colorScheme === 'dark' ? COLORS.white : COLORS.darkColor
-                  }
-                />
-              </View>
-            ) : filteredServices.length > 0 ? (
-              <FlatList
-                data={filteredServices}
-                keyExtractor={item => item.id}
-                renderItem={({item}) => (
-                  <ServicesContainer
-                    service_image={item.service_image}
-                    service_name={item.service_name}
-                    service_description={item.service_description}
-                    service_price={item.service_price}
-                  />
-                )}
-                contentContainerStyle={styles.serviceContainer}
-              />
-            ) : (
-              <View style={styles.noServiceContainer}>
-                <Text
+        {
+          role === 'mechanic' ? null : (
+            <>
+              <View style={styles.searchContainer}>
+                <View
                   style={[
-                    styles.noServiceText,
-                    {
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                    },
+                    styles.searchBarContainer,
+                    { borderColor: searchBorderColor },
                   ]}>
-                  No Service Available!
-                </Text>
+                  <Feather
+                    name="search"
+                    size={width * 0.045}
+                    color={colorScheme === 'dark' ? COLORS.white : COLORS.dark}
+                    style={styles.searchIcon}
+                  />
+                  <TextInput
+                    style={[
+                      styles.searchInputField,
+                      { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+                    ]}
+                    placeholder="Search!"
+                    placeholderTextColor={
+                      colorScheme === 'dark' ? COLORS.gray : COLORS.lightGray
+                    }
+                    onFocus={() => setSearchBorderColor(COLORS.primary)}
+                    onBlur={() => setSearchBorderColor(COLORS.lightGray)}
+                    value={searchQuery}
+                    onChangeText={handleSearch}
+                  />
+                </View>
               </View>
-            )}
-          </View>
-        </View>
+
+              <View style={styles.homeContainer}>
+                <View style={styles.serviceContainer}>
+                  {isSearching ? (
+                    <View style={styles.loaderContainer}>
+                      <ActivityIndicator
+                        size="large"
+                        color={
+                          colorScheme === 'dark' ? COLORS.white : COLORS.darkColor
+                        }
+                      />
+                    </View>
+                  ) : filteredServices.length > 0 ? (
+                    <FlatList
+                      data={filteredServices}
+                      keyExtractor={item => item.id}
+                      renderItem={({ item }) => (
+                        <ServicesContainer
+                          service_image={item.service_image}
+                          service_name={item.service_name}
+                          service_description={item.service_description}
+                          service_price={item.service_price}
+                        />
+                      )}
+                      contentContainerStyle={styles.serviceContainer}
+                    />
+                  ) : (
+                    <View style={styles.noServiceContainer}>
+                      <Text
+                        style={[
+                          styles.noServiceText,
+                          {
+                            color:
+                              colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          },
+                        ]}>
+                        No Service Available!
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            </>)}
       </ScrollView>
     </SafeAreaView>
   );

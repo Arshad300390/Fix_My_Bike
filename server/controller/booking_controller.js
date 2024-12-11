@@ -56,7 +56,12 @@ const createBooking = async (req, res, next) => {
 const getAllUserBookings = async (req, res, next) => {
   try {
     
-    const bookings = await Booking.find({status: { $regex: /^pending$/i } });
+    const bookings = await Booking.find({
+      $or: [
+        { status: { $regex: /^pending$/i } },
+        { status: { $regex: /^in progress$/i } }
+      ]
+    });
     if (!bookings.length) {
       return next(new HttpError("No booking yet.", 404));
     }
@@ -74,7 +79,10 @@ const getUserBookings = async (req, res, next) => {
   try {
     const userId = req.userId;
 
-    const bookings = await Booking.find({ userId, status: "pending" });
+    const bookings = await Booking.find({ userId, $or: [
+      { status: "pending" },
+      { status: "in progress" }, ]
+    });
 
     if (!bookings.length) {
       return next(new HttpError("No bookings found for this user.", 404));
@@ -90,7 +98,7 @@ const getUserBookingHistory = async (req, res, next) => {
   try {
     const userId = req.userId;
 
-    const bookings = await Booking.find({ userId, status: { $regex: /^done$/i } });
+    const bookings = await Booking.find({ userId, status: { $regex: /^completed$/i } });
 
     if (!bookings.length) {
       return next(
@@ -108,7 +116,7 @@ const getUserBookingHistory = async (req, res, next) => {
 const getAllUserBookingHistory = async (req, res, next) => {
   try {
 
-    const bookings = await Booking.find({status: { $regex: /^done$/i } });
+    const bookings = await Booking.find({status: { $regex: /^completed$/i } });
 
     if (!bookings.length) {
       return next(

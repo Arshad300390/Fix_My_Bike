@@ -63,7 +63,6 @@ const Services = () => {
         });
         const bookings = response.data.Bookings;
         if (bookings && bookings.length > 0) {
-          console.log('Fetched bookings history:', bookings);
           setServices(bookings);
         } else {
           console.log('No booking history yet.');

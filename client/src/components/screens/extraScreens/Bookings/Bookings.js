@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -26,7 +27,7 @@ const Bookings = () => {
   const [role, setRole] = useState();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [shouldRefresh, setShouldRefresh] = useState(false);
 
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const Bookings = () => {
         });
         setRole(response.data.User.role);
       } catch (error) {
-        console.error('Error fetching user role:', error.message);
+        console.error('Error fetching user_ role:', error.message);
       }
     };
     fetchUser();
@@ -80,8 +81,28 @@ const Bookings = () => {
       }
     };
 
-    fetchBookings();
-  }, [role]);
+    if (role || shouldRefresh) fetchBookings();
+  }, [role, shouldRefresh]);
+
+ const handleUpdateStatus = async (id, status) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios({
+      method: 'PUT',
+      url: `http://10.0.2.2:5000/api/service-booking/${id}/status`,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      data: {
+        status: status,
+      },
+    });
+    console.log('update run');
+    setShouldRefresh(true);
+  } catch (error) {
+    console.error('Error fetching user_ role:', error.message);
+  }
+ };
 
   return (
     <SafeAreaView
@@ -126,16 +147,17 @@ const Bookings = () => {
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.primary} />
       ) : (
-        <ScrollView >
+        <ScrollView style={styles.ScrollView}>
           <FlatList
             data={bookings}
-            scrollEnabled={false}
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
               <ServicesContainer
                 item={item}
                 role={role}
-                onEdit={() => navigation.navigate('edit_Service_Booking', { booking: item })}
+                status={item.status}
+                onShowInProgress={handleUpdateStatus}
+                onComplete={handleUpdateStatus}
               />
 
             )}
@@ -183,7 +205,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.05,
     paddingVertical: 10,
   },
-
-
-
+  scrollView: {
+    flex: 1,
+  },
 });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants/Constants';
 
-const ServiceHistoryCard = ({ item, role, onEdit }) => {
+const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status}) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -18,7 +18,7 @@ const ServiceHistoryCard = ({ item, role, onEdit }) => {
       <Text
         style={[
           styles.status,
-          { color: /^done$/i.test(item.status)  ? COLORS.success : COLORS.warning },
+          { color: /^completed$/i.test(item.status) ? COLORS.success : COLORS.warning },
         ]}
       >
         Status: {item.status}
@@ -27,9 +27,18 @@ const ServiceHistoryCard = ({ item, role, onEdit }) => {
         Date: {new Date(item.timestamp).toLocaleString()}
       </Text>
       {role === 'mechanic' && (
-        <TouchableOpacity style={styles.editButton} onPress={onEdit}>
-          <Text style={styles.editButtonText}>Edit</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+           <TouchableOpacity
+          style={[styles.showInProgressButton, status === 'in progress' && styles.disabledButton]}
+          onPress={() => onShowInProgress(item._id, 'in progress')}
+          disabled={status === 'in progress'}
+        >
+            <Text style={styles.showInProgressButtonText}>In Progress</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.completeButton} onPress={() => onComplete(item._id, 'completed')}>
+            <Text style={styles.completeButtonText}>Complete</Text>
+          </TouchableOpacity>
+        </View>
       )}
       {/* Conditional rendering for additional information */}
       {expanded && (
@@ -53,9 +62,9 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
+    elevation: 5,
   },
   serviceName: {
     fontSize: 16,
@@ -88,7 +97,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.lightGray,
   },
-  editButton: {
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    paddingHorizontal: 26,
+  },
+  showInProgressButton: {
     marginTop: 10,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -96,10 +112,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'flex-end', // Position the button on the right side
   },
-  editButtonText: {
+  showInProgressButtonText: {
     color: COLORS.white,
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  completeButton: {
+    marginTop: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.success, // Adjust color as needed
+    borderRadius: 5,
+    alignSelf: 'flex-end', // Position the button on the right side
+  },
+  completeButtonText: {
+    color: COLORS.white,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  disabledButton: {
+    backgroundColor: COLORS.lightGray,
   },
 });
 
