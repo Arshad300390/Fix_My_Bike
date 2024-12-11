@@ -56,7 +56,7 @@ const createBooking = async (req, res, next) => {
 const getAllUserBookings = async (req, res, next) => {
   try {
     
-    const bookings = await Booking.find({status: "pending" });
+    const bookings = await Booking.find({status: { $regex: /^pending$/i } });
     if (!bookings.length) {
       return next(new HttpError("No booking yet.", 404));
     }
@@ -103,6 +103,25 @@ const getUserBookingHistory = async (req, res, next) => {
     return next(new HttpError("Error fetching bookings!", 500));
   }
 };
+
+
+const getAllUserBookingHistory = async (req, res, next) => {
+  try {
+
+    const bookings = await Booking.find({status: { $regex: /^done$/i } });
+
+    if (!bookings.length) {
+      return next(
+        new HttpError("No bookings history found yet.", 404)
+      );
+    }
+
+    res.status(200).json({ Bookings: bookings });
+  } catch (error) {
+    return next(new HttpError("Error fetching bookings!", 500));
+  }
+};
+
 
 const getBookingById = async (req, res) => {
   try {
@@ -152,6 +171,7 @@ module.exports = {
   getAllUserBookings,
   getUserBookings,
   getUserBookingHistory,
+  getAllUserBookingHistory,
   getBookingById,
   updateBookingStatus,
   deleteBooking,

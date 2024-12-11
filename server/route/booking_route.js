@@ -28,6 +28,12 @@ router.get(
 );
 
 router.get(
+  "/history",
+  authMiddleware,
+  bookingController.getAllUserBookingHistory
+);
+
+router.get(
   "/service-booking/:id",
   authMiddleware,
   bookingController.getBookingById

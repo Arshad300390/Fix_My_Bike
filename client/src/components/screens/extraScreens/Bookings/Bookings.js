@@ -30,7 +30,7 @@ const Bookings = () => {
 
 
   useEffect(() => {
-    fetchUser = async () => {
+   const fetchUser = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
@@ -44,15 +44,15 @@ const Bookings = () => {
       } catch (error) {
         console.error('Error fetching user role:', error.message);
       }
-    }
+    };
     fetchUser();
-  }, [])
+  }, []);
 
   useEffect(() => {
     const fetchBookings = async () => {
-      if (!role) return;
+      if (!role) {return;}
       const url =
-        role == 'mechanic'
+        role === 'mechanic'
           ? 'http://10.0.2.2:5000/api/bookings'
           : 'http://10.0.2.2:5000/api/service-bookings';
       try {
@@ -65,10 +65,10 @@ const Bookings = () => {
           },
         });
 
-        const bookings = response.data.Bookings;
+        const serviceBookings = response.data.Bookings;
 
-        if (bookings && bookings.length > 0) {
-          setBookings(bookings);
+        if (serviceBookings && serviceBookings.length > 0) {
+          setBookings(serviceBookings);
         } else {
           console.log('No bookings yet.');
           setBookings([]);
@@ -116,7 +116,7 @@ const Bookings = () => {
             { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           {
-            role == "mechanic" ? "Bookings" : "My Bookings"
+            role === 'mechanic' ? 'Bookings' : 'My Bookings'
           }
 
         </Text>

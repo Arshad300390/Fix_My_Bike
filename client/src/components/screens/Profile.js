@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useEffect} from 'react';
 
 import {
   StyleSheet,
@@ -13,18 +14,17 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import { COLORS, FONTS } from '../constants/Constants';
+import {useNavigation} from '@react-navigation/native';
+import {COLORS, FONTS} from '../constants/Constants';
 import LogoutModal from '../utils/Modals/LogoutModal';
 import DeleteAccountModal from '../utils/Modals/DeleteAccountModal';
 import CustomModal from '../utils/Modals/CustomModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 const Profile = () => {
-  
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -42,25 +42,23 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchUser =  async()=>{
+   const fetchUser = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
           method: 'GET',
           url: 'http://10.0.2.2:5000/api/users/get-users',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         setRole(response.data.User.role);
       } catch (error) {
         console.error('Error fetching user role:', error.message);
-      } 
-    }
+      }
+    };
     fetchUser();
-  },[])
-
-
+  }, []);
 
   return (
     <SafeAreaView
@@ -92,14 +90,14 @@ const Profile = () => {
         <Text
           style={[
             styles.headerTitleText,
-            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
           ]}>
           Profile
         </Text>
         <Text
           style={[
             styles.headerDescriptionText,
-            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
           ]}>
           Your Profile - Preferences.
         </Text>
@@ -165,222 +163,274 @@ const Profile = () => {
           </View>
           {role === 'customer' ? (
             <>
-          <View
-            style={[
-              styles.vehicleCard,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.vehicleContainer}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons
-                    name="motorbike"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                    }}>
-                    Bike Management:{' '}
-                  </Text>
+              <View
+                style={[
+                  styles.vehicleCard,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.vehicleContainer}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <MaterialCommunityIcons
+                        name="motorbike"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        Bike Management:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('My_Bikes')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
 
-              <View style={styles.rightContainer}>
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('My_Bikes')}>
-                    <Feather
-                      name="chevron-right"
-                      size={30}
-                      color={COLORS.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
+              <View
+                style={[
+                  styles.bookingsCard,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.bookingsContainer}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="book"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        My Bookings:{' '}
+                      </Text>
+                    </View>
+                  </View>
 
-          <View
-            style={[
-              styles.bookingsCard,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.bookingsContainer}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <Feather
-                    name="book"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                    }}>
-                    My Bookings:{' '}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.rightContainer}>
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('My_Bookings')}>
-                    <Feather
-                      name="chevron-right"
-                      size={30}
-                      color={COLORS.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          <View
-            style={[
-              styles.servicesCard,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.servicesContainer}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <Feather
-                    name="grid"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                    }}>
-                    Services History:{' '}
-                  </Text>
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('My_Bookings')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
 
-              <View style={styles.rightContainer}>
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('Services')}>
-                    <Feather
-                      name="chevron-right"
-                      size={30}
-                      color={COLORS.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-          </>
-          ):(
-            <>
-             <View
-            style={[
-              styles.bookingsCard,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.bookingsContainer}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <Feather
-                    name="book"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                    }}>
-                    Bookings:{' '}
-                  </Text>
-                </View>
-              </View>
+              <View
+                style={[
+                  styles.servicesCard,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.servicesContainer}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="grid"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        Services History:{' '}
+                      </Text>
+                    </View>
+                  </View>
 
-              <View style={styles.rightContainer}>
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('My_Bookings')}>
-                    <Feather
-                      name="chevron-right"
-                      size={30}
-                      color={COLORS.primary}
-                    />
-                  </TouchableOpacity>
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Services')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
-            </View>
-          </View>
             </>
-          )
-        }
+          ) : (
+            <>
+              <View
+                style={[
+                  styles.bookingsCard,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.bookingsContainer}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="book"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        Bookings:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('My_Bookings')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              <View
+                style={[
+                  styles.bookingsCard,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.bookingsContainer}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="grid"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        Booking History:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Services')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </>
+          )}
           <View
             style={[
               styles.customerCareCard,
@@ -491,7 +541,7 @@ const Profile = () => {
             <View
               style={[
                 styles.deleteContainer,
-                colorScheme === 'dark' && { backgroundColor: COLORS.errorColor },
+                colorScheme === 'dark' && {backgroundColor: COLORS.errorColor},
               ]}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
@@ -501,7 +551,7 @@ const Profile = () => {
                     color={
                       colorScheme === 'dark' ? COLORS.white : COLORS.errorColor
                     }
-                    style={{ bottom: 2 }}
+                    style={{bottom: 2}}
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -534,7 +584,7 @@ const Profile = () => {
                     name="log-out"
                     size={25}
                     color={COLORS.white}
-                    style={{ bottom: 2 }}
+                    style={{bottom: 2}}
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -643,7 +693,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -662,7 +712,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -681,7 +731,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -700,7 +750,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -713,13 +763,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-
   customerCareCard: {
     backgroundColor: COLORS.white,
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -738,7 +787,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,

@@ -6,7 +6,6 @@ import {
   Text,
   Dimensions,
   useColorScheme,
-  ScrollView,
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
@@ -22,17 +21,42 @@ const { width, height } = Dimensions.get('window');
 const Services = () => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [role, setRole] = useState();
 
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchUser = async () => {
+       try {
+         const token = await AsyncStorage.getItem('token');
+         const response = await axios({
+           method: 'GET',
+           url: 'http://10.0.2.2:5000/api/users/get-users',
+           headers: {
+             'Authorization': `Bearer ${token}`,
+           },
+         });
+         setRole(response.data.User.role);
+       } catch (error) {
+         console.error('Error fetching user role:', error.message);
+       }
+     };
+     fetchUser();
+   }, []);
+
+  useEffect(() => {
     const fetchServices = async () => {
+      if (!role) {return;}
+      const url =
+        role === 'mechanic'
+          ? 'http://10.0.2.2:5000/api/history'
+          : 'http://10.0.2.2:5000/api/service-History';
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
           method: 'GET',
-          url: 'http://10.0.2.2:5000/api/service-History',
+          url: url,
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -53,7 +77,7 @@ const Services = () => {
     };
 
     fetchServices();
-  }, []);
+  }, [role]);
 
 
 
@@ -89,7 +113,9 @@ const Services = () => {
             styles.headerTitleText,
             { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
-          My Booking History.
+             {
+            role === 'mechanic' ? 'Bookings' : 'My Booking History'
+          }
         </Text>
       </View>
       {
@@ -157,7 +183,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 
-  
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
