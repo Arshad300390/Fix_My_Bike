@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
@@ -50,7 +51,7 @@ const ServiceBooking = () => {
   const [addressError, setAddressError] = useState('');
   const [bikeModelError, setBikeModelError] = useState('');
   const [bikeRegNumberError, setBikeRegNumberError] = useState('');
-
+  const [img, setImage] = useState('');
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -246,6 +247,7 @@ const ServiceBooking = () => {
           dropOff: dropoff,
           timestamp: Date.now(),
           status: 'pending',
+          sheduleDate: '',
         };
 
         const response = await axios.post(

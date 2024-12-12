@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
@@ -20,6 +21,7 @@ import { COLORS, FONTS } from '../constants/Constants';
 import Feather from 'react-native-vector-icons/Feather';
 import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import ServicesContainer from '../utils/ServicesCard/ServicesCard';
+import SheduleCard from '../utils/SheduleCard/SheduleCard';
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,6 +35,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [notShedule, setNotShedule] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,6 +83,37 @@ const Home = () => {
 
     fetchUserData();
   }, [navigation]);
+
+  useEffect(()=>{
+    const fetchScheduleRequests = async () => {
+      if (role && role === 'mechanic') {
+        try {
+          const token = await AsyncStorage.getItem('token');
+
+          const response = await axios.get('http://10.0.2.2:5000/api/to-shedule', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const resData = response.data.Bookings;
+          setNotShedule(resData.length);
+          console.log('not shedule',resData);
+        } catch (error) {
+          console.error('Error fetching schedule requests:', error);
+        }
+      }
+    };
+
+    fetchScheduleRequests();
+    const intervalId = setInterval(() => {
+      fetchScheduleRequests();
+    }, 10000);
+
+    return () => {
+      clearInterval(intervalId);
+    }
+  },[role]);
+
 
   const services = [
     {
@@ -276,79 +310,82 @@ const Home = () => {
           </TouchableOpacity>
         </View>
         {
-          role === 'mechanic' ? null : (
-            <>
-              <View style={styles.searchContainer}>
-                <View
-                  style={[
-                    styles.searchBarContainer,
-                    { borderColor: searchBorderColor },
-                  ]}>
-                  <Feather
-                    name="search"
-                    size={width * 0.045}
-                    color={colorScheme === 'dark' ? COLORS.white : COLORS.dark}
-                    style={styles.searchIcon}
-                  />
-                  <TextInput
+          role === 'mechanic' ? (
+            <SheduleCard notShedule={notShedule} navigation={navigation}/>
+          )
+            : (
+              <>
+                <View style={styles.searchContainer}>
+                  <View
                     style={[
-                      styles.searchInputField,
-                      { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
-                    ]}
-                    placeholder="Search!"
-                    placeholderTextColor={
-                      colorScheme === 'dark' ? COLORS.gray : COLORS.lightGray
-                    }
-                    onFocus={() => setSearchBorderColor(COLORS.primary)}
-                    onBlur={() => setSearchBorderColor(COLORS.lightGray)}
-                    value={searchQuery}
-                    onChangeText={handleSearch}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.homeContainer}>
-                <View style={styles.serviceContainer}>
-                  {isSearching ? (
-                    <View style={styles.loaderContainer}>
-                      <ActivityIndicator
-                        size="large"
-                        color={
-                          colorScheme === 'dark' ? COLORS.white : COLORS.darkColor
-                        }
-                      />
-                    </View>
-                  ) : filteredServices.length > 0 ? (
-                    <FlatList
-                      data={filteredServices}
-                      keyExtractor={item => item.id}
-                      renderItem={({ item }) => (
-                        <ServicesContainer
-                          service_image={item.service_image}
-                          service_name={item.service_name}
-                          service_description={item.service_description}
-                          service_price={item.service_price}
-                        />
-                      )}
-                      contentContainerStyle={styles.serviceContainer}
+                      styles.searchBarContainer,
+                      { borderColor: searchBorderColor },
+                    ]}>
+                    <Feather
+                      name="search"
+                      size={width * 0.045}
+                      color={colorScheme === 'dark' ? COLORS.white : COLORS.dark}
+                      style={styles.searchIcon}
                     />
-                  ) : (
-                    <View style={styles.noServiceContainer}>
-                      <Text
-                        style={[
-                          styles.noServiceText,
-                          {
-                            color:
-                              colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                          },
-                        ]}>
-                        No Service Available!
-                      </Text>
-                    </View>
-                  )}
+                    <TextInput
+                      style={[
+                        styles.searchInputField,
+                        { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+                      ]}
+                      placeholder="Search!"
+                      placeholderTextColor={
+                        colorScheme === 'dark' ? COLORS.gray : COLORS.lightGray
+                      }
+                      onFocus={() => setSearchBorderColor(COLORS.primary)}
+                      onBlur={() => setSearchBorderColor(COLORS.lightGray)}
+                      value={searchQuery}
+                      onChangeText={handleSearch}
+                    />
+                  </View>
                 </View>
-              </View>
-            </>)}
+
+                <View style={styles.homeContainer}>
+                  <View style={styles.serviceContainer}>
+                    {isSearching ? (
+                      <View style={styles.loaderContainer}>
+                        <ActivityIndicator
+                          size="large"
+                          color={
+                            colorScheme === 'dark' ? COLORS.white : COLORS.darkColor
+                          }
+                        />
+                      </View>
+                    ) : filteredServices.length > 0 ? (
+                      <FlatList
+                        data={filteredServices}
+                        keyExtractor={item => item.id}
+                        renderItem={({ item }) => (
+                          <ServicesContainer
+                            service_image={item.service_image}
+                            service_name={item.service_name}
+                            service_description={item.service_description}
+                            service_price={item.service_price}
+                          />
+                        )}
+                        contentContainerStyle={styles.serviceContainer}
+                      />
+                    ) : (
+                      <View style={styles.noServiceContainer}>
+                        <Text
+                          style={[
+                            styles.noServiceText,
+                            {
+                              color:
+                                colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                            },
+                          ]}>
+                          No Service Available!
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </>)}
       </ScrollView>
     </SafeAreaView>
   );
@@ -483,5 +520,21 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.semiBold,
     fontSize: width * 0.05,
     textAlign: 'center',
+  },
+  card: {
+    backgroundColor: '#fff', // White background
+    borderRadius: 10, // Rounded corners
+    padding: 20, // Internal padding
+    margin: 10, // Space around the card
+    shadowColor: '#000', // Shadow color
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset
+    shadowOpacity: 0.1, // Shadow opacity
+    shadowRadius: 5, // Shadow radius
+    elevation: 3, // Shadow for Android
+  },
+  cardText: {
+    fontSize: 16, // Text size
+    color: '#333', // Text color
+    textAlign: 'center', // Center text
   },
 });

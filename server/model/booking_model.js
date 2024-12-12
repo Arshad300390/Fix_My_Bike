@@ -36,6 +36,8 @@ const bookingSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
 
   status: { type: String, default: "pending" },
+
+  SheduleDate: { type: Date, default: null}
 });
 
 module.exports = mongoose.model("Booking", bookingSchema);

@@ -55,7 +55,7 @@ const createBooking = async (req, res, next) => {
 
 const getAllUserBookings = async (req, res, next) => {
   try {
-    
+
     const bookings = await Booking.find({
       $or: [
         { status: { $regex: /^pending$/i } },
@@ -79,9 +79,10 @@ const getUserBookings = async (req, res, next) => {
   try {
     const userId = req.userId;
 
-    const bookings = await Booking.find({ userId, $or: [
-      { status: "pending" },
-      { status: "in progress" }, ]
+    const bookings = await Booking.find({
+      userId, $or: [
+        { status: "pending" },
+        { status: "in progress" },]
     });
 
     if (!bookings.length) {
@@ -93,6 +94,24 @@ const getUserBookings = async (req, res, next) => {
     return next(new HttpError("Error fetching bookings!", 500));
   }
 };
+
+const getNotSheduleBookings = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+
+    const bookings = await Booking.find({ SheduleDate: null });
+
+    if (bookings.length === 0) {
+      return res.status(200).json({ Bookings: 0 });
+    } else {
+      console.log(bookings.length);
+    }
+    res.status(200).json({ Bookings: bookings });
+  } catch (error) {
+    return next(new HttpError("Error fetching bookings for shedule!", 500));
+  }
+};
+
 
 const getUserBookingHistory = async (req, res, next) => {
   try {
@@ -116,7 +135,7 @@ const getUserBookingHistory = async (req, res, next) => {
 const getAllUserBookingHistory = async (req, res, next) => {
   try {
 
-    const bookings = await Booking.find({status: { $regex: /^completed$/i } });
+    const bookings = await Booking.find({ status: { $regex: /^completed$/i } });
 
     if (!bookings.length) {
       return next(
@@ -161,6 +180,27 @@ const updateBookingStatus = async (req, res) => {
       .json({ message: "Error updating booking", error: error.message });
   }
 };
+//
+const updateBookingShedule = async (req, res) => {
+  try {
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { SheduleDate: req.body.date },
+      { new: true }
+    );
+    if (!updatedBooking)
+      return res.status(404).json({ message: "Booking not found" });
+    res
+      .status(200)
+      .json({ message: "Booking status updated", data: updatedBooking });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating booking", error: error.message });
+  }
+};
+//
+
 
 const deleteBooking = async (req, res) => {
   try {
@@ -178,8 +218,10 @@ module.exports = {
   createBooking,
   getAllUserBookings,
   getUserBookings,
+  getNotSheduleBookings,
   getUserBookingHistory,
   getAllUserBookingHistory,
+  updateBookingShedule,
   getBookingById,
   updateBookingStatus,
   deleteBooking,

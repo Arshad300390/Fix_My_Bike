@@ -19,7 +19,7 @@ import BikeDetailed from './src/components/screens/extraScreens/BikeManagement/B
 import Bookings from './src/components/screens/extraScreens/Bookings/Bookings';
 import Services from './src/components/screens/extraScreens/Bookings/Services';
 import ServiceBooking from './src/components/screens/extraScreens/Bookings/ServiceBooking';
-import EditServiceBooking from './src/components/screens/extraScreens/Bookings/EditServiceBooking';
+import SheduleBooking from './src/components/screens/extraScreens/Bookings/BookingsToShedule';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -122,9 +122,9 @@ const App = () => {
             <ServiceBooking {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
-        <Stack.Screen name="edit_Service_Booking">
+        <Stack.Screen name="Shedule_Booking">
           {props => (
-            <EditServiceBooking {...props} setStatusBarColor={setStatusBarColor} />
+            <SheduleBooking {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

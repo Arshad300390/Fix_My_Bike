@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable curly */
 import React, { useEffect, useState } from 'react';
 import {
@@ -97,7 +98,6 @@ const Bookings = () => {
         status: status,
       },
     });
-    console.log('update run');
     setShouldRefresh(true);
   } catch (error) {
     console.error('Error fetching user_ role:', error.message);
@@ -147,9 +147,10 @@ const Bookings = () => {
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.primary} />
       ) : (
-        <ScrollView style={styles.ScrollView}>
+        <ScrollView style={styles.scrollView}>
           <FlatList
             data={bookings}
+            scrollEnabled={true}
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
               <ServicesContainer

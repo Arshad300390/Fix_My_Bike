@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-
+const http = require('http');
 const userRoutes = require("./route/user_route");
 const bikeRoutes = require("./route/bike_route");
 const serviceRoutes = require("./route/service_route");
@@ -11,7 +11,6 @@ const googleSigninRoutes = require("./route/google_signin_route");
 require("dotenv").config();
 
 const app = express();
-
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -37,6 +36,7 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connected to MongoDB successfully!");
+   
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
     });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants/Constants';
 
-const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status}) => {
+const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, onShedule }) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -27,18 +27,24 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status})
         Date: {new Date(item.timestamp).toLocaleString()}
       </Text>
       {role === 'mechanic' && (
+        item.SheduleDate ? (
         <View style={styles.buttonContainer}>
-           <TouchableOpacity
-          style={[styles.showInProgressButton, status === 'in progress' && styles.disabledButton]}
-          onPress={() => onShowInProgress(item._id, 'in progress')}
-          disabled={status === 'in progress'}
-        >
+          <TouchableOpacity
+            style={[styles.showInProgressButton, status === 'in progress' && styles.disabledButton]}
+            onPress={() => onShowInProgress(item._id, 'in progress')}
+            disabled={status === 'in progress'}
+          >
             <Text style={styles.showInProgressButtonText}>In Progress</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.completeButton} onPress={() => onComplete(item._id, 'completed')}>
             <Text style={styles.completeButtonText}>Complete</Text>
           </TouchableOpacity>
         </View>
+      ):(
+        <TouchableOpacity style={styles.showInProgressButton} onPress={() => onShedule(item._id, 'completed')}>
+            <Text style={styles.showInProgressButtonText}>shedule date</Text>
+          </TouchableOpacity>
+      )
       )}
       {/* Conditional rendering for additional information */}
       {expanded && (

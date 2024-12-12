@@ -28,6 +28,18 @@ router.get(
 );
 
 router.get(
+  "/to-shedule",
+  authMiddleware,
+  bookingController.getNotSheduleBookings
+);
+
+router.put(
+  "/to-shedule/:id/date",
+  authMiddleware,
+  bookingController.updateBookingShedule
+);
+
+router.get(
   "/history",
   authMiddleware,
   bookingController.getAllUserBookingHistory
