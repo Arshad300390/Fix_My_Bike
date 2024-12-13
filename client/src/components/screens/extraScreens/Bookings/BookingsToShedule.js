@@ -43,7 +43,7 @@ const Bookings = () => {
                 const notSheduleRequest = response.data.Bookings;
                 setBookings(notSheduleRequest);
                 setLoading(false);
-                console.log('resp',response.data.Bookings);
+                console.log('resp', response.data.Bookings);
                 console.log('get bookings', bookings);
             } catch (error) {
                 console.error('Error fetching schedule requests:', error);
@@ -56,8 +56,13 @@ const Bookings = () => {
         try {
             const token = await AsyncStorage.getItem('token');
             const currentDate = new Date();
-            const formattedDate = currentDate.toISOString().split('T')[0];
-            console.log('stamp',formattedDate);
+
+            const nextDay = new Date(currentDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+
+            const formattedDate = nextDay.toISOString().split('T')[0];
+
+            console.log('Date after one day:', formattedDate);
             const response = await axios({
                 method: 'PUT',
                 url: `http://10.0.2.2:5000/api/to-shedule/${id}/date`,

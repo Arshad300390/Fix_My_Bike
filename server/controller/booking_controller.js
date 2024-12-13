@@ -101,12 +101,10 @@ const getNotSheduleBookings = async (req, res, next) => {
 
     const bookings = await Booking.find({ SheduleDate: null });
 
-    if (bookings.length === 0) {
-      return res.status(200).json({ Bookings: 0 });
-    } else {
-      console.log(bookings.length);
-    }
-    res.status(200).json({ Bookings: bookings });
+    res.status(200).json({
+      count: bookings.length,
+      Bookings: bookings, // Always send the array, even if it's empty
+    });
   } catch (error) {
     return next(new HttpError("Error fetching bookings for shedule!", 500));
   }

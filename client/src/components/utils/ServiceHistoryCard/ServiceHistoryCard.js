@@ -24,7 +24,7 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
         Status: {item.status}
       </Text>
       <Text style={styles.timestamp}>
-        Date: {new Date(item.timestamp).toLocaleString()}
+      SheduleDate: {item.SheduleDate ? new Date(item.SheduleDate).toLocaleString() : 'Not Sheduled Yet'}
       </Text>
       {role === 'mechanic' && (
         item.SheduleDate ? (

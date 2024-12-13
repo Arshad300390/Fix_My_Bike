@@ -35,7 +35,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const [notShedule, setNotShedule] = useState('');
+  const [notShedule, setNotShedule] = useState(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -95,9 +95,11 @@ const Home = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-          const resData = response.data.Bookings;
-          setNotShedule(resData.length);
+          const resData = response.data;
+          setNotShedule(resData.count);
+          console.log(resData.count);
           console.log('not shedule',resData);
+          setLoading(false);
         } catch (error) {
           console.error('Error fetching schedule requests:', error);
         }
@@ -107,7 +109,7 @@ const Home = () => {
     fetchScheduleRequests();
     const intervalId = setInterval(() => {
       fetchScheduleRequests();
-    }, 10000);
+    }, 9000);
 
     return () => {
       clearInterval(intervalId);
@@ -251,7 +253,7 @@ const Home = () => {
   const handleSearch = text => {
     setSearchQuery(text);
     setIsSearching(true);
-    setTimeout(() => setIsSearching(false), 500);
+    setTimeout(() => setIsSearching(false), 900000);
   };
 
   return (
@@ -311,7 +313,11 @@ const Home = () => {
         </View>
         {
           role === 'mechanic' ? (
-            <SheduleCard notShedule={notShedule} navigation={navigation}/>
+            notShedule === undefined || notShedule === null ? (
+              <Text>Loading  not schedule...</Text> // Show a loading message or spinner
+            ) : (
+              <SheduleCard notShedule={notShedule} navigation={navigation} />
+            )
           )
             : (
               <>
