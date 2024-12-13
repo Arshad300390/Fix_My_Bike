@@ -57,9 +57,12 @@ const getAllUserBookings = async (req, res, next) => {
   try {
 
     const bookings = await Booking.find({
-      $or: [
-        { status: { $regex: /^pending$/i } },
-        { status: { $regex: /^in progress$/i } }
+      $and: [
+        { $or: [
+          { status: { $regex: /^pending$/i } },
+          { status: { $regex: /^in progress$/i } }
+        ] },
+        { SheduleDate: { $ne: null } } // Ensure SheduleDate is not null
       ]
     });
     if (!bookings.length) {

@@ -19,7 +19,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import ServicesContainer from '../../../utils/ServiceHistoryCard/ServiceHistoryCard';
+import ServiceToSheduleContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
 const { width, height } = Dimensions.get('window');
 
 const Bookings = () => {
@@ -125,7 +125,7 @@ const Bookings = () => {
                         scrollEnabled={true}
                         keyExtractor={(item) => item._id.toString()}
                         renderItem={({ item }) => (
-                            <ServicesContainer
+                            <ServiceToSheduleContainer
                                 item={item}
                                 role={'mechanic'}
                                 status={item.status}

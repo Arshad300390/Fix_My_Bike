@@ -15,7 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ServicesHistoryContainer from '../../../utils/ServiceHistoryCard/ServiceHistoryCard';
+import ServicesHistoryContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
 const { width, height } = Dimensions.get('window');
 
 const Services = () => {
