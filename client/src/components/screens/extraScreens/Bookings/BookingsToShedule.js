@@ -19,7 +19,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import ServiceToSheduleContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
+import ServiceToScheduleContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
 const { width, height } = Dimensions.get('window');
 
 const Bookings = () => {
@@ -35,13 +35,13 @@ const Bookings = () => {
             try {
                 const token = await AsyncStorage.getItem('token');
 
-                const response = await axios.get('http://10.0.2.2:5000/api/to-shedule', {
+                const response = await axios.get('http://10.0.2.2:5000/api/to-schedule', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                const notSheduleRequest = response.data.Bookings;
-                setBookings(notSheduleRequest);
+                const notScheduleRequest = response.data.Bookings;
+                setBookings(notScheduleRequest);
                 setLoading(false);
                 console.log('resp', response.data.Bookings);
                 console.log('get bookings', bookings);
@@ -65,7 +65,7 @@ const Bookings = () => {
             console.log('Date after one day:', formattedDate);
             const response = await axios({
                 method: 'PUT',
-                url: `http://10.0.2.2:5000/api/to-shedule/${id}/date`,
+                url: `http://10.0.2.2:5000/api/to-schedule/${id}/date`,
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -75,7 +75,7 @@ const Bookings = () => {
             });
             navigation.replace('Main');
         } catch (error) {
-            console.error('Error in shedule', error.message);
+            console.error('Error in schedule', error.message);
         }
     };
 
@@ -111,7 +111,7 @@ const Bookings = () => {
                         styles.headerTitleText,
                         { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
                     ]}>
-                    Bookings To Be Sheduled
+                    Bookings To Be Scheduled
                 </Text>
 
             </View>
@@ -125,11 +125,11 @@ const Bookings = () => {
                         scrollEnabled={true}
                         keyExtractor={(item) => item._id.toString()}
                         renderItem={({ item }) => (
-                            <ServiceToSheduleContainer
+                            <ServiceToScheduleContainer
                                 item={item}
                                 role={'mechanic'}
                                 status={item.status}
-                                onShedule={handleUpdateStatus}
+                                onSchedule={handleUpdateStatus}
                             />
 
                         )}

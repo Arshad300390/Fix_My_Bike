@@ -31,7 +31,6 @@ const authMiddleware = async (req, res, next) => {
     if (!userData) {
       return next(new HttpError("User Not Found", 404));
     }
-
     req.token = jwtToken;
     req.user = userData;
     req.userId = userData._id;

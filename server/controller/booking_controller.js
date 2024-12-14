@@ -18,6 +18,10 @@ const createBooking = async (req, res, next) => {
       additionalServices,
       dropOff,
       totalPrice,
+      mechanicName,
+      mechanicNumber,
+      SheduleDate,
+      status
     } = req.body;
 
     const bookingData = {
@@ -36,7 +40,10 @@ const createBooking = async (req, res, next) => {
       totalPrice,
       dropOff,
       timestamp: Date.now(),
-      status: "pending",
+      mechanicName,
+      mechanicNumber,
+      status,
+      SheduleDate
     };
 
     const booking = new Booking(bookingData);
@@ -58,11 +65,13 @@ const getAllUserBookings = async (req, res, next) => {
 
     const bookings = await Booking.find({
       $and: [
-        { $or: [
-          { status: { $regex: /^pending$/i } },
-          { status: { $regex: /^in progress$/i } }
-        ] },
-        { SheduleDate: { $ne: null } } // Ensure SheduleDate is not null
+        {
+          $or: [
+            { status: { $regex: /^pending$/i } },
+            { status: { $regex: /^in progress$/i } }
+          ]
+        },
+        { scheduleDate: { $ne: null } } // Ensure SheduleDate is not null
       ]
     });
     if (!bookings.length) {
@@ -102,8 +111,7 @@ const getNotSheduleBookings = async (req, res, next) => {
   try {
     const userId = req.userId;
 
-    const bookings = await Booking.find({ SheduleDate: null });
-
+    const bookings = await Booking.find({ scheduleDate: null });
     res.status(200).json({
       count: bookings.length,
       Bookings: bookings, // Always send the array, even if it's empty
@@ -164,10 +172,15 @@ const getBookingById = async (req, res) => {
 };
 
 const updateBookingStatus = async (req, res) => {
+  
   try {
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { status: req.body.status },
+      {
+        $set: {
+          status: req.body.status,
+        },
+      },
       { new: true }
     );
     if (!updatedBooking)
@@ -183,10 +196,22 @@ const updateBookingStatus = async (req, res) => {
 };
 //
 const updateBookingShedule = async (req, res) => {
+  const mechanicNumber = req.user.phone_number;
+  const mechanicName = req.user.full_name;
+
+ const scheduleDate = new Date(req.body.date); 
   try {
+    const hh = await Booking.findByIdAndUpdate(
+      req.params.id,);
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { SheduleDate: req.body.date },
+      
+       {  
+          mechanicName: mechanicName ,
+          mechanicNumber: mechanicNumber,
+          scheduleDate: scheduleDate,
+        },
+      
       { new: true }
     );
     if (!updatedBooking)

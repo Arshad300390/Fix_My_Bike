@@ -21,7 +21,7 @@ import { COLORS, FONTS } from '../constants/Constants';
 import Feather from 'react-native-vector-icons/Feather';
 import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import ServicesContainer from '../utils/ServicesCard/ServicesCard';
-import SheduleCard from '../utils/SheduleCard/SheduleCard';
+import ScheduleCard from '../utils/SheduleCard/SheduleCard';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,7 +35,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const [notShedule, setNotShedule] = useState(0);
+  const [notSchedule, setNotSchedule] = useState(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -90,15 +90,15 @@ const Home = () => {
         try {
           const token = await AsyncStorage.getItem('token');
 
-          const response = await axios.get('http://10.0.2.2:5000/api/to-shedule', {
+          const response = await axios.get('http://10.0.2.2:5000/api/to-schedule', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
           const resData = response.data;
-          setNotShedule(resData.count);
+          setNotSchedule(resData.count);
           console.log(resData.count);
-          console.log('not shedule',resData);
+          console.log('not schedule',resData);
           setLoading(false);
         } catch (error) {
           console.error('Error fetching schedule requests:', error);
@@ -313,10 +313,10 @@ const Home = () => {
         </View>
         {
           role === 'mechanic' ? (
-            notShedule === undefined || notShedule === null ? (
+            notSchedule === undefined || notSchedule === null ? (
               <Text>Loading  not schedule...</Text> // Show a loading message or spinner
             ) : (
-              <SheduleCard notShedule={notShedule} navigation={navigation} />
+              <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
             )
           )
             : (

@@ -50,9 +50,44 @@ const Bookings = () => {
     fetchUser();
   }, []);
 
+  // useEffect(() => {
+  //   const fetchBookings = async () => {
+  //     if (!role) {return;}
+  //     const url =
+  //       role === 'mechanic'
+  //         ? 'http://10.0.2.2:5000/api/bookings'
+  //         : 'http://10.0.2.2:5000/api/service-bookings';
+  //     try {
+  //       const token = await AsyncStorage.getItem('token');
+  //       const response = await axios({
+  //         method: 'GET',
+  //         url: url,
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       const serviceBookings = response.data.Bookings;
+
+  //       if (serviceBookings && serviceBookings.length > 0) {
+  //         setBookings(serviceBookings);
+  //       } else {
+  //         console.log('No bookings yet.');
+  //         setBookings([]);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching bookings:', error.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (role || shouldRefresh) fetchBookings();
+  // }, [role, shouldRefresh]);
+
   useEffect(() => {
     const fetchBookings = async () => {
-      if (!role) {return;}
+      if (!role) return;
       const url =
         role === 'mechanic'
           ? 'http://10.0.2.2:5000/api/bookings'
@@ -66,9 +101,10 @@ const Bookings = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-
+  
         const serviceBookings = response.data.Bookings;
 
+  
         if (serviceBookings && serviceBookings.length > 0) {
           setBookings(serviceBookings);
         } else {
@@ -79,10 +115,10 @@ const Bookings = () => {
         console.error('Error fetching bookings:', error.message);
       } finally {
         setLoading(false);
+        setShouldRefresh(false); // Reset refresh state after fetch
       }
     };
-
-    if (role || shouldRefresh) fetchBookings();
+    fetchBookings();
   }, [role, shouldRefresh]);
 
  const handleUpdateStatus = async (id, status) => {
@@ -98,7 +134,8 @@ const Bookings = () => {
         status: status,
       },
     });
-    setShouldRefresh(true);
+    setShouldRefresh((prev)=> !prev);
+    navigation.navigate('Profile');
   } catch (error) {
     console.error('Error fetching user_ role:', error.message);
   }

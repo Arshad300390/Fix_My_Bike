@@ -2,22 +2,22 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
-const Card = ({ notShedule, navigation }) => {
+const Card = ({ notSchedule, navigation }) => {
   const handleGetScheduled = () => {
     navigation.navigate('Shedule_Booking');
   };
-console.log('count',notShedule);
+console.log('count',notSchedule);
   return (
     <View style={styles.card}>
       <Text style={styles.cardText}>
-        {notShedule === 1 ? (
+        {notSchedule === 1 ? (
           <>
-            <Text style={styles.number}>{notShedule}</Text>
+            <Text style={styles.number}>{notSchedule}</Text>
             <Text> Booking is </Text>
           </>
         ) : (
           <>
-            <Text style={styles.number}>{notShedule}</Text>
+            <Text style={styles.number}>{notSchedule}</Text>
             <Text> Bookings are </Text>
           </>
         )}

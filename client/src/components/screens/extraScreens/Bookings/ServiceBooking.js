@@ -248,6 +248,8 @@ const ServiceBooking = () => {
           timestamp: Date.now(),
           status: 'pending',
           sheduleDate: '',
+          mechanicName: '',
+          mechanicNumber: '',
         };
 
         const response = await axios.post(

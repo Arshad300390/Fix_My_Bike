@@ -28,13 +28,13 @@ router.get(
 );
 
 router.get(
-  "/to-shedule",
+  "/to-schedule",
   authMiddleware,
   bookingController.getNotSheduleBookings
 );
 
 router.put(
-  "/to-shedule/:id/date",
+  "/to-schedule/:id/date",
   authMiddleware,
   bookingController.updateBookingShedule
 );

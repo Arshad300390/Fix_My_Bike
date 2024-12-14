@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants/Constants';
 
-const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status, onShedule }) => {
+const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status, onSchedule }) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -12,6 +12,7 @@ const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status
   return (
     <TouchableOpacity onPress={toggleExpand} style={styles.card}>
       <Text style={styles.serviceName}>Service Name: {item.serviceName}</Text>
+      <Text style={styles.mechanicName}>Mechanic Name: {item.mechanicName}</Text>
       <Text style={styles.details}>Bike: {item.bikeName}</Text>
       <Text style={styles.details}>Comments: {item.comments}</Text>
       <Text style={styles.price}>Total Price: ${item.totalPrice}</Text>
@@ -24,27 +25,12 @@ const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status
         Status: {item.status}
       </Text>
       <Text style={styles.timestamp}>
-      SheduleDate: {item.SheduleDate ? new Date(item.SheduleDate).toLocaleString() : 'Not Sheduled Yet'}
+      ScheduleDate: {item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : 'Not Scheduled Yet'}
       </Text>
-      {role === 'mechanic' && (
-        item.SheduleDate ? (
-        {/* <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.showInProgressButton, status === 'in progress' && styles.disabledButton]}
-            onPress={() => onShowInProgress(item._id, 'in progress')}
-            disabled={status === 'in progress'}
-          >
-            <Text style={styles.showInProgressButtonText}>In Progress</Text>
+      {role === 'mechanic' && item.scheduleDate(
+        <TouchableOpacity style={styles.showInProgressButton} onPress={() => onSchedule(item._id, 'completed')}>
+            <Text style={styles.showInProgressButtonText}>schedule date</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.completeButton} onPress={() => onComplete(item._id, 'completed')}>
-            <Text style={styles.completeButtonText}>Complete</Text>
-          </TouchableOpacity>
-        </View> */}
-      ) : (
-        <TouchableOpacity style={styles.showInProgressButton} onPress={() => onShedule(item._id, 'completed')}>
-            <Text style={styles.showInProgressButtonText}>shedule date</Text>
-          </TouchableOpacity>
-      )
       )}
       {/* Conditional rendering for additional information */}
       {expanded && (
@@ -77,6 +63,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.dark,
   },
+  mechanicName: {
+    color: COLORS.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
+    backgroundColor: COLORS.averageColor,
+    padding: 8,
+    borderRadius: 5,
+    textAlign: 'center',
+    borderWidth: 2,
+    borderColor: '#ff5733',
+},
   details: {
     fontSize: 14,
     color: COLORS.dark,

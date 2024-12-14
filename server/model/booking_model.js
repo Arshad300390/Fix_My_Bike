@@ -37,7 +37,11 @@ const bookingSchema = new mongoose.Schema({
 
   status: { type: String, default: "pending" },
 
-  SheduleDate: { type: Date, default: null}
+  mechanicName: { type: String, default: null },
+
+  mechanicNumber: {type: String, default: null },
+
+  scheduleDate: { type: Date, default: null}
 });
 
 module.exports = mongoose.model("Booking", bookingSchema);
