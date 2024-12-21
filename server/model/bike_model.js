@@ -27,6 +27,10 @@ const bikeSchema = new Schema({
     ref: "User",
     required: true,
   },
+  isSelected:{
+    type: Boolean,
+    default: false,
+  }
 });
 
 const Bike = mongoose.model("Bike", bikeSchema);

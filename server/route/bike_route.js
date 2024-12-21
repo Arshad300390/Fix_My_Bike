@@ -11,8 +11,16 @@ router.get(
   bikeController.getUserBikes
 );
 
+router.get(
+  "/get-user-selected-bike/:id",
+  authMiddleware,
+  bikeController.geSelectedBike,
+);
+
 router.patch("/update-bike/:id", authMiddleware, bikeController.updateBike);
 
 router.delete("/remove-bike/:id", authMiddleware, bikeController.deleteBike);
+
+router.patch("/update-selection/:id", authMiddleware, bikeController.selectBike);
 
 module.exports = router;

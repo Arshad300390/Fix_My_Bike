@@ -129,6 +129,7 @@ const Bookings = () => {
                                 item={item}
                                 role={'mechanic'}
                                 status={item.status}
+                                scheduleDate = {item.scheduleDate}
                                 onSchedule={handleUpdateStatus}
                             />
 

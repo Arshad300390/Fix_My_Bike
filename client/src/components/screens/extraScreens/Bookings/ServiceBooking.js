@@ -29,6 +29,7 @@ const ServiceBooking = () => {
   const service_price = route.params?.service_price;
 
   const [totalPrice, setTotalPrice] = useState(service_price);
+  const [userId, setUserId]=useState('');
   const [name, setName] = useState('');
   const [cell, setCell] = useState('');
   const [address, setAddress] = useState('');
@@ -52,7 +53,7 @@ const ServiceBooking = () => {
   const [bikeModelError, setBikeModelError] = useState('');
   const [bikeRegNumberError, setBikeRegNumberError] = useState('');
   const [img, setImage] = useState('');
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+  const [isButtonEnabled, setIsButtonEnabled] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -82,6 +83,9 @@ const ServiceBooking = () => {
 
         if (user && user.full_name) {
           setName(user.full_name);
+          setUserId(user._id);
+          setAddress(user.address);
+          setCell(user.phone_number);
         } else {
           console.log('Full Name Not Found In Response');
         }
@@ -102,9 +106,44 @@ const ServiceBooking = () => {
         navigation.replace('Signin');
       }
     };
-
+    
+    
     fetchUserData();
   }, [navigation]);
+
+  useEffect(() => {
+    if (userId) {
+      const fetchBike = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+  
+          if (!token) {
+            navigation.replace('Signin');
+            return;
+          }
+  
+          const response = await axios.get(
+            
+            `http://10.0.2.2:5000/api/bikes/get-user-selected-bike/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+          const bike= response.data.Bike[0];
+          setBikeModel(bike.bike_model);
+          setBikeName(bike.bike_name);
+          setBikeCompanyName(bike.bike_company_name);
+          setBikeRegNumber(bike.bike_registration_number);
+        }catch(error){
+          console.log('error fetcing user selected bike');
+        }
+        }
+        fetchBike();
+
+    }
+  }, [userId]);
 
   useEffect(() => {
     const statusBarColor =
@@ -115,29 +154,31 @@ const ServiceBooking = () => {
     );
   }, [colorScheme]);
 
-  const isValidInput = () => {
-    const namePattern = /^[a-zA-Z\s]*$/;
-    const cellPattern = /^(\+92|92|0)(3\d{2}|\d{2})(\d{7})$/;
-    const addressPattern = /^House#\d+\sStreet#\d+\s[A-Za-z\s]+\s[A-Za-z\s]+$/;
-    const isNameValid = namePattern.test(name);
-    const isCellValid = cellPattern.test(cell);
-    const isAddressValid = addressPattern.test(address);
+  // const isValidInput = () => {
+  //   const namePattern = /^[a-zA-Z\s]*$/;
+  //   const cellPattern = /^(\+92|92|0)(3\d{2}|\d{2})(\d{7})$/;
+  //   const addressPattern = /^House#\d+\sStreet#\d+\s[A-Za-z\s]+\s[A-Za-z\s]+$/;
+  //   const isNameValid = namePattern.test(name);
+  //   const isCellValid = cellPattern.test(cell);
+  //   const isAddressValid = addressPattern.test(address);
 
-    bikeModelError === '' &&
-      bikeRegNumberError === '' &&
-      bikeModel !== '' &&
-      bikeRegNumber !== '';
+  //   bikeModelError === '' &&
+  //     bikeRegNumberError === '' &&
+  //     bikeModel !== '' &&
+  //     bikeRegNumber !== '';
 
-    return isNameValid && isCellValid && isAddressValid;
-  };
+  //   return isNameValid && isCellValid && isAddressValid;
+  // };
 
   const handleNameChange = value => {
     setName(value);
     if (value === '') {
       setNameError('Name is required');
-    } else if (!/^[a-zA-Z\s]+$/.test(value)) {
-      setNameError('Only alphabets are allowed');
-    } else {
+    }
+    //  else if (!/^[a-zA-Z\s]+$/.test(value)) {
+    //   setNameError('Only alphabets are allowed');
+    // } 
+    else {
       setNameError('');
     }
   };
@@ -146,9 +187,11 @@ const ServiceBooking = () => {
     setCell(value);
     if (value === '') {
       setCellError('Cell is required');
-    } else if (!/^(\+92|92|0)(3\d{2}|\d{2})(\d{7})$/.test(value)) {
-      setCellError('Invalid Cell Format');
-    } else {
+    }
+    //  else if (!/^(\+92|92|0)(3\d{2}|\d{2})(\d{7})$/.test(value)) {
+    //   setCellError('Invalid Cell Format');
+    // }
+     else {
       setCellError('');
     }
   };
@@ -157,11 +200,13 @@ const ServiceBooking = () => {
     setAddress(value);
     if (value === '') {
       setAddressError('Address is required');
-    } else if (
-      !/^House#\d+\sStreet#\d+\s[A-Za-z\s]+\s[A-Za-z\s]+$/.test(value)
-    ) {
-      setAddressError('Address must follow format');
-    } else {
+    }
+    //  else if (
+    //   !/^House#\d+\sStreet#\d+\s[A-Za-z\s]+\s[A-Za-z\s]+$/.test(value)
+    // ) {
+    //   setAddressError('Address must follow format');
+    // }
+     else {
       setAddressError('');
     }
   };
@@ -209,10 +254,10 @@ const ServiceBooking = () => {
     setTotalPrice(basePrice + additionalCost);
   };
 
-  useEffect(() => {
-    setIsButtonEnabled(isValidInput());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, cell, address, comments]);
+  // useEffect(() => {
+  //   setIsButtonEnabled(isValidInput());
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [name, cell, address, comments]);
 
   const handleServiceBooking = async () => {
     if (isButtonEnabled) {

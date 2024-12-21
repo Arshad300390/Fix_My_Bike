@@ -95,6 +95,60 @@ const updateBike = async (req, res, next) => {
     return next(new HttpError("Error updating bike!", 500));
   }
 };
+//
+const selectBike = async (req, res, next) => {
+  try {
+    const {isSelected } = req.body;
+    const bikeId = req.params.id;
+
+    const bike = await Bike.findById(bikeId);
+    if (!bike) {
+      return next(new HttpError("Bike not found.", 404));
+    }
+
+    console.log("Bike User ID:", bike.user.toString());
+    console.log("Current User ID:", req.userId);
+
+    if (!bike.user.equals(new mongoose.Types.ObjectId(req.userId))) {
+      return next(
+        new HttpError("You do not have permission to selection update this bike.", 403)
+      );
+    }
+
+    await Bike.updateMany(
+      { user: req.userId },
+      { $set: { isSelected: false } }
+    );
+
+    if (isSelected !== undefined) {
+      bike.isSelected = isSelected;
+    }
+
+    await bike.save(); 
+    res.status(200).json({ message: "Bike selection updated successfully", bike });
+  } catch (err) {
+    console.error("Error selection updating bike:", err);
+    return next(new HttpError("Error selection updating bike!", 500));
+  }
+};
+
+const geSelectedBike = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    const bike = await Bike.find({ user: userId,
+      isSelected: true,
+     });
+
+    if (!bike.length) {
+      return next(new HttpError("No bikes found for this user.", 404));
+    }
+    res.json({ Bike: bike });
+  } catch (err) {
+    return next(new HttpError("Error fetching bikes!", 500));
+  }
+};
+//
 
 const deleteBike = async (req, res, next) => {
   try {
@@ -137,4 +191,6 @@ module.exports = {
   getUserBikes,
   updateBike,
   deleteBike,
+  selectBike,
+  geSelectedBike,
 };

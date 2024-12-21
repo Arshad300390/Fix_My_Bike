@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,15 +9,16 @@ import {
   SafeAreaView,
   useColorScheme,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import CheckBox from '@react-native-community/checkbox';
+import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import {COLORS, FONTS} from '../../constants/Constants';
+import { COLORS, FONTS } from '../../constants/Constants';
 import DeleteBikeModal from '../Modals/DeleteBikeModal';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-const BikeCard = ({bike, onDelete}) => {
+const BikeCard = ({ bike, onDelete, onCheckboxChange }) => {
   const [expanded, setExpanded] = useState(false);
   const [showDeleteBikeModal, setShowDeleteBikeModal] = useState(false);
   const colorScheme = useColorScheme();
@@ -36,7 +38,7 @@ const BikeCard = ({bike, onDelete}) => {
   };
 
   const handleViewBikeDetails = () => {
-    navigation.navigate('Bike_Detailed', {bike});
+    navigation.navigate('Bike_Detailed', { bike });
   };
 
   return (
@@ -85,6 +87,12 @@ const BikeCard = ({bike, onDelete}) => {
             </View>
           </View>
           <View style={styles.rightContainer}>
+          <View style={[styles.checkbox, { marginRight: width * 0.05}]}>
+            <CheckBox
+              value={bike.isSelected}
+              onValueChange={value => onCheckboxChange(bike._id, 'true')}
+            />
+          </View>
             <View style={styles.iconContainer}>
               <Feather
                 name={expanded ? 'chevron-up' : 'chevron-down'}
@@ -175,7 +183,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -236,5 +244,9 @@ const styles = StyleSheet.create({
 
   icon: {
     color: COLORS.primary,
+  },
+  checkbox: {
+    alignSelf: 'center',
+    marginRight: width * 0.02,
   },
 });

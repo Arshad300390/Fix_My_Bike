@@ -1,3 +1,6 @@
+/* eslint-disable no-const-assign */
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
@@ -39,7 +42,7 @@ const MyBikes = () => {
     };
 
     fetchUserBikes();
-  }, []);
+  }, [ ]);
 
   const fetchUserAndBikes = async token => {
     setLoading(true);
@@ -94,12 +97,42 @@ const MyBikes = () => {
     setRefreshing(false);
   };
 
+  const onCheckboxChangefun = async (id, value) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    const response = await axios.patch(
+      `http://10.0.2.2:5000/api/bikes/update-selection/${id}`,
+      { isSelected: value },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (response.status === 200) {
+      onRefresh();
+    } else {
+      console.error("Failed to update bike selection:", response.data);
+    }
+  } catch (error) {
+    console.error("Error updating bike selection:", error);
+  }
+};
+
+
   const renderBikeItem = ({item}) => (
     <BikeCard
       bike={item}
       onDelete={bikeId => {
         setBikes(prevBikes => prevBikes.filter(bike => bike._id !== bikeId));
       }}
+      onCheckboxChange = {onCheckboxChangefun}
     />
   );
 

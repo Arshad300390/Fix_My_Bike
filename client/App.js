@@ -11,6 +11,7 @@ import ForgotPassword from './src/components/shared/ForgotPassword';
 import BottomNavigator from './src/components/navigation/BottomNavigator';
 import DetailProfileScreen from './src/components/screens/extraScreens/ProfileUpdate/DetailProfileScreen';
 import CustomerCare from './src/components/screens/extraScreens/CustomerCare/CustomerCare';
+import EmergencyAssistance from './src/components/screens/extraScreens/EmergencyAssistance/EmergencyAssistance';
 import ChatBot from './src/components/screens/extraScreens/CustomerCare/ChatBot';
 import AddBikes from './src/components/screens/extraScreens/BikeManagement/AddBikes';
 import MyBikes from './src/components/screens/extraScreens/BikeManagement/MyBikes';
@@ -73,6 +74,12 @@ const App = () => {
         <Stack.Screen name="Customer_Care">
           {props => (
             <CustomerCare {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Emergency_Assistance">
+          {props => (
+            <EmergencyAssistance {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
 

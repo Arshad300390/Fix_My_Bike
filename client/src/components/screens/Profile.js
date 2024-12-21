@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   StyleSheet,
@@ -14,15 +14,15 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useNavigation} from '@react-navigation/native';
-import {COLORS, FONTS} from '../constants/Constants';
+import { useNavigation } from '@react-navigation/native';
+import { COLORS, FONTS } from '../constants/Constants';
 import LogoutModal from '../utils/Modals/LogoutModal';
 import DeleteAccountModal from '../utils/Modals/DeleteAccountModal';
 import CustomModal from '../utils/Modals/CustomModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const Profile = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -42,7 +42,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-   const fetchUser = async () => {
+    const fetchUser = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
@@ -90,14 +90,14 @@ const Profile = () => {
         <Text
           style={[
             styles.headerTitleText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           Profile
         </Text>
         <Text
           style={[
             styles.headerDescriptionText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           Your Profile - Preferences.
         </Text>
@@ -486,6 +486,59 @@ const Profile = () => {
 
           <View
             style={[
+              styles.CustomerAssistanceCard,
+              {
+                backgroundColor:
+                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+              },
+            ]}>
+            <View style={styles.customerAssistanceContainer}>
+              <View style={styles.leftContainer}>
+                <View style={styles.iconContainer}>
+                  <MaterialCommunityIcons
+                    name="headset_outline"
+                    size={25}
+                    style={[
+                      styles.icon,
+                      {
+                        color:
+                          colorScheme === 'dark'
+                            ? COLORS.white
+                            : COLORS.primary,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                      fontSize: width * 0.045,
+                      marginLeft: 10,
+                    }}>
+                    Emergency assistance:{' '}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rightContainer}>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Emergency_Assistance')}>
+                    <Feather
+                      name="chevron-right"
+                      size={30}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View
+            style={[
               styles.changePasswordCard,
               {
                 backgroundColor:
@@ -541,7 +594,7 @@ const Profile = () => {
             <View
               style={[
                 styles.deleteContainer,
-                colorScheme === 'dark' && {backgroundColor: COLORS.errorColor},
+                colorScheme === 'dark' && { backgroundColor: COLORS.errorColor },
               ]}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
@@ -551,7 +604,7 @@ const Profile = () => {
                     color={
                       colorScheme === 'dark' ? COLORS.white : COLORS.errorColor
                     }
-                    style={{bottom: 2}}
+                    style={{ bottom: 2 }}
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -584,7 +637,7 @@ const Profile = () => {
                     name="log-out"
                     size={25}
                     color={COLORS.white}
-                    style={{bottom: 2}}
+                    style={{ bottom: 2 }}
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -693,7 +746,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -712,7 +765,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -731,7 +784,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -750,7 +803,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -768,7 +821,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
@@ -781,13 +834,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  CustomerAssistanceCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+    width: width * 0.9,
+    gap: 20,
+  },
+  customerAssistanceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 
   changePasswordCard: {
     backgroundColor: COLORS.white,
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
