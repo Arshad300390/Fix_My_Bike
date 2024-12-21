@@ -496,7 +496,7 @@ const Profile = () => {
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
-                    name="headset_outline"
+                    name="help-rhombus"
                     size={25}
                     style={[
                       styles.icon,
@@ -526,6 +526,59 @@ const Profile = () => {
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('Emergency_Assistance')}>
+                    <Feather
+                      name="chevron-right"
+                      size={30}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View
+            style={[
+              styles.serviceCenterCard,
+              {
+                backgroundColor:
+                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+              },
+            ]}>
+            <View style={styles.serviceCenterContainer}>
+              <View style={styles.leftContainer}>
+                <View style={styles.iconContainer}>
+                  <MaterialCommunityIcons
+                    name="location-enter"
+                    size={25}
+                    style={[
+                      styles.icon,
+                      {
+                        color:
+                          colorScheme === 'dark'
+                            ? COLORS.white
+                            : COLORS.primary,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                      fontSize: width * 0.045,
+                      marginLeft: 10,
+                    }}>
+                    service center:{' '}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rightContainer}>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Service_Center_Locator')}>
                     <Feather
                       name="chevron-right"
                       size={30}
@@ -846,10 +899,30 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     gap: 20,
   },
+
   customerAssistanceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+
+  serviceCenterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  serviceCenterCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+    width: width * 0.9,
+    gap: 20,
   },
 
   changePasswordCard: {
