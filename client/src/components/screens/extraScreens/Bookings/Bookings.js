@@ -32,7 +32,7 @@ const Bookings = () => {
 
 
   useEffect(() => {
-   const fetchUser = async () => {
+    const fetchUser = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
@@ -101,10 +101,10 @@ const Bookings = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-  
+
         const serviceBookings = response.data.Bookings;
 
-  
+
         if (serviceBookings && serviceBookings.length > 0) {
           setBookings(serviceBookings);
         } else {
@@ -121,25 +121,25 @@ const Bookings = () => {
     fetchBookings();
   }, [role, shouldRefresh]);
 
- const handleUpdateStatus = async (id, status) => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    const response = await axios({
-      method: 'PUT',
-      url: `http://10.0.2.2:5000/api/service-booking/${id}/status`,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      data: {
-        status: status,
-      },
-    });
-    setShouldRefresh((prev)=> !prev);
-    navigation.navigate('Profile');
-  } catch (error) {
-    console.error('Error fetching user_ role:', error.message);
-  }
- };
+  const handleUpdateStatus = async (id, status) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios({
+        method: 'PUT',
+        url: `http://10.0.2.2:5000/api/service-booking/${id}/status`,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        data: {
+          status: status,
+        },
+      });
+      setShouldRefresh((prev) => !prev);
+      navigation.navigate('Profile');
+    } catch (error) {
+      console.error('Error fetching user_ role:', error.message);
+    }
+  };
 
   return (
     <SafeAreaView
@@ -183,6 +183,10 @@ const Bookings = () => {
 
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.primary} />
+      ) : bookings.length === 0 ? ( 
+        <View style={styles.noBookingsContainer}>
+          <Text style={styles.noBookingsText}>No bookings available</Text>
+        </View>
       ) : (
         <ScrollView style={styles.scrollView}>
           <FlatList
@@ -197,12 +201,12 @@ const Bookings = () => {
                 onShowInProgress={handleUpdateStatus}
                 onComplete={handleUpdateStatus}
               />
-
             )}
             contentContainerStyle={styles.bookingContainer}
           />
         </ScrollView>
       )}
+
     </SafeAreaView>
   );
 };
@@ -246,4 +250,16 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  noBookingsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+  },
+  noBookingsText: {
+    fontSize: width * 0.09,
+    color: COLORS.text,
+    textAlign: 'center',
+  },
+  
 });

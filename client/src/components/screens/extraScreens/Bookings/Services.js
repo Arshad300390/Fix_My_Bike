@@ -122,6 +122,10 @@ const Services = () => {
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color={COLORS.white} />
           </View>
+         ) : services.length === 0 ? ( 
+          <View style={styles.noBookingsContainer}>
+            <Text style={styles.noBookingsText}>No History available</Text>
+          </View>
         ) : (
           <FlatList
             data={services}
@@ -186,5 +190,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  noBookingsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+  },
+  noBookingsText: {
+    fontSize: width * 0.09,
+    color: COLORS.text,
+    textAlign: 'center',
   },
 });

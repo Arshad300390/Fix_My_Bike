@@ -8,8 +8,8 @@ const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status
   const toggleExpand = () => {
     setExpanded(!expanded);
   };
-  console.log('role',role);
-  console.log('dated',item.scheduleDate);
+  console.log('role', role);
+  console.log('dated', item.scheduleDate);
 
   return (
     <TouchableOpacity onPress={toggleExpand} style={styles.card}>
@@ -27,13 +27,18 @@ const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status
         Status: {item.status}
       </Text>
       <Text style={styles.timestamp}>
-      ScheduleDate: {item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : 'Not Scheduled Yet'}
+        ScheduleDate: {item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : 'Not Scheduled Yet'}
       </Text>
-      
-        <TouchableOpacity style={styles.showInProgressButton} onPress={() => onSchedule(item._id, 'completed')}>
-            <Text style={styles.showInProgressButtonText}>schedule date</Text>
-          </TouchableOpacity>
-      
+
+      {item.scheduleDate == null && (
+        <TouchableOpacity
+          style={styles.showInProgressButton}
+          onPress={() => onSchedule(item._id, 'completed')}
+        >
+          <Text style={styles.showInProgressButtonText}>Schedule Date</Text>
+        </TouchableOpacity>
+      )}
+
       {/* Conditional rendering for additional information */}
       {expanded && (
         <View style={styles.additionalInfo}>
@@ -74,7 +79,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderWidth: 2,
     borderColor: COLORS.darkColor,
-},
+  },
   details: {
     fontSize: 14,
     color: COLORS.dark,
