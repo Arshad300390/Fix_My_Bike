@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,18 +7,41 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  FlatList,
   useColorScheme,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {COLORS, FONTS} from '../../../constants/Constants';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import AssistanceContainer from './EmergencyAssistanceCard';
 
 const {width, height} = Dimensions.get('window');
 
 const EmergencyAssistance = () => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [mechanics, setMechanics] = useState([]); 
+  useEffect(() => {
+    const fetchMechanics = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const response = await axios({
+          method: 'GET',
+          url: 'http://10.0.2.2:5000/api/users/get-mechanics',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setMechanics(response.data.mechanics);
+      } catch (error) {
+        console.error('Error fetching mechanics:', error.message);
+      }
+    };
+    fetchMechanics();
+  }, []);
 
   return (
     <SafeAreaView
@@ -64,83 +87,17 @@ const EmergencyAssistance = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View
-          style={[
-            styles.cardContainer,
-            colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
-          ]}>
-          
-
-          <View
-            style={[
-              styles.contactCard,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.contactContainer}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <Feather
-                    name="phone-call"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                      fontWeight: 'bold',
-                    }}>
-                    Contact With Us!
-                  </Text>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.04,
-                      marginLeft: 10,
-                      marginTop: 5,
-                    }}>
-                   M Ali:
-                  </Text>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.04,
-                      marginLeft: 10,
-                      marginTop: 5,
-                    }}>Phone: (048) 3657832
-                  </Text>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.04,
-                      marginLeft: 10,
-                      marginTop: 5,
-                    }}>
-                    Email: fixmybike@gmail.com
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
+      <FlatList
+            data={mechanics}
+            scrollEnabled={true}
+            keyExtractor={(item) => item._id.toString()} 
+            renderItem={({ item }) => (
+              <AssistanceContainer
+              mechanic={item}
+              />
+            )}
+            contentContainerStyle={styles.EmergencyAssistanceCard}
+          />
       </ScrollView>
     </SafeAreaView>
   );
@@ -189,12 +146,6 @@ const styles = StyleSheet.create({
     left: width * 0.01,
   },
 
-  cardContainer: {
-    alignItems: 'center',
-    paddingVertical: height * 0.02,
-    gap: 20,
-  },
-
   EmergencyAssistanceCard: {
     backgroundColor: COLORS.white,
     borderRadius: 10,
@@ -207,41 +158,4 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     gap: 20,
   },
-
-  EmergencyAssistanceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  contactCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 10,
-    marginVertical: 10,
-  },
-
-  contactContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-
-  leftContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginTop: 5,
-    gap: 5,
-  },
-
-  icon: {
-    color: COLORS.dark,
-  },
-});
+}); 

@@ -41,6 +41,12 @@ const bookingSchema = new mongoose.Schema({
 
   mechanicNumber: {type: String, default: null },
 
+  mechanicId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
+
   scheduleDate: { type: Date, default: null}
 });
 

@@ -100,6 +100,27 @@ const getUsers = async (req, res, next) => {
   }
 };
 
+//
+const getMechanics = async (req, res, next) => {
+  try {
+    const mechanics = await User.find({ role: "mechanic" }).select(
+      "full_name email phone_number role address"
+    );
+
+    if (!mechanics.length) {
+      return next(new HttpError("No mechanics found!", 404));
+    }
+
+    // Send the response with the mechanics' data
+    res.status(200).json({ mechanics: mechanics });
+  } catch (err) {
+    return next(new HttpError("Error Getting Mechanics!", 500));
+  }
+};
+
+
+//
+
 const getUsersById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
@@ -323,6 +344,7 @@ const forgotPassword = async (req, res, next) => {
 module.exports = {
   signup,
   login,
+  getMechanics,
   getUsers,
   getUsersById,
   updateUsers,

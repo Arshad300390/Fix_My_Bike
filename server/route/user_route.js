@@ -10,6 +10,8 @@ router.post("/signin", userController.login);
 
 router.get("/get-users", authMiddleware, userController.getUsers);
 
+router.get("/get-mechanics", authMiddleware, userController.getMechanics);
+
 router.get("/get-user-by-id/:id", authMiddleware, userController.getUsersById);
 
 router.put("/reset-password", userController.resetPassword);

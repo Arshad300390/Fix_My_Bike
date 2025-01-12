@@ -20,6 +20,7 @@ const createBooking = async (req, res, next) => {
       totalPrice,
       mechanicName,
       mechanicNumber,
+      mechanicId,
       SheduleDate,
       status
     } = req.body;
@@ -42,6 +43,7 @@ const createBooking = async (req, res, next) => {
       timestamp: Date.now(),
       mechanicName,
       mechanicNumber,
+      mechanicId,
       status,
       SheduleDate
     };
@@ -62,7 +64,6 @@ const createBooking = async (req, res, next) => {
 
 const getAllUserBookings = async (req, res, next) => {
   try {
-
     const bookings = await Booking.find({
       $and: [
         {
@@ -71,7 +72,8 @@ const getAllUserBookings = async (req, res, next) => {
             { status: { $regex: /^in progress$/i } }
           ]
         },
-        { scheduleDate: { $ne: null } } // Ensure SheduleDate is not null
+        { scheduleDate: { $ne: null } }, // Ensure SheduleDate is not null
+        { mechanicId: req.user._id }
       ]
     });
     if (!bookings.length) {
@@ -143,9 +145,12 @@ const getUserBookingHistory = async (req, res, next) => {
 
 const getAllUserBookingHistory = async (req, res, next) => {
   try {
-
-    const bookings = await Booking.find({ status: { $regex: /^completed$/i } });
-
+    const bookings = await Booking.find({
+      $and: [
+        { status: { $regex: /^completed$/i } }, // Status is 'completed'
+        { mechanicId: req.user._id }           // mechanicId matches req.user._id
+      ]
+    });
     if (!bookings.length) {
       return next(
         new HttpError("No bookings history found yet.", 404)
@@ -198,7 +203,7 @@ const updateBookingStatus = async (req, res) => {
 const updateBookingShedule = async (req, res) => {
   const mechanicNumber = req.user.phone_number;
   const mechanicName = req.user.full_name;
-
+  const mechanicId = req.user._id;
  const scheduleDate = new Date(req.body.date); 
   try {
     const hh = await Booking.findByIdAndUpdate(
@@ -209,6 +214,7 @@ const updateBookingShedule = async (req, res) => {
        {  
           mechanicName: mechanicName ,
           mechanicNumber: mechanicNumber,
+          mechanicId: mechanicId,
           scheduleDate: scheduleDate,
         },
       
