@@ -1,33 +1,40 @@
 const mongoose = require("mongoose");
 
 const serviceSchema = new mongoose.Schema({
-  name: {
+  service_name: {
     type: String,
     required: true,
     trim: true,
   },
 
-  description: {
+  service_description: {
     type: String,
     required: true,
   },
 
-  cost: {
+  service_price: {
     type: Number,
     required: true,
     min: 0,
   },
 
-  category: {
+  service_model: {
     type: String,
     required: true,
   },
 
-  availability: {
-    type: Boolean,
-    default: true,
+  engine_power: {
+    type: Number,
+    required: true,
+    min: 50, // Assuming minimum engine power is 50cc
   },
   
+  shop_owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,

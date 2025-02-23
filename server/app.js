@@ -4,10 +4,9 @@ const mongoose = require("mongoose");
 const http = require('http');
 const userRoutes = require("./route/user_route");
 const bikeRoutes = require("./route/bike_route");
-const serviceRoutes = require("./route/service_route");
 const bookingRoutes = require('./route/booking_route');
 const productRoutes = require('./route/product_route');
-
+const serviceRoutes = require("./route/service_route");
 const googleSigninRoutes = require("./route/google_signin_route");
 
 require("dotenv").config();
@@ -31,9 +30,10 @@ app.use((req, res, next) => {
 app.use("/api/users", userRoutes);
 app.use("/api/bikes", bikeRoutes);
 app.use("/api/social-auth", googleSigninRoutes);
-app.use("/api/service", serviceRoutes);
+// app.use("/api/service", serviceRoutes);
 app.use("/api", bookingRoutes);
 app.use("/api", productRoutes);
+app.use("/api", serviceRoutes);
 
 mongoose
   .connect(process.env.MONGODB_URI)

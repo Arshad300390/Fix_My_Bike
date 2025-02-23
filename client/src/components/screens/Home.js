@@ -23,6 +23,7 @@ import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import ServicesContainer from '../utils/ServicesCard/ServicesCard';
 import ScheduleCard from '../utils/SheduleCard/SheduleCard';
 import SellerDashboard from './extraScreens/SellerScreens/SellerDashboard';
+import ServiceDashboard from './extraScreens/MechanicScreens/ServiceDashboard';
 
 const { width, height } = Dimensions.get('window');
 
@@ -98,8 +99,6 @@ const Home = () => {
           });
           const resData = response.data;
           setNotSchedule(resData.count);
-          console.log(resData.count);
-          console.log('not schedule',resData);
           setLoading(false);
         } catch (error) {
           console.error('Error fetching schedule requests:', error);
@@ -317,7 +316,15 @@ const Home = () => {
             notSchedule === undefined || notSchedule === null ? (
               <Text>Loading  not schedule...</Text> // Show a loading message or spinner
             ) : (
+              <>
               <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
+              <View style={[styles.card,{height:height*0.63} ]}>
+                  {/* <TouchableOpacity style={styles.gotoDashboard}>
+                    <Text style={[styles.cardText,{color: "white"}]}>Service Dashboard</Text>
+                  </TouchableOpacity> */}
+                  <ServiceDashboard />
+                </View>
+                </>
             )
           )
             : role === 'customer' ? (
@@ -389,7 +396,8 @@ const Home = () => {
                           No Service Available!
                         </Text>
                       </View>
-                    )}
+                    )
+                    }
                   </View>
                 </View>
               </>
@@ -413,7 +421,7 @@ const styles = StyleSheet.create({
   },
 
   scrollViewContainer: {
-    marginTop: height * 0.005,
+    marginTop: height * 0.004,
   },
 
   headerContainer: {
@@ -461,8 +469,8 @@ const styles = StyleSheet.create({
 
   imgContainer: {
     marginTop: height * 0.02,
-    width: width * 0.2,
-    height: width * 0.2,
+    width: width * 0.17,
+    height: width * 0.17,
     borderRadius: (width * 0.3) / 2,
     overflow: 'hidden',
     borderWidth: 2,
@@ -550,4 +558,16 @@ const styles = StyleSheet.create({
     color: '#333', // Text color
     textAlign: 'center', // Center text
   },
+  gotoDashboard: {
+    backgroundColor: COLORS.primary, // Primary color from COLORS
+    paddingVertical: height * 0.015,
+    paddingHorizontal: width * 0.05,
+    borderRadius: width * 0.02,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // Shadow for Android
+  },
+  
 });
