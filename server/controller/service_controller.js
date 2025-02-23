@@ -1,4 +1,4 @@
-const Service = require("../model/Service_model");
+const Service = require("../model/service_model");
 const HttpError = require("../model/http_error");
 
 

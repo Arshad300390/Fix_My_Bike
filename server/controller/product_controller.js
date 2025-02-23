@@ -27,6 +27,7 @@ const addProduct = async (req, res, next) => {
 const getshopProducts = async (req, res, next) => {
   try {
     const userId = req.userId;
+    console.log(userId);
     const products = await Product.find({ shop_owner: userId });
 
     if (!products.length) {
@@ -38,6 +39,22 @@ const getshopProducts = async (req, res, next) => {
     return next(new HttpError("Error fetching products!", 500));
   }
 };
+
+const getProductsByUserId = async (req, res, next) => {
+  try {
+    const { userId } = req.params; 
+
+    const products = await Product.find({ shop_owner: userId });
+
+    if (!products.length) {
+      return next(new HttpError("No products found for this shop.", 404));
+    }
+    res.status(200).json({ Products: products });
+  } catch (err) {
+    return next(new HttpError("Error fetching products!", 500));
+  }
+};
+
 
 const updateProduct = async (req, res, next) => {
   try {
@@ -94,4 +111,5 @@ module.exports = {
   getshopProducts,
   updateProduct,
   deleteProduct,
+  getProductsByUserId,
 };

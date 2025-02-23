@@ -26,6 +26,8 @@ import AddProduct from './src/components/screens/extraScreens/SellerScreens/Prod
 import EditProduct from './src/components/screens/extraScreens/SellerScreens/EditForm';
 import AddService from './src/components/screens/extraScreens/MechanicScreens/ServiceForm';
 import EditService from './src/components/screens/extraScreens/MechanicScreens/EditForm';
+import ShopsDashboard from './src/components/screens/extraScreens/CustomerScreen/ShopsDashboard';
+import ShopItemScreen from './src/components/screens/extraScreens/CustomerScreen/ShopItemScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -164,6 +166,16 @@ const App = () => {
         <Stack.Screen name="Edit_Service">
           {props => (
             <EditService {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ShopItem">
+          {props => (
+            <ShopItemScreen {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Shops">
+          {props => (
+            <ShopsDashboard {...props} role="seller" setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

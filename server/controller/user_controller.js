@@ -118,6 +118,21 @@ const getMechanics = async (req, res, next) => {
   }
 };
 
+const getSellers = async (req, res, next) => {
+  try {
+    const sellers = await User.find({ role: "seller" }).select(
+      "full_name email phone_number role address"
+    );
+    if (!sellers.length) {
+      return next(new HttpError("No sellers found!", 404));
+    }
+
+    // Send the response with the sellers' data
+    res.status(200).json({ Sellers: sellers });
+  } catch (err) {
+    return next(new HttpError("Error Getting Sellers!", 500));
+  }
+};
 
 //
 
@@ -352,4 +367,5 @@ module.exports = {
   logout,
   resetPassword,
   forgotPassword,
+  getSellers,
 };

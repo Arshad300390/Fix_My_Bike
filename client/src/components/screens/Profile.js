@@ -111,13 +111,13 @@ const Profile = () => {
           ]}>
           <View
             style={[
-              styles.editProfileCard,
+              styles.card,
               {
                 backgroundColor:
                   colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
               },
             ]}>
-            <View style={styles.editProfileContainer}>
+            <View style={styles.container}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
                   <Feather
@@ -165,13 +165,13 @@ const Profile = () => {
             <>
               <View
                 style={[
-                  styles.vehicleCard,
+                  styles.card,
                   {
                     backgroundColor:
                       colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
                   },
                 ]}>
-                <View style={styles.vehicleContainer}>
+                <View style={styles.container}>
                   <View style={styles.leftContainer}>
                     <View style={styles.iconContainer}>
                       <MaterialCommunityIcons
@@ -218,13 +218,13 @@ const Profile = () => {
 
               <View
                 style={[
-                  styles.bookingsCard,
+                  styles.card,
                   {
                     backgroundColor:
                       colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
                   },
                 ]}>
-                <View style={styles.bookingsContainer}>
+                <View style={styles.container}>
                   <View style={styles.leftContainer}>
                     <View style={styles.iconContainer}>
                       <Feather
@@ -271,13 +271,13 @@ const Profile = () => {
 
               <View
                 style={[
-                  styles.servicesCard,
+                  styles.card,
                   {
                     backgroundColor:
                       colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
                   },
                 ]}>
-                <View style={styles.servicesContainer}>
+                <View style={styles.container}>
                   <View style={styles.leftContainer}>
                     <View style={styles.iconContainer}>
                       <Feather
@@ -326,13 +326,13 @@ const Profile = () => {
             <>
               <View
                 style={[
-                  styles.bookingsCard,
+                  styles.card,
                   {
                     backgroundColor:
                       colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
                   },
                 ]}>
-                <View style={styles.bookingsContainer}>
+                <View style={styles.container}>
                   <View style={styles.leftContainer}>
                     <View style={styles.iconContainer}>
                       <Feather
@@ -379,13 +379,13 @@ const Profile = () => {
 
               <View
                 style={[
-                  styles.bookingsCard,
+                  styles.card,
                   {
                     backgroundColor:
                       colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
                   },
                 ]}>
-                <View style={styles.bookingsContainer}>
+                <View style={styles.container}>
                   <View style={styles.leftContainer}>
                     <View style={styles.iconContainer}>
                       <Feather
@@ -433,13 +433,13 @@ const Profile = () => {
           )}
           <View
             style={[
-              styles.customerCareCard,
+              styles.card,
               {
                 backgroundColor:
                   colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
               },
             ]}>
-            <View style={styles.customerCareContainer}>
+            <View style={styles.container}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
@@ -486,13 +486,13 @@ const Profile = () => {
 
           <View
             style={[
-              styles.CustomerAssistanceCard,
+              styles.card,
               {
                 backgroundColor:
                   colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
               },
             ]}>
-            <View style={styles.customerAssistanceContainer}>
+            <View style={styles.container}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
@@ -539,13 +539,13 @@ const Profile = () => {
 
           <View
             style={[
-              styles.serviceCenterCard,
+              styles.card,
               {
                 backgroundColor:
                   colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
               },
             ]}>
-            <View style={styles.serviceCenterContainer}>
+            <View style={styles.container}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
@@ -592,13 +592,117 @@ const Profile = () => {
 
           <View
             style={[
-              styles.changePasswordCard,
+              styles.card,
               {
                 backgroundColor:
                   colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
               },
             ]}>
-            <View style={styles.changePasswordContainer}>
+            <View style={styles.container}>
+              <View style={styles.leftContainer}>
+                <View style={styles.iconContainer}>
+                  <Feather
+                    name="clipboard"
+                    size={25}
+                    style={[
+                      styles.icon,
+                      {
+                        color:
+                          colorScheme === 'dark'
+                            ? COLORS.white
+                            : COLORS.primary,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                      fontSize: width * 0.045,
+                      marginLeft: 10,
+                    }}>
+                    Service Shops:{' '}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rightContainer}>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Shops')}>
+                    <Feather
+                      name="chevron-right"
+                      size={30}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor:
+                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+              },
+            ]}>
+            <View style={styles.container}>
+              <View style={styles.leftContainer}>
+                <View style={styles.iconContainer}>
+                  <Feather
+                    name="layers"
+                    size={25}
+                    style={[
+                      styles.icon,
+                      {
+                        color:
+                          colorScheme === 'dark'
+                            ? COLORS.white
+                            : COLORS.primary,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                      fontSize: width * 0.045,
+                      marginLeft: 10,
+                    }}>
+                    Product Shops:{' '}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rightContainer}>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Shops')}>
+                    <Feather
+                      name="chevron-right"
+                      size={30}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor:
+                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+              },
+            ]}>
+            <View style={styles.container}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
                   <Feather
@@ -794,7 +898,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
 
-  editProfileCard: {
+  card: {
     backgroundColor: COLORS.white,
     borderRadius: 10,
     padding: 20,
@@ -807,138 +911,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
 
-  editProfileContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  vehicleCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
-  },
-
-  vehicleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  bookingsCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
-  },
-
-  bookingsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  servicesCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
-  },
-  servicesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  customerCareCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
-  },
-
-  customerCareContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  CustomerAssistanceCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
-  },
-
-  customerAssistanceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  serviceCenterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  serviceCenterCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
-  },
-
-  changePasswordCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
-  },
-
-  changePasswordContainer: {
+  container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

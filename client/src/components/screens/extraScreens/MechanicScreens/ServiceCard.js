@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
+    justifyContent: "space-evenly",
     marginTop: 10,
   },
   editButton: {

@@ -319,9 +319,7 @@ const Home = () => {
               <>
               <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
               <View style={[styles.card,{height:height*0.63} ]}>
-                  {/* <TouchableOpacity style={styles.gotoDashboard}>
-                    <Text style={[styles.cardText,{color: "white"}]}>Service Dashboard</Text>
-                  </TouchableOpacity> */}
+                 
                   <ServiceDashboard />
                 </View>
                 </>

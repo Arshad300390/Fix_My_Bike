@@ -10,6 +10,7 @@ router.get(
   authMiddleware,
   productController.getshopProducts
 );
+router.get("/get-products/:userId", authMiddleware, productController.getProductsByUserId);
 
 router.patch("/update-product/:id", authMiddleware, productController.updateProduct);
 
