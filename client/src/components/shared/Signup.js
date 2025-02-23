@@ -645,6 +645,7 @@ const Signup = () => {
                 <Picker.Item label="Select Role" value="" />
                 <Picker.Item label="Customer" value="customer" />
                 <Picker.Item label="Mechanic" value="mechanic" />
+                <Picker.Item label="seller" value="seller" />
               </Picker>
             </View>
           </View>

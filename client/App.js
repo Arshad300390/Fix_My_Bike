@@ -22,6 +22,9 @@ import Bookings from './src/components/screens/extraScreens/Bookings/Bookings';
 import Services from './src/components/screens/extraScreens/Bookings/Services';
 import ServiceBooking from './src/components/screens/extraScreens/Bookings/ServiceBooking';
 import SheduleBooking from './src/components/screens/extraScreens/Bookings/BookingsToShedule';
+import AddProduct from './src/components/screens/extraScreens/SellerScreens/ProductForm';
+import EditProduct from './src/components/screens/extraScreens/SellerScreens/EditForm';
+
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -139,6 +142,16 @@ const App = () => {
         <Stack.Screen name="Shedule_Booking">
           {props => (
             <SheduleBooking {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Add_Product">
+          {props => (
+            <AddProduct {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Edit_Product">
+          {props => (
+            <EditProduct {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

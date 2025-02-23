@@ -22,6 +22,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import ServicesContainer from '../utils/ServicesCard/ServicesCard';
 import ScheduleCard from '../utils/SheduleCard/SheduleCard';
+import SellerDashboard from './extraScreens/SellerScreens/SellerDashboard';
 
 const { width, height } = Dimensions.get('window');
 
@@ -319,7 +320,7 @@ const Home = () => {
               <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
             )
           )
-            : (
+            : role === 'customer' ? (
               <>
                 <View style={styles.searchContainer}>
                   <View
@@ -391,7 +392,13 @@ const Home = () => {
                     )}
                   </View>
                 </View>
-              </>)}
+              </>
+              ) : role === 'seller' ? (
+                <View><SellerDashboard /></View>
+              ) : (
+                <Text>Role not recognized</Text>
+              )
+            }
       </ScrollView>
     </SafeAreaView>
   );

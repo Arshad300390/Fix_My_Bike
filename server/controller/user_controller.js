@@ -35,7 +35,7 @@ const signup = async (req, res, next) => {
       role,
       profile_image: userProfileImageUrl,
     });
-
+    console.log(user);
     await user.save();
     console.log("User created successfully:", user);
 
