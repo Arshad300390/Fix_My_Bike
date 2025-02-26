@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable quotes */
+import React, { useEffect, useState, useCallback } from "react";
 import { View, FlatList, Text, StyleSheet, ActivityIndicator, Alert, Dimensions, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { COLORS, FONTS } from "../../../constants/Constants";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import StarRatingDisplay from "react-native-star-rating-widget";
+
 const { width } = Dimensions.get("window");
 
 const ShopsDashboard = ({ role }) => {
@@ -11,6 +15,7 @@ const ShopsDashboard = ({ role }) => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
+  // Fetch sellers with ratings
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -20,13 +25,14 @@ const ShopsDashboard = ({ role }) => {
         return;
       }
 
-      // Fetch data based on role
-      const response = await axios.get(`http://10.0.2.2:5000/api/users/get-${role}s`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUsers(response.data.Sellers);
+      const response = await axios.get(
+        `http://10.0.2.2:5000/api/users/get-seller's-ratings`, // Corrected endpoint
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setUsers(response.data.sellers); // Use "sellers" as returned by API
     } catch (error) {
       console.error(`Error fetching ${role}s:`, error);
       Alert.alert("Error", `Failed to fetch ${role}s. Please try again.`);
@@ -36,8 +42,14 @@ const ShopsDashboard = ({ role }) => {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [role]);
+    fetchUsers(); // Fetch data initially when the page loads
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUsers(); // Re-fetch data when navigating back
+    }, [])
+  );
 
   return (
     <View style={styles.screen}>
@@ -51,19 +63,37 @@ const ShopsDashboard = ({ role }) => {
         <FlatList
           data={users}
           keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.userCard}
-              onPress={() => navigation.navigate("ShopItem", { user: item._id, name:item. full_name, email: item.email })} 
-            >
-              <View style={styles.textContainer}>
-                <Text style={styles.userName}>
-                  {item.full_name} Auto Spare Parts Shop
-                </Text>
-                <Text style={styles.userEmail}>{item.email}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+          renderItem={({ item }) => {
+            const shopRating = item.averageRating || 0; // Directly from API
+
+            return (
+              <TouchableOpacity
+                style={styles.userCard}
+                onPress={() =>
+                  navigation.navigate("ShopItem", {
+                    user: item._id,
+                    name: item.full_name,
+                    email: item.email,
+                  })
+                }
+              >
+                <View style={styles.textContainer}>
+                  <Text style={styles.userName}>
+                    {item.full_name} Auto Spare Parts Shop
+                  </Text>
+                  <Text style={styles.userEmail}>{item.email}</Text>
+
+                  {/* Display rating below email */}
+                  <View style={styles.ratingContainer}>
+                    <StarRatingDisplay rating={shopRating} starSize={20} color={COLORS.primary} onChange={() => {}} />
+                    <Text style={styles.ratingText}>
+                      {shopRating ? `${shopRating.toFixed(1)} / 5` : "No Ratings Yet"}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
           contentContainerStyle={styles.listContainer}
         />
       )}
@@ -120,6 +150,16 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.dark,
     textAlign: "center",
+  },
+  ratingContainer: {
+    alignItems: "center",
+    marginTop: 5,
+  },
+  ratingText: {
+    fontSize: width * 0.035,
+    fontFamily: FONTS.regular,
+    color: COLORS.dark,
+    marginTop: 5,
   },
 });
 

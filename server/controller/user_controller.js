@@ -134,6 +134,55 @@ const getSellers = async (req, res, next) => {
   }
 };
 
+const getSellersWithRatings = async (req, res, next) => {
+  try {
+    const sellers = await User.aggregate([
+      { $match: { role: "seller" } }, // Get only sellers
+      {
+        $lookup: {
+          from: "ratings",
+          localField: "_id",
+          foreignField: "shop_owner",
+          as: "ratings",
+        },
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: "$ratings" }, 0] }, // If ratings exist
+              then: { $avg: "$ratings.rating" }, // Calculate average
+              else: 0, // Default 0 if no ratings
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          full_name: 1,
+          email: 1,
+          phone_number: 1,
+          role: 1,
+          address: 1,
+          profile_image: 1, // Include profile image (if needed)
+          averageRating: 1,
+        },
+      },
+    ]);
+
+    if (!sellers.length) {
+      return next(new HttpError("No sellers found!", 404));
+    }
+
+    res.status(200).json({ sellers });
+  } catch (err) {
+    console.error("Error fetching sellers with ratings:", err);
+    return next(new HttpError("Error fetching sellers!", 500));
+  }
+};
+
+
+
 //
 
 const getUsersById = async (req, res, next) => {
@@ -308,15 +357,14 @@ const forgotPassword = async (req, res, next) => {
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${existingUser._id}/${token}`;
     console.log("Password reset URL:", resetUrl);
 
-    // Configure Mailtrap SMTP transport using provided environment variables
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST, // Mailtrap SMTP host from .env
-      port: process.env.EMAIL_PORT, // Port from .env (465 is typically SSL)
+      host: process.env.EMAIL_HOST, 
+      port: process.env.EMAIL_PORT, 
       auth: {
-        user: process.env.EMAIL_USER, // SMTP username from .env
-        pass: process.env.EMAIL_PASS, // SMTP password from .env
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS, 
       },
-      secure: true, // Use SSL for security (recommended for port 465)
+      secure: true, 
     });
 
     await transporter.verify((error) => {
@@ -368,4 +416,5 @@ module.exports = {
   resetPassword,
   forgotPassword,
   getSellers,
+  getSellersWithRatings,
 };
