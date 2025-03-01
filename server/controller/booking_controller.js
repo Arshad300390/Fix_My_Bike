@@ -246,6 +246,34 @@ const deleteBooking = async (req, res) => {
       .json({ message: "Error deleting booking", error: error.message });
   }
 };
+
+const getOilChange = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+
+    // Calculate date 60 days ago
+    const sixtyDaysAgo = new Date();
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+
+    const bookings = await Booking.find({
+      userId,
+      serviceName: "Engine Maintenance",
+      status: { $regex: /^completed$/i },
+      timestamp: { $lt: sixtyDaysAgo },
+    });
+    // If no old oil change requests are found, return an empty array with a message
+    res.status(200).json({ 
+      Bookings: bookings, 
+      message: bookings.length ? "Old oil change requests found." : "No old oil change required." 
+    });
+
+  } catch (error) {
+    return next(new HttpError("Error fetching oil change requests!", 500));
+  }
+};
+
+
+
 module.exports = {
   createBooking,
   getAllUserBookings,
@@ -257,4 +285,5 @@ module.exports = {
   getBookingById,
   updateBookingStatus,
   deleteBooking,
+  getOilChange,
 };

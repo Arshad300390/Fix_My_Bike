@@ -181,6 +181,52 @@ const getSellersWithRatings = async (req, res, next) => {
   }
 };
 
+const getMechanicsWithRatings = async (req, res, next) => {
+  try {
+    const sellers = await User.aggregate([
+      { $match: { role: "mechanic" } }, // Get only sellers
+      {
+        $lookup: {
+          from: "ratings",
+          localField: "_id",
+          foreignField: "shop_owner",
+          as: "ratings",
+        },
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: "$ratings" }, 0] }, // If ratings exist
+              then: { $avg: "$ratings.rating" }, // Calculate average
+              else: 0, // Default 0 if no ratings
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          full_name: 1,
+          email: 1,
+          phone_number: 1,
+          role: 1,
+          address: 1,
+          profile_image: 1, // Include profile image (if needed)
+          averageRating: 1,
+        },
+      },
+    ]);
+
+    if (!sellers.length) {
+      return next(new HttpError("No mechanic found!", 404));
+    }
+
+    res.status(200).json({ sellers });
+  } catch (err) {
+    console.error("Error fetching mechanic with ratings:", err);
+    return next(new HttpError("Error fetching mechanic!", 500));
+  }
+};
 
 
 //
@@ -417,4 +463,5 @@ module.exports = {
   forgotPassword,
   getSellers,
   getSellersWithRatings,
+  getMechanicsWithRatings,
 };

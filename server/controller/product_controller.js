@@ -42,16 +42,17 @@ const getshopProducts = async (req, res, next) => {
 
 const getProductsByUserId = async (req, res, next) => {
   try {
-    const { userId } = req.params; 
+    const { userId } = req.params;
 
-    const products = await Product.find({ shop_owner: userId });
+    const items = await Product.find({ shop_owner: userId });
 
-    if (!products.length) {
-      return next(new HttpError("No products found for this shop.", 404));
-    }
-    res.status(200).json({ Products: products });
+    res.status(200).json({ 
+      count: items.length,
+      Items: items 
+    });
+
   } catch (err) {
-    return next(new HttpError("Error fetching products!", 500));
+    return next(new HttpError("Error fetching items product!", 500));
   }
 };
 

@@ -38,6 +38,11 @@ router.put(
   authMiddleware,
   bookingController.updateBookingShedule
 );
+router.get(
+  "/oil-change",
+  authMiddleware,
+  bookingController.getOilChange
+);
 
 router.get(
   "/history",

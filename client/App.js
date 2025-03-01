@@ -175,7 +175,7 @@ const App = () => {
         </Stack.Screen>
         <Stack.Screen name="Shops">
           {props => (
-            <ShopsDashboard {...props} role="seller" setStatusBarColor={setStatusBarColor} />
+            <ShopsDashboard {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

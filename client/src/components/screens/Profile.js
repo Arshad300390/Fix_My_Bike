@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-  Image,
   ScrollView,
   useColorScheme,
 } from 'react-native';
@@ -631,7 +630,7 @@ const Profile = () => {
               <View style={styles.rightContainer}>
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Shops')}>
+                    onPress={() => navigation.navigate('Shops', {role: 'mechanic'})}>
                     <Feather
                       name="chevron-right"
                       size={30}
@@ -683,7 +682,7 @@ const Profile = () => {
               <View style={styles.rightContainer}>
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Shops')}>
+                    onPress={() => navigation.navigate('Shops',  {role: 'seller'})}>
                     <Feather
                       name="chevron-right"
                       size={30}

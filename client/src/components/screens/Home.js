@@ -1,3 +1,5 @@
+/* eslint-disable no-alert */
+/* eslint-disable quotes */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
@@ -74,6 +76,10 @@ const Home = () => {
 
         if (user && user.role) {
           setRole(user.role);
+           if(user.role === 'customer'){
+            console.log("here");
+            oilChange();
+           }
         } else {
           console.log('Role Not Found In Response');
         }
@@ -85,6 +91,40 @@ const Home = () => {
 
     fetchUserData();
   }, [navigation]);
+
+const oilChange = async() => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      console.log(token);
+      navigation.replace('Signin');
+      return;
+    }
+
+    const response = await axios.get(
+      'http://10.0.2.2:5000/api/oil-change',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const { Bookings, message } = response.data;
+
+    if (Bookings.length > 0) {
+      // Extract bike name and model from each booking
+      const bikeDetails = Bookings.map(
+        (booking) => `Your bike ${booking.bikeName} (${booking.bikeNumber}) oil change was 60 days earlier.`
+      ).join("\n");
+
+      alert(bikeDetails);
+    }
+  } catch (error) {
+    console.log('Error fetching oil change data:', error);
+  }
+};
 
   useEffect(()=>{
     const fetchScheduleRequests = async () => {
@@ -113,7 +153,7 @@ const Home = () => {
 
     return () => {
       clearInterval(intervalId);
-    }
+    };
   },[role]);
 
 
@@ -318,8 +358,7 @@ const Home = () => {
             ) : (
               <>
               <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
-              <View style={[styles.card,{height:height*0.63} ]}>
-                 
+              <View style={[styles.card,{height:height * 0.63} ]}>
                   <ServiceDashboard />
                 </View>
                 </>

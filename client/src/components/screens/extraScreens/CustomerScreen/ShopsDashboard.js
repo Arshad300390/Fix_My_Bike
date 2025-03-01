@@ -10,11 +10,11 @@ import StarRatingDisplay from "react-native-star-rating-widget";
 
 const { width } = Dimensions.get("window");
 
-const ShopsDashboard = ({ role }) => {
+const ShopsDashboard = ({ route }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-
+  const { role } = route.params;
   // Fetch sellers with ratings
   const fetchUsers = async () => {
     try {
@@ -26,7 +26,7 @@ const ShopsDashboard = ({ role }) => {
       }
 
       const response = await axios.get(
-        `http://10.0.2.2:5000/api/users/get-seller's-ratings`, // Corrected endpoint
+        `http://10.0.2.2:5000/api/users/get-${role}'s-ratings`, // Corrected endpoint
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -64,7 +64,7 @@ const ShopsDashboard = ({ role }) => {
           data={users}
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => {
-            const shopRating = item.averageRating || 0; // Directly from API
+            const shopRating = item.averageRating || 0;
 
             return (
               <TouchableOpacity
@@ -74,6 +74,8 @@ const ShopsDashboard = ({ role }) => {
                     user: item._id,
                     name: item.full_name,
                     email: item.email,
+                    role: role,
+                    rating: shopRating,
                   })
                 }
               >

@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get("window");
 import { useRoute } from "@react-navigation/native";
 import ProductCard from "./ProductCard";
+import ServiceCard from "./ServiceCard";
 import StarRating,{ StarRatingDisplay } from 'react-native-star-rating-widget';
 import Feather from 'react-native-vector-icons/Feather';
 import { Tooltip } from "react-native-elements";
@@ -20,10 +21,14 @@ const ShopItemScreen = () => {
   const userId = route.params?.user;
   const name = route.params?.name;
   const email = route.params?.email;
+  const role = route.params?.role;
+  const shopRating = route.params?.rating;
 
-  const [products, setProducts] = useState([]);
+  const things = role === 'seller' ? 'get-products' : 'shop/get-services';
+
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [rating, setRating] = useState(4.5);
+  const [rating, setRating] = useState(shopRating);
 
   const handleRating = async (newRating) => {
     setRating(newRating);
@@ -58,7 +63,7 @@ const ShopItemScreen = () => {
 
 
   const fetchItems = async () => {
-
+    console.log(`http://10.0.2.2:5000/api/${things}/${userId}`);
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem("token");
@@ -67,15 +72,15 @@ const ShopItemScreen = () => {
         navigation.replace("Signin");
         return;
       }
-      const response = await axios.get(`http://10.0.2.2:5000/api/get-products/${userId}`, {
+      const response = await axios.get(`http://10.0.2.2:5000/api/${things}/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setProducts(response.data.Products);
+      setItems(response.data.Items);
     } catch (error) {
-      console.error("Error fetching products:", error);
-      Alert.alert("Error", "Failed to fetch products. Please try again.");
+      console.error("Error fetching itemss:", error);
+      Alert.alert("Error", "Failed to fetch items. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -93,29 +98,40 @@ const ShopItemScreen = () => {
         </Text>
         <Text style={styles.userEmail}>{email}</Text>
         <View style={styles.ratingContainer}>
-  <View style={styles.rateUsContainer}>
-  <Text style={styles.ratingLabel}>Rate Us</Text>
-    <TouchableOpacity onPress={() => Alert.alert("Rating Info", "Rate the shop based on your experience from 1 to 5 stars.")}>
-    <Feather name="arrow-right" size={18} color={COLORS.primary} style={styles.infoIcon} />
-    </TouchableOpacity>
-  </View>
-  <StarRating
-    rating={rating}
-    onChange={handleRating}
-    enableSwiping={true}
-  />
-</View>
+          <View style={styles.rateUsContainer}>
+            <Text style={styles.ratingLabel}>Rate Us</Text>
+            <TouchableOpacity onPress={() => Alert.alert('Rating Info", "Rate the shop based on your experience from 1 to 5 stars.')}>
+              <Feather name="arrow-right" size={18} color={COLORS.primary} style={styles.infoIcon} />
+            </TouchableOpacity>
+          </View>
+          <StarRating
+            rating={rating}
+            onChange={handleRating}
+            enableSwiping={true}
+          />
+        </View>
       </View>
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item._id.toString()}
-        renderItem={({ item }) =>
-          <ProductCard product={item}
-          />}
-        contentContainerStyle={styles.listContainer}
-      />
+
+      {/* Check if items are empty */}
+      {items.length === 0 ? (
+        <Text style={styles.noItemsText}>No items available yet.</Text>
+      ) : (
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item._id.toString()}
+          renderItem={({ item }) =>
+            role === 'seller' ? (
+              <ProductCard product={item} />
+            ) : (
+              <ServiceCard service={item} />
+            )
+          }
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -141,7 +157,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   ratingContainer: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 10,
@@ -159,6 +175,12 @@ const styles = StyleSheet.create({
   },
   infoIcon: {
     marginLeft: 5, // Adjust spacing
+  },
+  noItemsText: {
+    fontSize: 16,
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 
