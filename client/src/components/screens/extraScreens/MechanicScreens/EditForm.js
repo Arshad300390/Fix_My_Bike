@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { COLORS, FONTS } from "../../../constants/Constants";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COLORS, FONTS } from '../../../constants/Constants';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 
 const ServiceForm = ({ route }) => {
   const navigation = useNavigation();
   const service = route.params?.service;
 
   if (!service) {
-    Alert.alert("Error", "No service data provided!");
+    Alert.alert('Error', 'No service data provided!');
     navigation.goBack();
     return null;
   }
@@ -25,15 +26,15 @@ const ServiceForm = ({ route }) => {
 
   const handleSubmit = async () => {
     if (!serviceName || !servicePrice || !serviceModel || !enginePower || !serviceDescription) {
-      Alert.alert("Error", "Please fill all fields");
+      Alert.alert('Error', 'Please fill all fields');
       return;
     }
 
     try {
-      const token = await AsyncStorage.getItem("token");
+      const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert("Authentication Error", "Please sign in first.");
-        navigation.replace("Signin");
+        Alert.alert('Authentication Error', 'Please sign in first.');
+        navigation.replace('Signin');
         return;
       }
 
@@ -50,12 +51,12 @@ const ServiceForm = ({ route }) => {
       });
 
       if (response.status === 200) {
-        Alert.alert("Success", "Service updated successfully!");
+        Alert.alert('Success', 'Service updated successfully!');
         navigation.goBack();
       }
     } catch (error) {
-      console.error("Error updating service:", error);
-      Alert.alert("Error", "Failed to update service. Please try again.");
+      console.error('Error updating service:', error);
+      Alert.alert('Error', 'Failed to update service. Please try again.');
     }
   };
 
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontSize: width * 0.055,
     fontFamily: FONTS.bold,
-    textAlign: "center",
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 10,
     padding: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   serviceText: {
     color: COLORS.white,

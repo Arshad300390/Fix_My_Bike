@@ -1,32 +1,32 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { COLORS, FONTS } from "../../../constants/Constants";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COLORS, FONTS } from '../../../constants/Constants';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 
 const ServiceForm = ({ onSubmit }) => {
-  const [serviceName, setServiceName] = useState("");
-  const [servicePrice, setServicePrice] = useState("");
-  const [serviceModel, setServiceModel] = useState("");
-  const [enginePower, setEnginePower] = useState("");
-  const [serviceDescription, setServiceDescription] = useState("");
+  const [serviceName, setServiceName] = useState('');
+  const [servicePrice, setServicePrice] = useState('');
+  const [serviceModel, setServiceModel] = useState('');
+  const [enginePower, setEnginePower] = useState('');
+  const [serviceDescription, setServiceDescription] = useState('');
 
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
     if (!serviceName || !servicePrice || !serviceModel || !enginePower || !serviceDescription) {
-      Alert.alert("Error", "Please fill all fields");
+      Alert.alert('Error', 'Please fill all fields');
       return;
     }
 
     try {
-      const token = await AsyncStorage.getItem("token");
+      const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert("Authentication Error", "Please sign in first.");
-        navigation.replace("Signin");
+        Alert.alert('Authentication Error', 'Please sign in first.');
+        navigation.replace('Signin');
         return;
       }
 
@@ -38,7 +38,7 @@ const ServiceForm = ({ onSubmit }) => {
         service_description: serviceDescription,
       };
 
-      const response = await axios.post("http://10.0.2.2:5000/api/shop/services", 
+      const response = await axios.post('http://10.0.2.2:5000/api/shop/services', 
         serviceData, 
         {
           headers: {
@@ -48,17 +48,17 @@ const ServiceForm = ({ onSubmit }) => {
       );
 
       if (response.status === 201) {
-        Alert.alert("Success", "Service added successfully!");
-        setServiceName("");
-        setServicePrice("");
-        setServiceModel("");
-        setEnginePower("");
-        setServiceDescription("");
+        Alert.alert('Success', 'Service added successfully!');
+        setServiceName('');
+        setServicePrice('');
+        setServiceModel('');
+        setEnginePower('');
+        setServiceDescription('');
         navigation.goBack();
       }
     } catch (error) {
-      console.error("Error adding service:", error);
-      Alert.alert("Error", "Failed to add service. Please try again.");
+      console.error('Error adding service:', error);
+      Alert.alert('Error', 'Failed to add service. Please try again.');
     }
   };
 
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontSize: width * 0.055,
     fontFamily: FONTS.bold,
-    textAlign: "center",
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 10,
     padding: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   serviceText: {
     color: COLORS.white,

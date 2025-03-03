@@ -1,15 +1,16 @@
-import React, { useEffect, useState, useCallback } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
-  View, FlatList, Text, StyleSheet, TouchableOpacity, 
-  Dimensions, ActivityIndicator, Alert 
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+  View, FlatList, Text, StyleSheet, TouchableOpacity,
+  Dimensions, ActivityIndicator, Alert,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import ServiceCard from "./ServiceCard"; 
+import ServiceCard from './ServiceCard';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const ServiceDashboard = () => {
   const [services, setServices] = useState([]);
@@ -19,22 +20,22 @@ const ServiceDashboard = () => {
   const fetchServices = async () => {
     try {
       setLoading(true);
-      const token = await AsyncStorage.getItem("token");
+      const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert("Authentication Error", "Please sign in first.");
-        navigation.replace("Signin");
+        Alert.alert('Authentication Error', 'Please sign in first.');
+        navigation.replace('Signin');
         return;
       }
 
-      const response = await axios.get("http://10.0.2.2:5000/api/shop/services", {
+      const response = await axios.get('http://10.0.2.2:5000/api/shop/services', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setServices(response.data.Services);
     } catch (error) {
-      console.error("Error fetching services:", error);
-      Alert.alert("Error", "Failed to fetch services. Please try again.");
+      console.error('Error fetching services:', error);
+      Alert.alert('Error', 'Failed to fetch services. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -51,20 +52,20 @@ const ServiceDashboard = () => {
   );
 
   const handleEdit = (service) => {
-    navigation.navigate("Edit_Service", { service });
+    navigation.navigate('Edit_Service', { service });
   };
 
   const handleDelete = async (productId) => {
-    Alert.alert("Confirm", "Are you sure you want to delete this service?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert('Confirm', 'Are you sure you want to delete this service?', [
+      { text: 'Cancel', style: 'cancel' },
       {
-        text: "Delete",
+        text: 'Delete',
         onPress: async () => {
           try {
-            const token = await AsyncStorage.getItem("token");
+            const token = await AsyncStorage.getItem('token');
             if (!token) {
-              Alert.alert("Authentication Error", "Please sign in first.");
-              navigation.replace("Signin");
+              Alert.alert('Authentication Error', 'Please sign in first.');
+              navigation.replace('Signin');
               return;
             }
             await axios.delete(`http://10.0.2.2:5000/api/shop/services/${productId}`, {
@@ -72,11 +73,10 @@ const ServiceDashboard = () => {
                 Authorization: `Bearer ${token}`,
               }
             });
-  
             setServices((prevServices) => prevServices.filter(service => service._id !== productId));
-            Alert.alert("Success", "Service deleted successfully!");
+            Alert.alert('Success', 'Service deleted successfully!');
           } catch (error) {
-            Alert.alert("Error", "Failed to delete service.");
+            Alert.alert('Error', 'Failed to delete service.');
           }
         }
       }
@@ -91,7 +91,7 @@ const ServiceDashboard = () => {
       {/* Header Row with Add Button */}
       <View style={styles.headerRow}>
         <Text style={styles.serviceText}>Services</Text>
-        <TouchableOpacity style={styles.addService} onPress={() => navigation.navigate("Add_Service")}>
+        <TouchableOpacity style={styles.addService} onPress={() => navigation.navigate('Add_Service')}>
           <Text style={styles.addServiceText}> Add Service</Text>
         </TouchableOpacity>
       </View>
@@ -116,22 +116,22 @@ const ServiceDashboard = () => {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1, 
+    flex: 1,
     paddingHorizontal: 5,
     paddingBottom: 5,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   header: {
     fontSize: width * 0.06,
     fontFamily: FONTS.bold,
     color: COLORS.primary,
-    textAlign: "center",
+    textAlign: 'center',
     marginVertical: 5,
   },
   headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
 
   },
   serviceText: {
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   flatList: {
     flex: 1,
-  }
+  },
 });
 
 export default ServiceDashboard;

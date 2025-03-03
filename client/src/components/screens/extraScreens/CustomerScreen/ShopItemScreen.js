@@ -63,7 +63,6 @@ const ShopItemScreen = () => {
 
 
   const fetchItems = async () => {
-    console.log(`http://10.0.2.2:5000/api/${things}/${userId}`);
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem("token");
