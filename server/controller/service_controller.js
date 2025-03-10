@@ -28,6 +28,19 @@ exports.createService = async (req, res, next) => {
   }
 };
 
+exports.getAllServices = async (req, res, next) => {
+  try {
+    const items = await Service.find();
+
+    res.status(200).json({ 
+      count: items.length,
+      Items: items 
+    });
+  } catch (err) {
+    return next(new HttpError("Error fetching item services!", 500));
+  }
+}
+
 exports.getServicesByUserId = async (req, res, next) => {
   try {
     const { userId } = req.params;

@@ -19,6 +19,7 @@ const ServicesContainer = ({
   service_name,
   service_description,
   service_price,
+  service_id,
 }) => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
@@ -29,6 +30,7 @@ const ServicesContainer = ({
       service_name,
       service_description,
       service_price,
+      service_id,
     });
   };
 

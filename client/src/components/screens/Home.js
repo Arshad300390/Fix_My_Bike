@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-alert */
 /* eslint-disable quotes */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -40,6 +41,7 @@ const Home = () => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [notSchedule, setNotSchedule] = useState(0);
+  const [customServices, setCustomServices] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -76,10 +78,10 @@ const Home = () => {
 
         if (user && user.role) {
           setRole(user.role);
-           if(user.role === 'customer'){
-            console.log("here");
+          if (user.role === 'customer') {
             oilChange();
-           }
+            getAllServices();
+          }
         } else {
           console.log('Role Not Found In Response');
         }
@@ -92,41 +94,66 @@ const Home = () => {
     fetchUserData();
   }, [navigation]);
 
-const oilChange = async() => {
-  try {
-    const token = await AsyncStorage.getItem('token');
+  const oilChange = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
 
-    if (!token) {
-      console.log(token);
-      navigation.replace('Signin');
-      return;
-    }
+      if (!token) {
+        console.log(token);
+        navigation.replace('Signin');
+        return;
+      }
 
-    const response = await axios.get(
-      'http://10.0.2.2:5000/api/oil-change',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.get(
+        'http://10.0.2.2:5000/api/oil-change',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
+      );
 
-    const { Bookings, message } = response.data;
+      const { Bookings, message } = response.data;
 
-    if (Bookings.length > 0) {
-      // Extract bike name and model from each booking
-      const bikeDetails = Bookings.map(
-        (booking) => `Your bike ${booking.bikeName} (${booking.bikeNumber}) oil change was 60 days earlier.`
-      ).join("\n");
+      if (Bookings.length > 0) {
+        // Extract bike name and model from each booking
+        const bikeDetails = Bookings.map(
+          (booking) => `Your bike ${booking.bikeName} (${booking.bikeNumber}) oil change was 60 days earlier.`
+        ).join("\n");
 
-      alert(bikeDetails);
+        alert(bikeDetails);
+      }
+    } catch (error) {
+      console.log('Error fetching oil change data:', error);
     }
-  } catch (error) {
-    console.log('Error fetching oil change data:', error);
-  }
-};
+  };
 
-  useEffect(()=>{
+  const getAllServices = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        console.log(token);
+        navigation.replace('Signin');
+        return;
+      }
+
+      const response = await axios.get(
+        'http://10.0.2.2:5000/api/shop/all/services',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      setCustomServices(response.data.Items);
+    } catch (error) {
+      console.log('Error fetching oil change data:', error);
+    }
+  };
+
+  useEffect(() => {
     const fetchScheduleRequests = async () => {
       if (role && role === 'mechanic') {
         try {
@@ -154,7 +181,7 @@ const oilChange = async() => {
     return () => {
       clearInterval(intervalId);
     };
-  },[role]);
+  }, [role]);
 
 
   const services = [
@@ -357,11 +384,11 @@ const oilChange = async() => {
               <Text>Loading  not schedule...</Text> // Show a loading message or spinner
             ) : (
               <>
-              <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
-              <View style={[styles.card,{height:height * 0.63} ]}>
+                <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
+                <View style={[styles.card, { height: height * 0.63 }]}>
                   <ServiceDashboard />
                 </View>
-                </>
+              </>
             )
           )
             : role === 'customer' ? (
@@ -406,7 +433,7 @@ const oilChange = async() => {
                           }
                         />
                       </View>
-                    ) : filteredServices.length > 0 ? (
+                    ) : filteredServices.length > 0 ? (<>
                       <FlatList
                         data={filteredServices}
                         keyExtractor={item => item.id}
@@ -420,6 +447,37 @@ const oilChange = async() => {
                         )}
                         contentContainerStyle={styles.serviceContainer}
                       />
+                      <Text style={{marginTop:-70, marginBottom:20, textAlign: 'center', color: 'black', fontSize: 40, fontWeight: 'bold'}}>Custom Services</Text>
+                      <FlatList
+                        data={customServices}
+                        keyExtractor={(item) => item._id}
+                        renderItem={({ item }) => {
+                          // Declare imageUrl inside the function block
+                          let imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg"; // Default image
+
+                          // Assign custom images based on service_name
+                          if (item.service_name.toLowerCase().includes("oil change")) {
+                            imageUrl = "https://media.istockphoto.com/id/1174788025/photo/the-process-of-pouring-new-oil-into-the-motorcycle-engine.jpg?s=612x612&w=0&k=20&c=IQHgBZ4SdLc6urAyfY-srbXaXeTxBZpWvbEUMPlj2_U="; // Replace with your oil change image URL
+                          } else if (item.service_name.toLowerCase().includes("tyre change")) {
+                            imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2dC1oSGcqSdmccoXHsSbh_0Rs1qoC4vKwY3K6r9uP5zVR7qQJsEOpihapFg6OXqxD9jc&usqp=CAU"; // Replace with your tyre change image URL
+                          } else if (item.service_name.toLowerCase().includes("head light change")) {
+                            imageUrl = "https://www.shutterstock.com/shutterstock/photos/329460197/display_1500/stock-photo-headlight-and-wheel-of-an-old-motorcycle-329460197.jpg"; // Replace with your headlight change image URL
+                          }
+
+                          return (
+                            <ServicesContainer
+                            service_id = {item._id}
+                              service_image={imageUrl}
+                              service_name={item.service_name}
+                              service_description={item.service_description}
+                              service_price={String(item.service_price)}
+                            />
+                          );
+                        }}
+                        contentContainerStyle={styles.serviceContainer}
+                      />
+
+                    </>
                     ) : (
                       <View style={styles.noServiceContainer}>
                         <Text
@@ -438,12 +496,12 @@ const oilChange = async() => {
                   </View>
                 </View>
               </>
-              ) : role === 'seller' ? (
-                <View><SellerDashboard /></View>
-              ) : (
-                <Text>Role not recognized</Text>
-              )
-            }
+            ) : role === 'seller' ? (
+              <View><SellerDashboard /></View>
+            ) : (
+              <Text>Role not recognized</Text>
+            )
+        }
       </ScrollView>
     </SafeAreaView>
   );
@@ -606,5 +664,5 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3, // Shadow for Android
   },
-  
+
 });

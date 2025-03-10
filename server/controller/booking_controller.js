@@ -1,10 +1,12 @@
 const Booking = require("../model/booking_model");
 const HttpError = require("../model/http_error");
 const User = require("../model/user_model");
+const Service = require("../model/service_model");
 
 const createBooking = async (req, res, next) => {
   try {
-    const {
+    let {
+      service_id,
       serviceName,
       serviceBasePrice,
       name,
@@ -21,10 +23,20 @@ const createBooking = async (req, res, next) => {
       mechanicName,
       mechanicNumber,
       mechanicId,
-      SheduleDate,
+      sheduleDate,
       status
     } = req.body;
-
+    console.log('scheduleDate', sheduleDate);
+    if(service_id){
+      const shop_owner = await Service.findById(service_id).select('shop_owner');
+      if (shop_owner) {
+        const mechanic = await User.findById(shop_owner.shop_owner).select("full_name phone_number");
+        mechanicName = mechanic.full_name;
+        mechanicNumber= mechanic.phone_number;
+        mechanicId= mechanic._id;
+      }
+      
+    }
     const bookingData = {
       userId: req.userId,
       serviceName,
@@ -45,7 +57,7 @@ const createBooking = async (req, res, next) => {
       mechanicNumber,
       mechanicId,
       status,
-      SheduleDate
+      scheduleDate: sheduleDate,
     };
 
     const booking = new Booking(bookingData);

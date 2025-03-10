@@ -1,5 +1,11 @@
+/* eslint-disable quotes */
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable space-infix-ops */
+/* eslint-disable semi */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-trailing-spaces */
 /* eslint-disable no-unused-vars */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -12,24 +18,28 @@ import {
   useColorScheme,
   StyleSheet,
   Dimensions,
+  Pressable,
+  Alert,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
-import {COLORS, FONTS} from '../../../constants/Constants';
-import {Picker} from '@react-native-picker/picker';
+import { COLORS, FONTS } from '../../../constants/Constants';
+import { Picker } from '@react-native-picker/picker';
 import CustomModal from '../../../utils/Modals/CustomModal';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const {width, height} = Dimensions.get('window');
+import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+const { width, height } = Dimensions.get('window');
 
 const ServiceBooking = () => {
   const route = useRoute();
   const service_name = route.params?.service_name;
   const service_price = route.params?.service_price;
+  const service_id = route.params?.service_id;
 
   const [totalPrice, setTotalPrice] = useState(service_price);
-  const [userId, setUserId]=useState('');
+  const [userId, setUserId] = useState('');
   const [name, setName] = useState('');
   const [cell, setCell] = useState('');
   const [address, setAddress] = useState('');
@@ -59,7 +69,50 @@ const ServiceBooking = () => {
   const [loading, setLoading] = useState(false);
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
+  //date picker
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [date, setDate] = useState();
+  const [time, setTime] = useState();
 
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (cdate) => {
+    const dt = new Date(cdate); // Ensure it's a Date object
+    const formattedDate = `${dt.getDate().toString().padStart(2, '0')}-${(dt.getMonth() + 1).toString().padStart(2, '0')}-${dt.getFullYear()}`;
+
+    setDate(formattedDate); // Update the state with formatted date
+    console.warn("A date has been picked: ", formattedDate);
+
+    hideDatePicker();
+  };
+
+
+  const showTimePicker = () => {
+    setTimePickerVisibility(true);
+  };
+
+  const hideTimePicker = () => {
+    setTimePickerVisibility(false);
+  };
+
+  const handleTimeConfirm = (ctime) => {
+    const dt = new Date(ctime);
+    const formattedTime = dt.toLocaleTimeString('en-GB', { hour12: false }); // 24-hour format
+    setTime(formattedTime);
+    hideTimePicker();
+  };
+
+
+
+
+  //
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -106,8 +159,8 @@ const ServiceBooking = () => {
         navigation.replace('Signin');
       }
     };
-    
-    
+
+
     fetchUserData();
   }, [navigation]);
 
@@ -116,14 +169,14 @@ const ServiceBooking = () => {
       const fetchBike = async () => {
         try {
           const token = await AsyncStorage.getItem('token');
-  
+
           if (!token) {
             navigation.replace('Signin');
             return;
           }
-  
+
           const response = await axios.get(
-            
+
             `http://10.0.2.2:5000/api/bikes/get-user-selected-bike/${userId}`,
             {
               headers: {
@@ -131,16 +184,16 @@ const ServiceBooking = () => {
               },
             },
           );
-          const bike= response.data.Bike[0];
+          const bike = response.data.Bike[0];
           setBikeModel(bike.bike_model);
           setBikeName(bike.bike_name);
           setBikeCompanyName(bike.bike_company_name);
           setBikeRegNumber(bike.bike_registration_number);
-        }catch(error){
+        } catch (error) {
           console.log('error fetcing user selected bike');
         }
-        }
-        fetchBike();
+      }
+      fetchBike();
 
     }
   }, [userId]);
@@ -191,7 +244,7 @@ const ServiceBooking = () => {
     //  else if (!/^(\+92|92|0)(3\d{2}|\d{2})(\d{7})$/.test(value)) {
     //   setCellError('Invalid Cell Format');
     // }
-     else {
+    else {
       setCellError('');
     }
   };
@@ -206,7 +259,7 @@ const ServiceBooking = () => {
     // ) {
     //   setAddressError('Address must follow format');
     // }
-     else {
+    else {
       setAddressError('');
     }
   };
@@ -222,14 +275,14 @@ const ServiceBooking = () => {
         <Text
           style={[
             styles.optionText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           {label}
         </Text>
         <Text
           style={[
             styles.optionPrice,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+            { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
           {`(Rs.${price})`}
         </Text>
@@ -241,15 +294,15 @@ const ServiceBooking = () => {
     const basePrice = parseFloat(service_price) || 0;
     let additionalCost = 0;
 
-    const {chain, tire, headlight, brake, battery, mirror} =
+    const { chain, tire, headlight, brake, battery, mirror } =
       updatedServiceState;
 
-    if (chain) {additionalCost += 50;}
-    if (tire) {additionalCost += 30;}
-    if (headlight) {additionalCost += 40;}
-    if (brake) {additionalCost += 35;}
-    if (battery) {additionalCost += 60;}
-    if (mirror) {additionalCost += 25;}
+    if (chain) { additionalCost += 50; }
+    if (tire) { additionalCost += 30; }
+    if (headlight) { additionalCost += 40; }
+    if (brake) { additionalCost += 35; }
+    if (battery) { additionalCost += 60; }
+    if (mirror) { additionalCost += 25; }
 
     setTotalPrice(basePrice + additionalCost);
   };
@@ -261,6 +314,32 @@ const ServiceBooking = () => {
 
   const handleServiceBooking = async () => {
     if (isButtonEnabled) {
+      if (!dropoff) {
+        Alert.alert('Required', 'Please select a Drop Off Point before proceeding.');
+        return;
+      }
+      if (!date) {
+        Alert.alert('Required', 'Please select a Date before proceeding.');
+        return;
+      }
+      if (!time) {
+        Alert.alert('Required', 'Please select a Time Slot before proceeding.');
+        return;
+      }
+
+      const [day, month, year] = date.split('-'); // Extract day, month, year
+const [hours, minutes] = time.split(':'); // Extract hours, minutes
+
+// Create Date object using UTC to prevent timezone shift
+const scheduleDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+
+// Convert to your required format (DD-MM-YYYY HH:mm:ss)
+const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:00`;
+
+console.log('scheduleDate:', scheduleDate.toISOString()); 
+console.log('date n time through variable', formattedDate);
+
+
       setLoading(true);
       try {
         const token = await AsyncStorage.getItem('token');
@@ -270,6 +349,7 @@ const ServiceBooking = () => {
         }
 
         const bookingData = {
+          service_id: service_id,
           serviceName: service_name,
           serviceBasePrice: service_price,
           name: name,
@@ -292,11 +372,10 @@ const ServiceBooking = () => {
           dropOff: dropoff,
           timestamp: Date.now(),
           status: 'pending',
-          sheduleDate: '',
+          sheduleDate: scheduleDate.toISOString(),
           mechanicName: '',
           mechanicNumber: '',
         };
-
         const response = await axios.post(
           'http://10.0.2.2:5000/api/service-booking',
           bookingData,
@@ -368,7 +447,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Service Name
             </Text>
@@ -391,7 +470,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Service Base Price
             </Text>
@@ -414,7 +493,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               User Information!
             </Text>
@@ -424,7 +503,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Name
             </Text>
@@ -451,7 +530,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Cell
             </Text>
@@ -479,7 +558,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Address
             </Text>
@@ -506,7 +585,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Vehicle Information!
             </Text>
@@ -516,14 +595,14 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Model
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Bike Model"
               placeholderTextColor={
@@ -538,14 +617,14 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Name
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Bike Name"
               placeholderTextColor={
@@ -560,14 +639,14 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Company Name
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Bike Company Name"
               placeholderTextColor={
@@ -582,14 +661,14 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Bike Registration Number
             </Text>
             <TextInput
               style={[
                 styles.inputField,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}
               placeholder="Enter Registration Number"
               placeholderTextColor={
@@ -728,7 +807,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Drop Off Point
             </Text>
@@ -737,7 +816,7 @@ const ServiceBooking = () => {
                 selectedValue={dropoff}
                 style={[
                   styles.picker,
-                  {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                  { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
                 ]}
                 onValueChange={handleDropOffChange}>
                 <Picker.Item label="Select Drop Off Point" value="" />
@@ -748,13 +827,39 @@ const ServiceBooking = () => {
                 />
               </Picker>
             </View>
+            <View style={styles.dateContainer}>
+              <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
+                <Text style={styles.buttonText}>Select Date</Text>
+              </TouchableOpacity>
+              <Text style={styles.selectedDate}>{date ? String(date) : 'No date selected'}</Text>
+
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
+            </View>
+            <View style={styles.dateContainer}>
+              <TouchableOpacity onPress={showTimePicker} style={styles.dateButton}>
+                <Text style={styles.buttonText}>Select Time Solot</Text>
+              </TouchableOpacity>
+              <Text style={styles.selectedDate}>{time ? String(time) : 'No time slot selected'}</Text>
+
+              <DateTimePickerModal
+                isVisible={isTimePickerVisible}
+                mode="time"
+                onConfirm={handleTimeConfirm}
+                onCancel={hideTimePicker}
+              />
+            </View>
           </View>
 
           <View style={styles.inputFieldContainer}>
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Comments
             </Text>
@@ -780,7 +885,7 @@ const ServiceBooking = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Total Price
             </Text>
@@ -1001,5 +1106,30 @@ const styles = StyleSheet.create({
     color: COLORS.errorColor,
     fontFamily: FONTS.semiBold,
     paddingHorizontal: 5,
+  },
+  //
+  dateContainer: {
+    flexDirection: 'row', // Arrange items in a row
+    alignItems: 'center', // Align vertically
+    justifyContent: 'space-between', // Space out elements
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  dateButton: {
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  selectedDate: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: '#333',
   },
 });
