@@ -174,6 +174,58 @@ const Profile = () => {
                   <View style={styles.leftContainer}>
                     <View style={styles.iconContainer}>
                       <MaterialCommunityIcons
+                        name="notification"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        Notifications Management:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Notifications')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.container}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <MaterialCommunityIcons
                         name="motorbike"
                         size={25}
                         style={[

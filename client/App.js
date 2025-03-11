@@ -28,6 +28,7 @@ import AddService from './src/components/screens/extraScreens/MechanicScreens/Se
 import EditService from './src/components/screens/extraScreens/MechanicScreens/EditForm';
 import ShopsDashboard from './src/components/screens/extraScreens/CustomerScreen/ShopsDashboard';
 import ShopItemScreen from './src/components/screens/extraScreens/CustomerScreen/ShopItemScreen';
+import NotificationsManager from './src/components/screens/extraScreens/NotificationsScreen/NotificationsManager';
 
 const Stack = createNativeStackNavigator();
 
@@ -176,6 +177,11 @@ const App = () => {
         <Stack.Screen name="Shops">
           {props => (
             <ShopsDashboard {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Notifications">
+          {props => (
+            <NotificationsManager {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

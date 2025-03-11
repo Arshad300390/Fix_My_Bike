@@ -16,6 +16,11 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
+    configurations.all {
+    resolutionStrategy.force "androidx.core:core:1.13.1"
+    resolutionStrategy.force "androidx.appcompat:appcompat:1.6.1"
+    resolutionStrategy.force "androidx.annotation:annotation:1.7.0"
+}
 }
 
 

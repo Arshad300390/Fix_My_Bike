@@ -328,16 +328,13 @@ const ServiceBooking = () => {
       }
 
       const [day, month, year] = date.split('-'); // Extract day, month, year
-const [hours, minutes] = time.split(':'); // Extract hours, minutes
+      const [hours, minutes] = time.split(':'); // Extract hours, minutes
 
-// Create Date object using UTC to prevent timezone shift
-const scheduleDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+      // Create Date object using UTC to prevent timezone shift
+      const scheduleDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
 
-// Convert to your required format (DD-MM-YYYY HH:mm:ss)
-const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:00`;
-
-console.log('scheduleDate:', scheduleDate.toISOString()); 
-console.log('date n time through variable', formattedDate);
+      // Convert to your required format (DD-MM-YYYY HH:mm:ss)
+      const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:00`;
 
 
       setLoading(true);
