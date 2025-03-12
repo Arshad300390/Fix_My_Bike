@@ -1,6 +1,6 @@
 const Service = require("../model/service_model");
 const HttpError = require("../model/http_error");
-
+const mongoose = require("mongoose");
 
 exports.createService = async (req, res, next) => {
   try {
@@ -41,19 +41,87 @@ exports.getAllServices = async (req, res, next) => {
   }
 }
 
+// exports.getServicesByUserId = async (req, res, next) => {
+//   try {
+//     const { userId } = req.params;
+//     const items = await Service.find({ shop_owner: userId });
+
+//     res.status(200).json({ 
+//       count: items.length,
+//       Items: items 
+//     });
+//   } catch (err) {
+//     return next(new HttpError("Error fetching item services!", 500));
+//   }
+// };
+
+
+
+
 exports.getServicesByUserId = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const items = await Service.find({ shop_owner: userId });
+    const userObjectId = new mongoose.Types.ObjectId(userId); // Fix ObjectId conversion
 
+    const services = await Service.aggregate([
+      { 
+        $match: { shop_owner: userObjectId }  // Ensure shop_owner matches userId
+      },
+      {
+        $lookup: {
+          from: "users", // Join with users collection
+          localField: "shop_owner",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "ratings", // Join with ratings collection
+          localField: "shop_owner",
+          foreignField: "shop_owner",
+          as: "ratings",
+        },
+      },
+      {
+        $addFields: {
+          shop_owner: "$shop_owner", // Keep shop_owner
+          full_name: { $arrayElemAt: ["$userDetails.full_name", 0] }, // Extract first match
+          email: { $arrayElemAt: ["$userDetails.email", 0] },
+          rating: { $avg: "$ratings.rating" } // Get average rating
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          shop_owner: 1, // Explicitly include shop_owner
+          service_name: 1,
+          service_description: 1,
+          service_price: 1,
+          service_model: 1,
+          engine_power: 1,
+          full_name: 1,  // Include full_name from users
+          email: 1,      // Include email from users
+          rating: 1      // Include average rating
+        },
+      },
+    ]);
+
+    console.log("Final Aggregation Output:", services);
     res.status(200).json({ 
-      count: items.length,
-      Items: items 
+      count: services.length,
+      Items: services
     });
+
   } catch (err) {
-    return next(new HttpError("Error fetching item services!", 500));
+    console.error("Error fetching services with a rating:", err);
+    return next(new HttpError("Error fetching services!", 500));
   }
 };
+
+
+
+
 
 exports.getShopServices = async (req, res, next) => {
   try {

@@ -27,7 +27,6 @@ const addProduct = async (req, res, next) => {
 const getshopProducts = async (req, res, next) => {
   try {
     const userId = req.userId;
-    console.log(userId);
     const products = await Product.find({ shop_owner: userId });
 
     if (!products.length) {
@@ -40,10 +39,26 @@ const getshopProducts = async (req, res, next) => {
   }
 };
 
+ const getAllProducts = async (req, res, next) => {
+  try {
+    const startTime = new Date();
+    console.log('get all products' , startTime.toLocaleString());
+    const items = await Product.find();
+
+    res.status(200).json({ 
+      count: items.length,
+      Items: items 
+    });
+    console.log(items);
+  } catch (err) {
+    return next(new HttpError("Error fetching item !", 500));
+  }
+}
+
 const getProductsByUserId = async (req, res, next) => {
   try {
     const { userId } = req.params;
-
+    console.log('get products by user id');
     const items = await Product.find({ shop_owner: userId });
 
     res.status(200).json({ 
@@ -113,4 +128,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProductsByUserId,
+  getAllProducts,
 };

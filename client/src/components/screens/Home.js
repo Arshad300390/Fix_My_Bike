@@ -79,7 +79,7 @@ const Home = () => {
         if (user && user.role) {
           setRole(user.role);
           if (user.role === 'customer') {
-            oilChange();
+           // oilChange();
             getAllServices();
           }
         } else {

@@ -81,7 +81,7 @@ const ShopsDashboard = ({ route }) => {
               >
                 <View style={styles.textContainer}>
                   <Text style={styles.userName}>
-                    {item.full_name} Auto Spare Parts Shop
+                    {item.full_name}  {role === "seller" ? "Product Shops" : "Mechanic Shops"}
                   </Text>
                   <Text style={styles.userEmail}>{item.email}</Text>
 

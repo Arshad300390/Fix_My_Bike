@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
@@ -82,7 +83,7 @@ const ServiceDashboard = () => {
       }
     ]);
   };
-  
+
 
   return (
     <View style={styles.screen}>

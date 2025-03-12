@@ -1,3 +1,5 @@
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable quotes */
 import React from "react";
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import { COLORS, FONTS } from "../../../constants/Constants";
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
   serviceName: {
     fontSize: width * 0.045,
     fontFamily: FONTS.bold,
-    color: COLORS.dark,
+    color: 'red',
   },
   serviceDetail: {
     fontSize: width * 0.04,

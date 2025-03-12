@@ -29,7 +29,7 @@ import EditService from './src/components/screens/extraScreens/MechanicScreens/E
 import ShopsDashboard from './src/components/screens/extraScreens/CustomerScreen/ShopsDashboard';
 import ShopItemScreen from './src/components/screens/extraScreens/CustomerScreen/ShopItemScreen';
 import NotificationsManager from './src/components/screens/extraScreens/NotificationsScreen/NotificationsManager';
-
+import ItemsDashboard from './src/components/screens/extraScreens/CustomerScreen/ItemsDashboard';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -176,7 +176,7 @@ const App = () => {
         </Stack.Screen>
         <Stack.Screen name="Shops">
           {props => (
-            <ShopsDashboard {...props} setStatusBarColor={setStatusBarColor} />
+            <ItemsDashboard {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
         <Stack.Screen name="Notifications">

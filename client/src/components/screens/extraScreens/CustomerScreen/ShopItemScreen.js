@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get("window");
 import { useRoute } from "@react-navigation/native";
 import ProductCard from "./ProductCard";
-import ServiceCard from "./ServiceCard";
+import ServiceCard from "./ItemCard";
 import StarRating,{ StarRatingDisplay } from 'react-native-star-rating-widget';
 import Feather from 'react-native-vector-icons/Feather';
 import { Tooltip } from "react-native-elements";

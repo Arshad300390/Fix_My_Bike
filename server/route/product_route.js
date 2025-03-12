@@ -12,6 +12,8 @@ router.get(
 );
 router.get("/get-products/:userId", authMiddleware, productController.getProductsByUserId);
 
+router.get("/all/products", authMiddleware, productController.getAllProducts);
+
 router.patch("/update-product/:id", authMiddleware, productController.updateProduct);
 
 router.delete("/remove-product/:id", authMiddleware, productController.deleteProduct);

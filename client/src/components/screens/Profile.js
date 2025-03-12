@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState, useEffect } from 'react';
 
@@ -734,7 +735,7 @@ const Profile = () => {
               <View style={styles.rightContainer}>
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Shops',  {role: 'seller'})}>
+                    onPress={() => navigation.navigate('Shops',  {role: 'seller', allShop: null})}>
                     <Feather
                       name="chevron-right"
                       size={30}
