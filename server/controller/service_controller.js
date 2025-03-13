@@ -107,7 +107,6 @@ exports.getServicesByUserId = async (req, res, next) => {
       },
     ]);
 
-    console.log("Final Aggregation Output:", services);
     res.status(200).json({ 
       count: services.length,
       Items: services

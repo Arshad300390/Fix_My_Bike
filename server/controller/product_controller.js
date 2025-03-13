@@ -41,35 +41,95 @@ const getshopProducts = async (req, res, next) => {
 
  const getAllProducts = async (req, res, next) => {
   try {
-    const startTime = new Date();
-    console.log('get all products' , startTime.toLocaleString());
+    
     const items = await Product.find();
 
     res.status(200).json({ 
       count: items.length,
       Items: items 
     });
-    console.log(items);
   } catch (err) {
     return next(new HttpError("Error fetching item !", 500));
   }
 }
 
+// const getProductsByUserId = async (req, res, next) => {
+//   try {
+//     const { userId } = req.params;
+//     console.log('get products by user id');
+//     const items = await Product.find({ shop_owner: userId });
+
+//     res.status(200).json({ 
+//       count: items.length,
+//       Items: items 
+//     });
+
+//   } catch (err) {
+//     return next(new HttpError("Error fetching items product!", 500));
+//   }
+// };
+
 const getProductsByUserId = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    console.log('get products by user id');
-    const items = await Product.find({ shop_owner: userId });
+    const userObjectId = new mongoose.Types.ObjectId(userId); // Convert userId to ObjectId
+
+    const products = await Product.aggregate([
+      {
+        $match: { shop_owner: userObjectId } // Filter by shop_owner
+      },
+      {
+        $lookup: {
+          from: "users", // Join with users collection
+          localField: "shop_owner",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "ratings", // Join with ratings collection
+          localField: "shop_owner",
+          foreignField: "shop_owner", // Match ratings by product_id
+          as: "ratings",
+        },
+      },
+      {
+        $addFields: {
+          shop_owner: "$shop_owner", // Keep shop_owner
+          full_name: { $arrayElemAt: ["$userDetails.full_name", 0] }, // Extract user full name
+          email: { $arrayElemAt: ["$userDetails.email", 0] },
+          rating: { $avg: "$ratings.rating" } // Calculate average rating
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          shop_owner: 1,
+          product_name: 1,
+          product_description: 1,
+          product_price: 1,
+          product_category: 1,
+          full_name: 1,
+          email: 1,
+          rating: 1
+        },
+      },
+    ]);
 
     res.status(200).json({ 
-      count: items.length,
-      Items: items 
+      count: products.length,
+      Items: products
     });
-
   } catch (err) {
-    return next(new HttpError("Error fetching items product!", 500));
+    console.error("Error fetching products with a rating:", err);
+    return next(new HttpError("Error fetching products!", 500));
   }
 };
+
+
+
+
 
 
 const updateProduct = async (req, res, next) => {

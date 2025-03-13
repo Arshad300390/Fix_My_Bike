@@ -1,3 +1,6 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable quotes */
+/* eslint-disable no-trailing-spaces */
 import React from "react";
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from "react-native";
 import { COLORS, FONTS } from "../../../constants/Constants";
@@ -22,6 +25,7 @@ const ProductCard = ({ product, onEdit, onDelete}) => {
         <Text style={styles.productName}>{product.product_name}</Text>
         <Text style={styles.productPrice}>Price: ${product.product_price}</Text>
         <Text style={styles.productCompany}>Company: {product.product_company_name}</Text>
+        <Text style={styles.productDescription}>Description: {product.product_description}</Text>
         <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.editButton} onPress={() => onEdit(product)}>
           <Text style={styles.buttonText}>Edit</Text>
@@ -40,7 +44,7 @@ const ProductCard = ({ product, onEdit, onDelete}) => {
 const styles = StyleSheet.create({
   card: {
     flexDirection: "row", 
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.lightDark,
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
@@ -51,18 +55,20 @@ const styles = StyleSheet.create({
     alignItems: "center", 
   },
   productImage: {
-    width: width * 0.25, 
-    height: width * 0.25, 
+    width: width * 0.35, 
+    height: width * 0.35, 
     borderRadius: 8,
     marginRight: 15, 
   },
   productDetails: {
     flex: 1, 
+    width: "100%",
+    alignItems: "center",
   },
   productName: {
     fontSize: width * 0.045,
     fontFamily: FONTS.bold,
-    color: COLORS.dark,
+    color: COLORS.white,
   },
   productPrice: {
     fontSize: width * 0.04,
@@ -72,7 +78,12 @@ const styles = StyleSheet.create({
   productCompany: {
     fontSize: width * 0.04,
     fontFamily: FONTS.medium,
-    color: COLORS.bold,
+    color: COLORS.white,
+  },
+  productDescription: {
+    fontSize: width * 0.03,
+    fontFamily: FONTS.regular,
+    color: COLORS.warning,
   },
   buttonContainer: {
     flexDirection: "row",

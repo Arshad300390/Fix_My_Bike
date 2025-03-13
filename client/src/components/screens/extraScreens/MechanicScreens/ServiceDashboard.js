@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /* eslint-disable comma-dangle */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useCallback } from 'react';
@@ -100,16 +101,42 @@ const ServiceDashboard = () => {
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.primary} />
       ) : (
+        // <FlatList
+        //   data={services}
+        //   keyExtractor={(item) => item._id.toString()}
+        //   renderItem={({ item }) =>
+        //     <ServiceCard service={item}
+        //       
+        //     />}
+        //   contentContainerStyle={styles.listContainer}
+        //   style={styles.flatList}
+        // />
         <FlatList
-          data={services}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) =>
-            <ServiceCard service={item}
-              onEdit={handleEdit} onDelete={handleDelete}
-            />}
-          contentContainerStyle={styles.listContainer}
-          style={styles.flatList}
-        />
+                                data={services}
+                                keyExtractor={(item) => item._id.toString()}
+                                renderItem={({ item }) => {
+                                  // Declare imageUrl inside the function block
+                                  let imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg"; // Default image
+
+                                  // Assign custom images based on service_name
+                                  if (item.service_name.toLowerCase().includes("oil change")) {
+                                    imageUrl = "https://media.istockphoto.com/id/1174788025/photo/the-process-of-pouring-new-oil-into-the-motorcycle-engine.jpg?s=612x612&w=0&k=20&c=IQHgBZ4SdLc6urAyfY-srbXaXeTxBZpWvbEUMPlj2_U="; // Replace with your oil change image URL
+                                  } else if (item.service_name.toLowerCase().includes("tyre change")) {
+                                    imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2dC1oSGcqSdmccoXHsSbh_0Rs1qoC4vKwY3K6r9uP5zVR7qQJsEOpihapFg6OXqxD9jc&usqp=CAU"; // Replace with your tyre change image URL
+                                  } else if (item.service_name.toLowerCase().includes("head light change")) {
+                                    imageUrl = "https://www.shutterstock.com/shutterstock/photos/329460197/display_1500/stock-photo-headlight-and-wheel-of-an-old-motorcycle-329460197.jpg"; // Replace with your headlight change image URL
+                                  }
+
+                                  return (
+                                    <ServiceCard
+                                    service = {item}
+                                      service_image={imageUrl}
+                                      onEdit={handleEdit} onDelete={handleDelete}
+                                    />
+                                  );
+                                }}
+                                contentContainerStyle={styles.serviceContainer}
+                              />
       )}
     </View>
   );
@@ -127,12 +154,13 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold,
     color: COLORS.primary,
     textAlign: 'center',
-    marginVertical: 5,
+    marginVertical: 1,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 10,
 
   },
   serviceText: {

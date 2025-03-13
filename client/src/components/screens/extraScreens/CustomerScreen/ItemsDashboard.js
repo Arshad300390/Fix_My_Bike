@@ -103,9 +103,9 @@ const ItemsDashboard = () => {
         }
     };
 
-const getStarColor = (rating) => {
-    if (rating <= 2) return COLORS.weakColor; // Red for weak ratings
-    if (rating <= 4) return COLORS.averageColor; // Yellow for average ratings
+const getStarColor = (r) => {
+    if (r <= 2) return COLORS.weakColor; // Red for weak ratings
+    if (r <= 4) return COLORS.averageColor; // Yellow for average ratings
     return COLORS.strongColor; // Green for strong ratings
   };
     useFocusEffect(
@@ -123,7 +123,7 @@ const getStarColor = (rating) => {
                 {allShop && customServices.length > 0 && (
                     <View style={styles.textContainer}>
                         <Text style={styles.userName}>
-                            {customServices[0]?.full_name} {role === "seller" ? "Product Shops" : "Mechanic Shops"}
+                            {customServices[0]?.full_name} {role === "seller" ? "Auto Spare Parts Shops" : "Auto Mechanic Shops"}
                         </Text>
                         <Text style={styles.userEmail}>{customServices[0]?.email}</Text>
 

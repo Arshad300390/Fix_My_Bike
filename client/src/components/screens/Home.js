@@ -42,6 +42,7 @@ const Home = () => {
   const colorScheme = useColorScheme();
   const [notSchedule, setNotSchedule] = useState(0);
   const [customServices, setCustomServices] = useState([]);
+  const [rating, setRating] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -63,7 +64,10 @@ const Home = () => {
         );
 
         const user = response.data.User;
-
+        const ratingData = user.rating[0].rating;
+        if (ratingData) {
+          setRating(parseFloat(user.rating[0].rating).toFixed(2));
+        }
         if (user && user.full_name) {
           setName(user.full_name);
         } else {
@@ -94,39 +98,7 @@ const Home = () => {
     fetchUserData();
   }, [navigation]);
 
-  const oilChange = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
 
-      if (!token) {
-        console.log(token);
-        navigation.replace('Signin');
-        return;
-      }
-
-      const response = await axios.get(
-        'http://10.0.2.2:5000/api/oil-change',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      const { Bookings, message } = response.data;
-
-      if (Bookings.length > 0) {
-        // Extract bike name and model from each booking
-        const bikeDetails = Bookings.map(
-          (booking) => `Your bike ${booking.bikeName} (${booking.bikeNumber}) oil change was 60 days earlier.`
-        ).join("\n");
-
-        alert(bikeDetails);
-      }
-    } catch (error) {
-      console.log('Error fetching oil change data:', error);
-    }
-  };
 
   const getAllServices = async () => {
     try {
@@ -363,7 +335,7 @@ const Home = () => {
                 styles.description,
                 { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
-              ({role})
+              ({role})  {rating && (role === 'mechanic' || role === 'seller') ? <Text style={styles.ratingText}>Rating: {rating}</Text> : null}
             </Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('Profile', { role })}>
@@ -556,7 +528,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold,
     marginTop: width * 0.01,
   },
-
+  ratingText: {
+    color: COLORS.warning,
+  },
   rightContainer: {
     alignItems: 'center',
     justifyContent: 'center',

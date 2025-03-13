@@ -1,4 +1,5 @@
 const User = require("../model/user_model");
+const Rating = require("../model/rating_model");
 const Bike = require("../model/bike_model");
 const HttpError = require("../model/http_error");
 const userProfileImageUpload = require("../middleware/upload_user_profile_image");
@@ -89,12 +90,17 @@ const getUsers = async (req, res, next) => {
     if (!user) {
       return next(new HttpError("User Not Found!", 404));
     }
-
+    const userRatings = await Rating.find({ shop_owner: userId }).select("rating");
+    let ratingInfo = "No rating yet"
+    if (userRatings.length) {
+       ratingInfo = userRatings;
+    }
+    console.log(ratingInfo);
     const users = await User.find({
       role: userType === "customer" ? "customer" :"mechanic",
     }).select("full_name email phone_number role");
 
-    res.json({ User: { ...user.toObject(), users } });
+    res.json({ User: { ...user.toObject(), rating: ratingInfo, users } });
   } catch (err) {
     return next(new HttpError("Error Getting Users!", 500));
   }

@@ -1,21 +1,29 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable quotes */
 import React, { useState, useEffect } from "react";
-import { 
-  View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, FlatList 
+import {
+  View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, FlatList, Dimensions,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import PushNotification from "react-native-push-notification";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../../constants/Constants';
+import { jwtDecode } from "jwt-decode";
+import base64 from 'base-64';
+import utf8 from 'utf8';
+
+const { width, height } = Dimensions.get('window');
 
 const NotificationsManager = () => {
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
-  const [title, setTitle] = useState(""); 
-  const [message, setMessage] = useState(""); 
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [notifications, setNotifications] = useState([]); // Store all notifications
+  const [userId, setUserId] = useState(null);
+
 
   // Show and Hide Date Picker
   const showDatePicker = () => setDatePickerVisibility(true);
@@ -53,9 +61,32 @@ const NotificationsManager = () => {
     (created) => console.log(`Notification channel created: ${created}`)
   );
 
+  const getUserId = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        const encodedPayload = token.split(".")[1]; // JWT payload
+        const decodedBytes = base64.decode(encodedPayload);
+        const decodedText = utf8.decode(decodedBytes);
+        const decodedObject = JSON.parse(decodedText);
+        const id = decodedObject?.user?.id;
+        setUserId(id);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  };
+
   const saveNotificationsToStorage = async (newNotifications) => {
     try {
-      await AsyncStorage.setItem("notifications", JSON.stringify(newNotifications));
+      if (!userId) {
+        console.error("User ID is missing!");
+        return;
+      }
+
+      const userNotificationsKey = `notifications_${userId}`;
+      await AsyncStorage.setItem(userNotificationsKey, JSON.stringify(newNotifications));
+      console.log(`Notifications saved for user: ${userId}`);
     } catch (error) {
       console.error("Error saving notifications:", error);
     }
@@ -63,7 +94,14 @@ const NotificationsManager = () => {
 
   const loadNotificationsFromStorage = async () => {
     try {
-      const storedNotifications = await AsyncStorage.getItem("notifications");
+
+      if (!userId) {
+        console.error("User ID is missing!");
+        return [];
+      }
+      const notiKey = `notifications_${userId}`;
+
+      const storedNotifications = await AsyncStorage.getItem(notiKey);
       if (storedNotifications) {
         setNotifications(JSON.parse(storedNotifications));
       }
@@ -73,6 +111,7 @@ const NotificationsManager = () => {
   };
 
   useEffect(() => {
+    getUserId();
     loadNotificationsFromStorage();
   }, []);
 
@@ -95,7 +134,7 @@ const NotificationsManager = () => {
       title: heading,
       message: details,
       date,
-      time
+      time,
     };
 
     const updatedNotifications = [...notifications, newNotification];
@@ -135,55 +174,59 @@ const NotificationsManager = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Schedule a Notification:</Text>
+      <View style={styles.formStyle}>
+        <Text style={styles.title}>Schedule a Notification:</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter notification title"
-        value={title}
-        onChangeText={setTitle}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Enter notification message"
-        value={message}
-        onChangeText={setMessage}
-      />
-
-      <View style={styles.dateContainer}>
-        <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
-          <Text style={styles.buttonText}>Select Date</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.selectedDate}>{date ? date : "No date selected"}</Text>
-
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter notification title"
+          placeholderTextColor={COLORS.white}
+          value={title}
+          onChangeText={setTitle}
         />
-      </View>
 
-      <View style={styles.dateContainer}>
-        <TouchableOpacity onPress={showTimePicker} style={styles.dateButton}>
-          <Text style={styles.buttonText}>Select Time</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.selectedDate}>{time ? time : "No time selected"}</Text>
-
-        <DateTimePickerModal
-          isVisible={isTimePickerVisible}
-          mode="time"
-          onConfirm={handleTimeConfirm}
-          onCancel={hideTimePicker}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter notification message"
+          placeholderTextColor={COLORS.white}
+          value={message}
+          onChangeText={setMessage}
         />
-      </View>
 
-      <TouchableOpacity onPress={handleSetNotification} style={[styles.dateButton, styles.setNotificationButton]}>
-        <Text style={styles.buttonText}>Set Notification</Text>
-      </TouchableOpacity>
+        <View style={styles.dateContainer}>
+          <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
+            <Text style={styles.buttonText}>Select Date</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.selectedDate}>{date ? date : "No date selected"}</Text>
+
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
+        </View>
+
+        <View style={styles.dateContainer}>
+          <TouchableOpacity onPress={showTimePicker} style={styles.dateButton}>
+            <Text style={styles.buttonText}>Select Time</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.selectedDate}>{time ? time : "No time selected"}</Text>
+
+          <DateTimePickerModal
+            isVisible={isTimePickerVisible}
+            mode="time"
+            onConfirm={handleTimeConfirm}
+            onCancel={hideTimePicker}
+          />
+        </View>
+
+        <TouchableOpacity onPress={handleSetNotification} style={[styles.dateButton, styles.setNotificationButton]}>
+          <Text style={styles.buttonText}>Set Notification</Text>
+        </TouchableOpacity>
+      </View>
 
       <Text style={styles.sectionTitle}>My Notifications</Text>
       <FlatList
@@ -212,7 +255,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flex: 1,
   },
+  formStyle: {
+    justifyContent: 'center',
+    backgroundColor: COLORS.lightDark,
+    padding: width * 0.05,
+    marginBottom: 20,
+    borderRadius: width * 0.02,
+  },
   title: {
+    textAlign: "center",
+    color: COLORS.white,
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
@@ -228,6 +280,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
+    color: COLORS.dark,
+    backgroundColor: COLORS.white,
   },
   dateContainer: {
     flexDirection: "row",
@@ -235,13 +289,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dateButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     padding: 10,
     borderRadius: 5,
   },
   buttonText: {
+    textAlign: "center",
     color: COLORS.white,
     fontWeight: "bold",
+  },
+  selectedDate: {
+    color: COLORS.white,
   },
   setNotificationButton: {
     marginVertical: 10,

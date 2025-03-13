@@ -1,3 +1,6 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable quotes */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useCallback } from "react";
 import { View, FlatList, Text, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 10,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.white,
   },
   header: {
     fontSize: width * 0.06,
