@@ -30,6 +30,10 @@ import ShopsDashboard from './src/components/screens/extraScreens/CustomerScreen
 import ShopItemScreen from './src/components/screens/extraScreens/CustomerScreen/ShopItemScreen';
 import NotificationsManager from './src/components/screens/extraScreens/NotificationsScreen/NotificationsManager';
 import ItemsDashboard from './src/components/screens/extraScreens/CustomerScreen/ItemsDashboard';
+import CartManager from './src/components/screens/extraScreens/CartScreen/CartManager';
+import Checkout from './src/components/screens/extraScreens/CheckoutScreen/Checkout';
+
+
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -182,6 +186,16 @@ const App = () => {
         <Stack.Screen name="Notifications">
           {props => (
             <NotificationsManager {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Cart">
+          {props => (
+            <CartManager {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Checkout">
+          {props => (
+            <Checkout {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

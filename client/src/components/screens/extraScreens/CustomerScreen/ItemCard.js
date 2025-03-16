@@ -1,16 +1,36 @@
+/* eslint-disable no-trailing-spaces */
 /* eslint-disable no-unused-vars */
 /* eslint-disable quotes */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView, Modal, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const { width, height } = Dimensions.get('window');
 
-const ItemCard = ({ service, role, setAllShop }) => {
+const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
+  console.log(service);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+  
+ 
 
-
+  // const getUserId = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem("token");
+  //     if (token) {
+  //       const encodedPayload = token.split(".")[1]; // JWT payload
+  //       const decodedBytes = base64.decode(encodedPayload);
+  //       const decodedText = utf8.decode(decodedBytes);
+  //       const decodedObject = JSON.parse(decodedText);
+  //       const id = decodedObject?.user?.id;
+  //       setUserId(id);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error decoding token:", error);
+  //   }
+  // };
 
   const handleBooking = () => {
     navigation.navigate('Service_Booking', {
@@ -21,6 +41,10 @@ const ItemCard = ({ service, role, setAllShop }) => {
       service_id: service.service_id,
     });
   };
+  
+
+
+
   let imageUrl = 'https://';
   if (role === 'mechanic') {
     imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg";
@@ -95,6 +119,7 @@ const ItemCard = ({ service, role, setAllShop }) => {
                     if (role === "mechanic") {
                       handleBooking();
                     } else if (role === "seller") {
+                      handleAddToCart(userId, service,);
                       console.log("I am click");
                     }
                   }}
