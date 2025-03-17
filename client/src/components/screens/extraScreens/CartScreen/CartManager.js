@@ -35,12 +35,14 @@ const CartManager = () => {
     useEffect(() => {
         fetchUserIdAndCart();
     }, []);
+
+
     const fetchUserIdAndCart = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) return console.log('❌ No token found');
     
-            const decodedObject = JSON.parse(utf8.decode(base64.decode(token.split(".")[1])));
+            const decodedObject = JSON.parse(utf8.decode(base64.decode(token.split(".")[1]))); 
             const id = decodedObject?.user?.id;
             if (!id) return console.log('❌ No user ID found in token');
     
@@ -57,25 +59,31 @@ const CartManager = () => {
             const parsedCart = JSON.parse(cartData);
             console.log("✅ Parsed Cart:", parsedCart);
     
-            // Correctly extract products from each shopOwnerId
-            const cartArray = Object.entries(parsedCart).flatMap(([shopOwnerId, shopData]) =>
-                Object.entries(shopData.products).map(([productId, product]) => ({
-                    shopOwnerId,
-                    productId,
-                    product_name: product.product_name || 'Unnamed Product',
-                    product_price: product.product_price || 0,
-                    quantity: product.quantity || 1,
-                    product_image: product.product_image || '',
-                }))
-            );
+            // ✅ Extract products correctly, ensuring trackingId is included
+            const cartArray = Object.entries(parsedCart).flatMap(([shopOwnerId, shopData]) => {
+                return Object.entries(shopData.products).map(([productId, product]) => {
+                    return {
+                        shopOwnerId,
+                        productId,
+                        product_name: product.product_name || "Unnamed Product",
+                        product_price: product.product_price || 0,
+                        quantity: product.quantity || 1,
+                        product_image: product.product_image || "",
+                        trackingId: shopData.trackingId || "", // Use the trackingId from the shopData
+                    };
+                });
+            });
     
+            console.log('cartArray with trackingId:', cartArray);
             setCartItems(cartArray);
-            updateCartSummary(cartArray);
+            updateCartSummary(cartArray); // Update summary based on new cart array
+    
         } catch (error) {
             console.error("❌ Error fetching cart items:", error);
         }
     };
     
+
 
 
 
@@ -146,28 +154,32 @@ const CartManager = () => {
                     <Text style={styles.countText}>{cartCount}</Text>
                 </View>
             </View>
-    
+
             {/* Cart Items */}
             {cartItems.length > 0 ? (
                 <FlatList
-                    data={Object.entries(cartItems.reduce((acc, item) => {
-                        acc[item.shopOwnerId] = acc[item.shopOwnerId] || { total: 0, items: [] };
-                        acc[item.shopOwnerId].items.push(item);
-                        acc[item.shopOwnerId].total += item.quantity * item.product_price;
-                        return acc;
-                    }, {}))}
+                data={Object.entries(cartItems.reduce((acc, item) => {
+                    acc[item.shopOwnerId] = acc[item.shopOwnerId] || { 
+                        total: 0, 
+                        items: [], 
+                        trackingId: item.trackingId // ✅ Include trackingId
+                    };
+                    acc[item.shopOwnerId].items.push(item);
+                    acc[item.shopOwnerId].total += item.quantity * item.product_price;
+                    return acc;
+                }, {}))}
                     keyExtractor={([shopOwnerId]) => shopOwnerId}
-                    renderItem={({ item: [shopOwnerId, { total, items }] }) => (
+                    renderItem={({ item: [shopOwnerId, { total, items, trackingId }] }) => (
                         <View style={styles.shopContainer}>
-                            <Text style={styles.shopTitle}>Shop Owner: {shopOwnerId}</Text>
-                            
+                            {/* <Text style={styles.shopTitle}>Shop Owner: {shopOwnerId}</Text> */}
+                            <Text style={{color:'black'}}>Tracking ID: {trackingId}</Text>  
                             {items.map(item => (
                                 <View key={item.productId} style={styles.cartItem}>
                                     <View style={styles.itemDetails}>
                                         <Text style={styles.itemName}>{item.product_name}</Text>
                                         <Text style={styles.itemPrice}>Price: ${item.quantity * item.product_price}</Text>
                                     </View>
-    
+
                                     {/* Quantity Controls */}
                                     <View style={styles.quantityContainer}>
                                         <TouchableOpacity
@@ -190,7 +202,7 @@ const CartManager = () => {
                                             <MaterialCommunityIcons name="plus" size={20} color="white" />
                                         </TouchableOpacity>
                                     </View>
-    
+
                                     {/* Remove Item */}
                                     <TouchableOpacity
                                         onPress={() => removeItem(item.shopOwnerId, item.productId)}
@@ -199,13 +211,13 @@ const CartManager = () => {
                                     </TouchableOpacity>
                                 </View>
                             ))}
-    
+
                             {/* Shop Total */}
                             <View style={styles.shopTotalContainer}>
                                 <Text style={styles.shopTotalText}>Total for this Shop: ${total.toFixed(2)}</Text>
                                 <Pressable
                                     style={styles.checkoutButton}
-                                    onPress={() => navigation.navigate('Checkout', { shopOwnerId, items, total })}>
+                                    onPress={() => navigation.navigate('Checkout', { shopOwnerId, userId, trackingId, items, total })}>
                                     <Text style={styles.checkoutButtonText}>Checkout This Shop</Text>
                                 </Pressable>
                             </View>
@@ -215,7 +227,7 @@ const CartManager = () => {
             ) : (
                 <Text style={styles.noItemsText}>No items in cart</Text>
             )}
-    
+
             {/* Bottom Actions */}
             <View style={styles.bottomContainer}>
                 <Pressable onPress={() => navigation.navigate('Home')}>
@@ -224,13 +236,13 @@ const CartManager = () => {
                 <Pressable onPress={emptyCart}>
                     <Text style={styles.emptyCartButton}>Empty Cart</Text>
                 </Pressable>
-                <Pressable onPress={() => navigation.navigate('Checkout')}>
+                {/* <Pressable onPress={() => navigation.navigate('Checkout')}>
                     <Text style={styles.emptyCartButton}>Go to Checkout</Text>
-                </Pressable>
+                </Pressable> */}
             </View>
         </View>
     );
-    
+
 };
 export default CartManager;
 
@@ -329,7 +341,7 @@ const styles = StyleSheet.create({
         width: 40,  // Ensure enough space for the icon
         height: 40,  // Ensure enough space for the icon
     },
-    
+
     shopTotalContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -356,6 +368,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 5,
         justifyContent: 'space-around',
+        borderTopEndRadius: 10,
+        borderTopStartRadius: 10
     },
     emptyCartButton: {
         color: COLORS.white,

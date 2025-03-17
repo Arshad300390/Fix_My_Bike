@@ -112,27 +112,37 @@ const ItemsDashboard = () => {
             console.log('Fetching cart count for user:', id);
             
             let cart = await AsyncStorage.getItem(`cart_${id}`);
+            console.log('🛒 Raw Cart Data:', cart);
+    
             cart = cart ? JSON.parse(cart) : {};
     
             let count = 0;
     
-            // Loop through each shop in the cart
+            // Loop through each shopOwner in the cart
             Object.values(cart).forEach(shop => {
-                if (shop.products) {
-                    Object.values(shop.products).forEach(product => {
-                        count += product.quantity;
+                // Ensure we're accessing the 'products' field correctly
+                const products = shop.products; // Access products from the shop object
+                if (products) {
+                    // Now loop through the products and count their quantities
+                    Object.values(products).forEach(product => {
+                        console.log('📦 Counting Product:', product);
+                        count += product.quantity || 0; // Ensure quantity is a valid number
                     });
                 }
             });
     
             console.log('🔄 Updated Cart Count:', count);
-            setCartCount(count);
+            setCartCount(count); // Ensure `setCartCount` is updating state correctly
         } catch (error) {
             console.error("❌ Error updating cart count:", error);
         }
     };
     
+    
+    
+    
     const handleAddToCart = async (service) => {
+        console.log('service',service);
         try {
             if (!userId) return;
     
@@ -142,21 +152,28 @@ const ItemsDashboard = () => {
             const shopOwnerId = service.shop_owner;
             const productId = service._id;
     
-            // If shopOwner doesn't exist in cart, initialize it and set tracking ID
+            // ✅ Ensure shopOwner exists in cart
             if (!cart[shopOwnerId]) {
                 const timestamp = new Date().toISOString(); // Generate datetime
                 const trackingId = `${timestamp}:${userId}:${shopOwnerId}`; // Create tracking ID
-    
+                console.log('shop owner', shopOwnerId, 'tracking id', trackingId);
                 cart[shopOwnerId] = {
                     trackingId, // Set tracking ID only once
-                    products: {}, // Create products container
+                    products: {}, // Initialize products container
                 };
             }
     
-            // If product already exists, increase quantity; otherwise, add new product
+            // ✅ Ensure products object exists before accessing it
+            if (!cart[shopOwnerId].products) {
+                cart[shopOwnerId].products = {}; 
+            }
+    
+            // ✅ Add or update product in the cart
             if (cart[shopOwnerId].products[productId]) {
+                console.log(`Updating quantity for product ${productId}`);
                 cart[shopOwnerId].products[productId].quantity += 1;
             } else {
+                console.log(`Adding new product ${productId} to cart`);
                 cart[shopOwnerId].products[productId] = {
                     product_image: `http://10.0.2.2:8081/src/assets/shop/${encodeURIComponent(service.product_name)}.jpg`,
                     product_name: service.product_name,
@@ -166,6 +183,7 @@ const ItemsDashboard = () => {
                 };
             }
     
+            // Save updated cart
             await AsyncStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
     
             // Fetch updated cart count immediately after adding an item
@@ -176,6 +194,7 @@ const ItemsDashboard = () => {
             console.error("❌ Error adding product to cart:", error);
         }
     };
+    
     
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

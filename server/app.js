@@ -8,6 +8,7 @@ const bookingRoutes = require('./route/booking_route');
 const productRoutes = require('./route/product_route');
 const ratingRoutes = require('./route/rating_route');
 const serviceRoutes = require("./route/service_route");
+const checkoutRoutes = require("./route/checkout_route");
 const googleSigninRoutes = require("./route/google_signin_route");
 
 require("dotenv").config();
@@ -36,6 +37,7 @@ app.use("/api", bookingRoutes);
 app.use("/api", productRoutes);
 app.use("/api", serviceRoutes);
 app.use("/api", ratingRoutes);
+app.use("/api", checkoutRoutes);
 
 mongoose
   .connect(process.env.MONGODB_URI)
