@@ -28,20 +28,26 @@ const ServiceDashboard = () => {
         navigation.replace('Signin');
         return;
       }
-
+  
       const response = await axios.get('http://10.0.2.2:5000/api/shop/services', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setServices(response.data.Services);
+  
+      const servicesData = response.data.Services;
+  
+      if (!servicesData || servicesData.length === 0) {
+        //Alert.alert('No Services', 'No services available yet.');
+        setServices([]); // Ensure it's an empty array
+      } else {
+        setServices(servicesData);
+      }
     } catch (error) {
       console.error('Error fetching services:', error);
-      Alert.alert('Error', 'Failed to fetch services. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchServices();
@@ -89,7 +95,7 @@ const ServiceDashboard = () => {
   return (
     <View style={styles.screen}>
       <Text style={styles.header}>Service Dashboard</Text>
-
+  
       {/* Header Row with Add Button */}
       <View style={styles.headerRow}>
         <Text style={styles.serviceText}>Services</Text>
@@ -97,49 +103,41 @@ const ServiceDashboard = () => {
           <Text style={styles.addServiceText}> Add Service</Text>
         </TouchableOpacity>
       </View>
-
+  
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.primary} />
+      ) : services.length === 0 ? (
+        <Text style={styles.noServiceText}>No services yet.</Text> // Display message when no services
       ) : (
-        // <FlatList
-        //   data={services}
-        //   keyExtractor={(item) => item._id.toString()}
-        //   renderItem={({ item }) =>
-        //     <ServiceCard service={item}
-        //       
-        //     />}
-        //   contentContainerStyle={styles.listContainer}
-        //   style={styles.flatList}
-        // />
         <FlatList
-                                data={services}
-                                keyExtractor={(item) => item._id.toString()}
-                                renderItem={({ item }) => {
-                                  // Declare imageUrl inside the function block
-                                  let imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg"; // Default image
-
-                                  // Assign custom images based on service_name
-                                  if (item.service_name.toLowerCase().includes("oil change")) {
-                                    imageUrl = "https://media.istockphoto.com/id/1174788025/photo/the-process-of-pouring-new-oil-into-the-motorcycle-engine.jpg?s=612x612&w=0&k=20&c=IQHgBZ4SdLc6urAyfY-srbXaXeTxBZpWvbEUMPlj2_U="; // Replace with your oil change image URL
-                                  } else if (item.service_name.toLowerCase().includes("tyre change")) {
-                                    imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2dC1oSGcqSdmccoXHsSbh_0Rs1qoC4vKwY3K6r9uP5zVR7qQJsEOpihapFg6OXqxD9jc&usqp=CAU"; // Replace with your tyre change image URL
-                                  } else if (item.service_name.toLowerCase().includes("head light change")) {
-                                    imageUrl = "https://www.shutterstock.com/shutterstock/photos/329460197/display_1500/stock-photo-headlight-and-wheel-of-an-old-motorcycle-329460197.jpg"; // Replace with your headlight change image URL
-                                  }
-
-                                  return (
-                                    <ServiceCard
-                                    service = {item}
-                                      service_image={imageUrl}
-                                      onEdit={handleEdit} onDelete={handleDelete}
-                                    />
-                                  );
-                                }}
-                                contentContainerStyle={styles.serviceContainer}
-                              />
+          data={services}
+          keyExtractor={(item) => item._id.toString()}
+          renderItem={({ item }) => {
+            let imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg"; // Default image
+  
+            if (item.service_name.toLowerCase().includes("oil change")) {
+              imageUrl = "https://media.istockphoto.com/id/1174788025/photo/the-process-of-pouring-new-oil-into-the-motorcycle-engine.jpg?s=612x612&w=0&k=20&c=IQHgBZ4SdLc6urAyfY-srbXaXeTxBZpWvbEUMPlj2_U=";
+            } else if (item.service_name.toLowerCase().includes("tyre change")) {
+              imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2dC1oSGcqSdmccoXHsSbh_0Rs1qoC4vKwY3K6r9uP5zVR7qQJsEOpihapFg6OXqxD9jc&usqp=CAU";
+            } else if (item.service_name.toLowerCase().includes("head light change")) {
+              imageUrl = "https://www.shutterstock.com/shutterstock/photos/329460197/display_1500/stock-photo-headlight-and-wheel-of-an-old-motorcycle-329460197.jpg";
+            }
+  
+            return (
+              <ServiceCard
+                service={item}
+                service_image={imageUrl}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            );
+          }}
+          contentContainerStyle={styles.serviceContainer}
+        />
       )}
     </View>
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -186,6 +184,12 @@ const styles = StyleSheet.create({
   flatList: {
     flex: 1,
   },
+  noServiceText: {
+    textAlign: 'center',
+    fontSize: 18,
+    color: 'gray',
+    marginTop: 20,
+  },  
 });
 
 export default ServiceDashboard;

@@ -34,7 +34,7 @@ router.get(
 );
 
 router.put(
-  "/to-schedule/:id/date",
+  "/to-schedule/:id",
   authMiddleware,
   bookingController.updateBookingShedule
 );

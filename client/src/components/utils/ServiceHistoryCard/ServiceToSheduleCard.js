@@ -8,8 +8,8 @@ const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status
   const toggleExpand = () => {
     setExpanded(!expanded);
   };
-  console.log('role', role);
-  console.log('dated', item.scheduleDate);
+  //console.log('role', role);
+  //console.log('dated', item.scheduleDate);
 
   return (
     <TouchableOpacity onPress={toggleExpand} style={styles.card}>
@@ -30,7 +30,7 @@ const ServiceToSheduleCard = ({ item, role, onShowInProgress, onComplete, status
         ScheduleDate: {item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : 'Not Scheduled Yet'}
       </Text>
 
-      {item.scheduleDate == null && (
+      {item.status === 'pending' && (
         <TouchableOpacity
           style={styles.showInProgressButton}
           onPress={() => onSchedule(item._id, 'completed')}

@@ -9,6 +9,7 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
     setExpanded(!expanded);
   };
 
+  //console.log(item.status);
   return (
     <TouchableOpacity onPress={toggleExpand} style={styles.card}>
       <Text style={styles.serviceName}>Service Name: {item.serviceName}</Text>
@@ -34,7 +35,7 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
       {role === 'mechanic' && item.scheduleDate && (
   <View style={styles.buttonContainer}>
     {/* Show "In Progress" button only if the status is "pending" */}
-    {item.status === 'pending' && (
+    {item.status === 'accepted' && (
       <TouchableOpacity
         style={styles.showInProgressButton}
         onPress={() => onShowInProgress(item._id, 'in progress')}
@@ -44,7 +45,7 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
     )}
 
     {/* Show "Complete" button only if the status is "pending" or "in progress" */}
-    {(item.status === 'pending' || item.status === 'in progress') && (
+    {(item.status === 'accepted' || item.status === 'in progress') && (
       <TouchableOpacity
         style={styles.completeButton}
         onPress={() => onComplete(item._id, 'completed')}

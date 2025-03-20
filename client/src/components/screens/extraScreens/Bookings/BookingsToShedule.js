@@ -43,10 +43,10 @@ const Bookings = () => {
                 const notScheduleRequest = response.data.Bookings;
                 setBookings(notScheduleRequest);
                 setLoading(false);
-                console.log('resp', response.data.Bookings);
-                console.log('get bookings', bookings);
+                //console.log('resp', response.data.Bookings);
+                //console.log('get bookings', bookings);
             } catch (error) {
-                console.error('Error fetching schedule requests:', error);
+                console.error('Error fetching- schedule requests:', error);
             }
         }
         fetchScheduleRequests();
@@ -65,12 +65,13 @@ const Bookings = () => {
             console.log('Date after one day:', formattedDate);
             const response = await axios({
                 method: 'PUT',
-                url: `http://10.0.2.2:5000/api/to-schedule/${id}/date`,
+                url: `http://10.0.2.2:5000/api/to-schedule/${id}`,
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
                 data: {
-                    date: formattedDate,
+                    status: 'accepted',
+                   // date: formattedDate,
                 },
             });
             navigation.replace('Main');

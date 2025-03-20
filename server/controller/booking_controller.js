@@ -80,14 +80,15 @@ const getAllUserBookings = async (req, res, next) => {
       $and: [
         {
           $or: [
-            { status: { $regex: /^pending$/i } },
-            { status: { $regex: /^in progress$/i } }
+            { status: { $regex: /^in progress$/i } }, 
+            { status: { $regex: /^accepted$/i } } // Also match "accepted"
           ]
         },
-        { scheduleDate: { $ne: null } }, // Ensure SheduleDate is not null
-        { mechanicId: req.user._id }
+        { scheduleDate: { $ne: null } }, // Ensure scheduleDate is not null
+        { mechanicId: req.user._id } // Match the mechanicId
       ]
     });
+    
     if (!bookings.length) {
       return next(new HttpError("No booking yet.", 404));
     }
@@ -106,10 +107,10 @@ const getUserBookings = async (req, res, next) => {
     const userId = req.userId;
 
     const bookings = await Booking.find({
-      userId, $or: [
-        { status: "pending" },
-        { status: "in progress" },]
+      userId,
+      status: "in progress",
     });
+    
 
     if (!bookings.length) {
       return next(new HttpError("No bookings found for this user.", 404));
@@ -120,12 +121,19 @@ const getUserBookings = async (req, res, next) => {
     return next(new HttpError("Error fetching bookings!", 500));
   }
 };
-
+//checked
 const getNotSheduleBookings = async (req, res, next) => {
   try {
     const userId = req.userId;
 
-    const bookings = await Booking.find({ scheduleDate: null });
+    const bookings = await Booking.find({
+      status: "pending",
+      $or: [
+        { mechanicId: req.user._id }, // Mechanic assigned to the user
+        { mechanicId: null } // No mechanic assigned
+      ]
+    });
+    
     res.status(200).json({
       count: bookings.length,
       Bookings: bookings, // Always send the array, even if it's empty
@@ -135,7 +143,7 @@ const getNotSheduleBookings = async (req, res, next) => {
   }
 };
 
-
+//checked
 const getUserBookingHistory = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -154,7 +162,7 @@ const getUserBookingHistory = async (req, res, next) => {
   }
 };
 
-
+//checked
 const getAllUserBookingHistory = async (req, res, next) => {
   try {
     const bookings = await Booking.find({
@@ -213,36 +221,36 @@ const updateBookingStatus = async (req, res) => {
 };
 //
 const updateBookingShedule = async (req, res) => {
-  const mechanicNumber = req.user.phone_number;
-  const mechanicName = req.user.full_name;
-  const mechanicId = req.user._id;
- const scheduleDate = new Date(req.body.date); 
   try {
-    const hh = await Booking.findByIdAndUpdate(
-      req.params.id,);
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    let updateFields = { status: req.body.status || "accepted" }; // Always update status
+
+    // Check if mechanic fields are empty
+    if (!booking.mechanicName || !booking.mechanicNumber || !booking.mechanicId) {
+      updateFields.mechanicName = req.user.full_name;
+      updateFields.mechanicNumber = req.user.phone_number;
+      updateFields.mechanicId = req.user._id;
+    }
+
+    // Update booking based on the determined fields
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
-      
-       {  
-          mechanicName: mechanicName ,
-          mechanicNumber: mechanicNumber,
-          mechanicId: mechanicId,
-          scheduleDate: scheduleDate,
-        },
-      
+      updateFields,
       { new: true }
     );
-    if (!updatedBooking)
-      return res.status(404).json({ message: "Booking not found" });
-    res
-      .status(200)
-      .json({ message: "Booking status updated", data: updatedBooking });
+
+    res.status(200).json({ message: "Booking updated successfully", data: updatedBooking });
+
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating booking", error: error.message });
+    res.status(500).json({ message: "Error updating booking", error: error.message });
   }
 };
+
 //
 
 

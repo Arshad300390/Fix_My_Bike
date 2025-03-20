@@ -140,7 +140,7 @@ const Home = () => {
           setNotSchedule(resData.count);
           setLoading(false);
         } catch (error) {
-          console.error('Error fetching schedule requests:', error);
+          console.error('Error -fetching schedule requests:', error);
         }
       }
     };
