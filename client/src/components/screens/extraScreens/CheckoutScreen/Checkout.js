@@ -4,7 +4,7 @@
 /* eslint-disable quotes */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable semi */
-import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, KeyboardAvoidingView, ScrollView, Keyboard, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, FONTS } from '../../../constants/Constants';
@@ -111,6 +111,14 @@ const Checkout = ({ route }) => {
 
     return (
         <>
+          <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"} 
+        style={{ flex: 1 }}
+    >
+         <ScrollView 
+            contentContainerStyle={{ flexGrow: 1 }} 
+            keyboardShouldPersistTaps="handled"
+        >
             <View style={styles.container}>
                 <View style={styles.textContainer}>
                     <Text style={styles.cartTitle}>Checkout Page</Text>
@@ -198,13 +206,14 @@ const Checkout = ({ route }) => {
                     )}
                 </View>
             </View>
-
+            </ScrollView>
             {/* Proceed Button */}
             <View style={styles.bottomContainer}>
                 <Pressable style={styles.proceedButton} onPress={handleProceed}>
                     <Text style={styles.proceedText}>Proceed</Text>
                 </Pressable>
             </View>
+            </KeyboardAvoidingView>
         </>
     );
 };

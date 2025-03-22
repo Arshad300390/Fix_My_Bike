@@ -108,7 +108,7 @@ const getUserBookings = async (req, res, next) => {
 
     const bookings = await Booking.find({
       userId,
-      status: "in progress",
+      status: { $in: ["in progress", "accepted"] },
     });
     
 
