@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import {
   StyleSheet,
@@ -14,40 +15,45 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import { COLORS } from '../../../constants/Constants';
 import { useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 const { width } = Dimensions.get('window');
 
 const ServiceCenterLocator = () => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [mechanics, setMechanics] = useState([]); // State for mechanics data
+  const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
+  const [selectedMechanic, setSelectedMechanic] = useState(null); // Store selected mechanic's details
 
-  // State for modal visibility and selected marker details
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  useEffect(() => {
+    getMechanics(); // Fetch mechanics when the component mounts
+  }, []);
 
-  // Marker coordinates
-  const markers = [
-    { id: 1, name: 'Multan FIX MY BIKE Service Center', latitude: 30.1575, longitude: 71.5249, timing: '9:00 AM - 6:00 PM', phone: '+9x 3xx 1234567' },
-    { id: 2, name: 'Lahore FIX MY BIKE Service Center', latitude: 31.5204, longitude: 74.3587, timing: '10:00 AM - 7:00 PM', phone: '+9x 3xx 7654321' },
-    { id: 3, name: 'Karachi FIX MY BIKE Service Center', latitude: 24.8607, longitude: 67.0011, timing: '9:00 AM - 6:00 PM', phone: '+9x 3xx 2345678' },
-    { id: 4, name: 'Islamabad FIX MY BIKE Service Center', latitude: 33.6844, longitude: 73.0479, timing: '10:00 AM - 8:00 PM', phone: '+9x 3xx 8765432' },
-    { id: 5, name: 'Peshawar FIX MY BIKE Service Center', latitude: 34.0151, longitude: 71.5249, timing: '8:00 AM - 5:00 PM', phone: '+9x 3xx 3456789' },
-    { id: 6, name: 'Quetta FIX MY BIKE Service Center', latitude: 30.1798, longitude: 66.9750, timing: '9:30 AM - 6:30 PM', phone: '+9x 3xx 9876543' },
-    { id: 7, name: 'Faisalabad FIX MY BIKE Service Center', latitude: 31.4504, longitude: 73.1350, timing: '9:00 AM - 7:00 PM', phone: '+9x 3xx 4567890' },
-    { id: 8, name: 'Hyderabad FIX MY BIKE Service Center', latitude: 25.3960, longitude: 68.3578, timing: '9:00 AM - 6:00 PM', phone: '+9x 3xx 6543210' },
-    { id: 9, name: 'Sialkot FIX MY BIKE Service Center', latitude: 32.4945, longitude: 74.5229, timing: '10:00 AM - 6:00 PM', phone: '+9x 3xx 5678901' },
-    { id: 10, name: 'Rawalpindi FIX MY BIKE Service Center', latitude: 33.6007, longitude: 73.0679, timing: '9:00 AM - 6:00 PM', phone: '+9x 3xx 0987654' },
-  ];
-  
+  const getMechanics = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        navigation.replace('Signin');
+        return;
+      }
 
-  const openModal = (marker) => {
-    setSelectedMarker(marker);
-    setModalVisible(true);
+      const url = "http://10.0.2.2:5000/api/users//get-mechanics-with-location";
+
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("Mechanics Data:", response.data);
+      setMechanics(response.data.mechanics || []); // Set mechanics data to state
+    } catch (error) {
+      console.error("Error fetching mechanics:", error);
+    }
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedMarker(null);
+  const handleOpenMapModal = (mechanic) => {
+    setSelectedMechanic(mechanic); // Store selected mechanic's data
+    setModalVisible(true); // Open the map modal
   };
 
   return (
@@ -70,146 +76,138 @@ const ServiceCenterLocator = () => {
           },
         ]}
       >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Feather
-            name="chevron-left"
-            size={30}
-            color={colorScheme === 'dark' ? COLORS.white : COLORS.dark}
-          />
-        </TouchableOpacity>
+        <Text style={styles.headerText}>Service Center Locator</Text>
       </View>
 
-      {/* Map */}
-      <View style={styles.container}>
-        <MapView
-          provider={PROVIDER_GOOGLE}
-          style={styles.map}
-          region={{
-            latitude: 30.3753,
-            longitude: 69.3451,
-            latitudeDelta: 6,
-            longitudeDelta: 6,
-          }}
-        >
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-              onPress={() => openModal(marker)}
-            >
-              <View style={styles.markerWrapper}>
-                <View style={styles.markerCircle}>
-                  <Image
-                    source={require('../../../../assets/png/mechanic.png')} // Replace with your custom image path
-                    style={styles.markerIcon}
-                  />
-                </View>
-                <Text style={styles.markerText}>{marker.name}</Text>
-              </View>
-            </Marker>
-          ))}
-        </MapView>
-      </View>
+      {/* Mechanic List */}
+      <View style={styles.mechanicListContainer}>
+        {mechanics &&  mechanics.map((mechanic, index) => (
+          <View key={index} style={styles.mechanicCard}>
+            <View>
 
-      {/* Modal */}
-      {selectedMarker && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>{selectedMarker.name}</Text>
-              <Text style={styles.modalText}>Timing: {selectedMarker.timing}</Text>
-              <Text style={styles.modalText}>Phone: {selectedMarker.phone}</Text>
-              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
+            <Text style={styles.mechanicName}>{mechanic.full_name}</Text>
+            <Text style={styles.mechanicService}>{mechanic.email}</Text>
+            <Text style={styles.mechanicService}>{mechanic.phone_number}</Text>
             </View>
+            <TouchableOpacity
+              style={styles.viewMapButton}
+              onPress={() => handleOpenMapModal(mechanic)}
+            >
+              <Feather name="arrow-right" size={24} color={COLORS.white} />
+            </TouchableOpacity>
           </View>
-        </Modal>
-      )}
+        ))}
+      </View>
 
+      {/* Modal for Map */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.closeButton}
+            >
+              <Feather name="x" size={24} color={COLORS.white} />
+            </TouchableOpacity>
+            <Text style={styles.modalHeaderText}>
+              {selectedMechanic?.full_name}
+            </Text>
+          </View>
+          <MapView
+            provider={PROVIDER_GOOGLE}
+            style={styles.map}
+            initialRegion={{
+              latitude: selectedMechanic?.latitude || 37.78825, // Use mechanic's latitude or default if undefined
+              longitude: selectedMechanic?.longitude || -122.4324, // Use mechanic's longitude or default if undefined
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: selectedMechanic?.latitude || 37.78825,
+                longitude: selectedMechanic?.longitude || -122.4324,
+              }}
+              title={selectedMechanic?.full_name}
+              description={selectedMechanic?.service_name}
+            />
+          </MapView>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 };
 
-export default ServiceCenterLocator;
-
 const styles = StyleSheet.create({
   primaryContainer: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    padding: 10,
   },
-
   headerContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    backgroundColor: COLORS.white,
-    paddingHorizontal: width * 0.02,
-    paddingVertical: width * 0.05,
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.gray,
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  mechanicListContainer: {
+    flex: 1,
+    marginTop: 20,
+  },
+  mechanicCard: {
+    backgroundColor: COLORS.lightDark,
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  mechanicName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.warning,
+  },
+  mechanicService: {
+    fontSize: 14,
+    color: COLORS.white,
+  },
+  viewMapButton: {
+    backgroundColor: COLORS.primary,
+    padding: 8,
+    borderRadius: 50,
   },
   modalContainer: {
-   
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-    elevation: 5, // Add shadow for Android
-    shadowColor: '#000', // Add shadow for iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: COLORS.white,
   },
-
-
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    flex: 1,
-    justifyContent: 'flex-end',
+  modalHeader: {
+    padding: 15,
+    backgroundColor: COLORS.primary,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  modalHeaderText: {
+    color: COLORS.white,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    backgroundColor: COLORS.primary,
+    padding: 5,
+    borderRadius: 50,
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  markerWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  markerCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255, 0, 0, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  markerIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
-  },
-  markerText: {
-    marginBottom: 5,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    color: 'white',
-    fontSize: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    overflow: 'hidden',
+    flex: 1,
   },
 });
+
+export default ServiceCenterLocator;

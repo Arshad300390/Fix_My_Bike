@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { v2: cloudinary } = require("cloudinary");
+const Shop = require("../model/shop_location_model");
 
 const signup = async (req, res, next) => {
   try {
@@ -123,6 +124,50 @@ const getMechanics = async (req, res, next) => {
     return next(new HttpError("Error Getting Mechanics!", 500));
   }
 };
+
+const getMechanicsWithLocation = async (req, res, next) => {
+  try {
+    // Find all mechanics
+    const mechanics = await User.find({ role: "mechanic" })
+      .select("full_name email phone_number role address");
+
+    if (!mechanics.length) {
+      return next(new HttpError("No mechanics found!", 404));
+    }
+
+    // Default coordinates in case no shop is found or coordinates are missing
+    const defaultLatitude = 0.0;  // Default latitude
+    const defaultLongitude = 0.0; // Default longitude
+
+    // For each mechanic, find the corresponding shop by matching the 'owner' field
+    const mechanicsWithLocation = await Promise.all(mechanics.map(async (mechanic) => {
+      // Find shop for each mechanic using the owner reference
+      const shop = await Shop.findOne({ owner: mechanic._id }).select('latitude longitude');
+
+      // Return the mechanic with the shop's latitude and longitude, or default if missing
+      return {
+        full_name: mechanic.full_name,
+        email: mechanic.email,
+        phone_number: mechanic.phone_number,
+        role: mechanic.role,
+        address: mechanic.address,
+        latitude: shop && shop.latitude ? shop.latitude : defaultLatitude,  // Default latitude if missing
+        longitude: shop && shop.longitude ? shop.longitude : defaultLongitude,  // Default longitude if missing
+      };
+    }));
+
+    // Send the response with the mechanics' data along with their shop coordinates
+    res.status(200).json({
+      mechanics: mechanicsWithLocation,
+    });
+
+  } catch (err) {
+    console.error(err);
+    return next(new HttpError("Error getting mechanics!", 500));
+  }
+};
+
+
 
 const getSellers = async (req, res, next) => {
   try {
@@ -470,4 +515,5 @@ module.exports = {
   getSellers,
   getSellersWithRatings,
   getMechanicsWithRatings,
+  getMechanicsWithLocation,
 };

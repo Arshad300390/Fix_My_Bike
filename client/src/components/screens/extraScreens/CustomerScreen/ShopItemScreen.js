@@ -93,7 +93,7 @@ const ShopItemScreen = () => {
     <View style={styles.screen}>
       <View style={styles.textContainer}>
         <Text style={styles.userName}>
-          {name} Auto Spare Parts Shop
+          {name} Auto Spare Parts Shop..
         </Text>
         <Text style={styles.userEmail}>{email}</Text>
         <View style={styles.ratingContainer}>

@@ -10,7 +10,7 @@ const ratingRoutes = require('./route/rating_route');
 const serviceRoutes = require("./route/service_route");
 const checkoutRoutes = require("./route/checkout_route");
 const googleSigninRoutes = require("./route/google_signin_route");
-
+const shopLocationRoutes = require("./route/shop_location_route"); // Import the shop location route
 require("dotenv").config();
 
 const app = express();
@@ -38,6 +38,7 @@ app.use("/api", productRoutes);
 app.use("/api", serviceRoutes);
 app.use("/api", ratingRoutes);
 app.use("/api", checkoutRoutes);
+app.use("/api/shop", shopLocationRoutes); // Use the shop location route
 
 mongoose
   .connect(process.env.MONGODB_URI)

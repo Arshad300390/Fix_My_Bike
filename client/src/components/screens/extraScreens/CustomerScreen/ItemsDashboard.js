@@ -40,7 +40,7 @@ const ItemsDashboard = () => {
     const [rating, setRating] = useState(0);
     const [cartCount, setCartCount] = useState(0); // Ensuring accurate count
     const [userId, setUserId] = useState(null);
-
+    const [shopOwnerId, setShopOwnerId] = useState(null); // Added for tracking ID
     useFocusEffect(
         useCallback(() => {
             getAllItems();
@@ -85,6 +85,9 @@ const ItemsDashboard = () => {
             });
 
             setCustomServices(response.data.Items || []);
+            setRating(response.data.Items[0].rating);
+            setShopOwnerId(response.data.Items[0].shop_owner);
+            console.log(shopOwnerId, 'shop owner id');
         } catch (error) {
             console.log('Error fetching services:', error);
         }
@@ -110,14 +113,14 @@ const ItemsDashboard = () => {
     const updateCartCount = async (id) => {
         try {
             console.log('Fetching cart count for user:', id);
-            
+
             let cart = await AsyncStorage.getItem(`cart_${id}`);
             console.log('🛒 Raw Cart Data:', cart);
-    
+
             cart = cart ? JSON.parse(cart) : {};
-    
+
             let count = 0;
-    
+
             // Loop through each shopOwner in the cart
             Object.values(cart).forEach(shop => {
                 // Ensure we're accessing the 'products' field correctly
@@ -130,28 +133,28 @@ const ItemsDashboard = () => {
                     });
                 }
             });
-    
+
             console.log('🔄 Updated Cart Count:', count);
             setCartCount(count); // Ensure `setCartCount` is updating state correctly
         } catch (error) {
             console.error("❌ Error updating cart count:", error);
         }
     };
-    
-    
-    
-    
+
+
+
+
     const handleAddToCart = async (service) => {
-        console.log('service',service);
+        console.log('service', service);
         try {
             if (!userId) return;
-    
+
             let cart = await AsyncStorage.getItem(`cart_${userId}`);
             cart = cart ? JSON.parse(cart) : {};
-    
+
             const shopOwnerId = service.shop_owner;
             const productId = service._id;
-    
+
             // ✅ Ensure shopOwner exists in cart
             if (!cart[shopOwnerId]) {
                 const timestamp = new Date().toISOString(); // Generate datetime
@@ -162,12 +165,12 @@ const ItemsDashboard = () => {
                     products: {}, // Initialize products container
                 };
             }
-    
+
             // ✅ Ensure products object exists before accessing it
             if (!cart[shopOwnerId].products) {
-                cart[shopOwnerId].products = {}; 
+                cart[shopOwnerId].products = {};
             }
-    
+
             // ✅ Add or update product in the cart
             if (cart[shopOwnerId].products[productId]) {
                 console.log(`Updating quantity for product ${productId}`);
@@ -182,20 +185,51 @@ const ItemsDashboard = () => {
                     quantity: 1,
                 };
             }
-    
+
             // Save updated cart
             await AsyncStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
-    
+
             // Fetch updated cart count immediately after adding an item
             await updateCartCount(userId);
-    
+
             console.log("✅ Cart updated:", cart);
         } catch (error) {
             console.error("❌ Error adding product to cart:", error);
         }
     };
+
+    const handleRating = async (newRating) => {
+        setRating(newRating);
+        console.log(`User rated: ${newRating}`);
+        try {
+            const token = await AsyncStorage.getItem("token");
+            if (!token) {
+                Alert.alert("Authentication Error", "Please sign in first.");
+                navigation.replace("Signin");
+                return;
+            }
+
     
+            const response = await axios.post(
+                "http://10.0.2.2:5000/api/save-rating",
+                {
+                    shop_owner: shopOwnerId, // Correct field name
+                    rating: newRating,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
     
+            console.log(response.data.message);
+        } catch (error) {
+            console.error("Error saving rating:", error);
+        }
+    };
+    
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <SafeAreaView style={[
@@ -208,15 +242,29 @@ const ItemsDashboard = () => {
                             {customServices[0]?.full_name} {role === "seller" ? "Auto Spare Parts Shops" : "Auto Mechanic Shops"}
                         </Text>
                         <View style={styles.middleContainer}>
+
                             <Text style={styles.userEmail}>{customServices[0]?.email}</Text>
-                            {role === 'seller' && 
+                            {role === 'seller' &&
                                 <Pressable onPress={() => navigation.navigate('Cart')}>
                                     <View style={styles.cartContainer}>
                                         <MaterialCommunityIcons name="cart" size={24} color="white" />
                                         <Text style={styles.countText}>{cartCount}</Text>
-                                    </View> 
+                                    </View>
                                 </Pressable>
                             }
+                        </View>
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+
+                            <Text style={{ color: 'white' }}>Rate Us Here:</Text>
+                            <TouchableOpacity >
+                                 <StarRating
+                                    rating={rating ? rating.toFixed(2) : "0.00"}  // Ensure rating is valid
+                                    onChange={handleRating}
+                                    enableSwiping={true}
+                                />
+                            </TouchableOpacity>
+                            <Text style={{ color: 'white' }}>({rating ? rating.toFixed(2) : "0.00"})</Text>
+
                         </View>
                     </View>
                 ) : (
@@ -225,12 +273,12 @@ const ItemsDashboard = () => {
                             <Text style={[{ fontSize: 30 }, styles.userEmail]}>
                                 {role === 'seller' ? 'Product Dashboard' : 'Services Dashboard'}
                             </Text>
-                            {role === 'seller' && 
-                            <Pressable onPress={() => navigation.navigate('Cart')}>
-                                <View style={styles.cartContainer}>
-                                    <MaterialCommunityIcons name="cart" size={24} color="white" />
-                                    <Text style={styles.countText}>{cartCount}</Text>
-                                </View>
+                            {role === 'seller' &&
+                                <Pressable onPress={() => navigation.navigate('Cart')}>
+                                    <View style={styles.cartContainer}>
+                                        <MaterialCommunityIcons name="cart" size={24} color="white" />
+                                        <Text style={styles.countText}>{cartCount}</Text>
+                                    </View>
                                 </Pressable>
                             }
                         </View>
@@ -337,12 +385,12 @@ const styles = StyleSheet.create({
         borderWidth: 4,
         padding: 5,
     },
-    
+
     countText: {
         color: COLORS.white,
         fontSize: 16,
     },
-    
+
 
     ratingContainer: {
         flexDirection: "row",
@@ -368,12 +416,12 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     rateUsContainer: {
-        marginTop: height * 0.03,
-        backgroundColor: COLORS.lightDark,
-        paddingVertical: height * 0.0015,
-        paddingHorizontal: width * 0.40,
-        flexDirection: "row",
-        alignSelf: "center",
+        backgroundColor: COLORS.primary,
+        padding: 10,
+        borderRadius: 10,
+        flexDirection: "row", // "Rate Us" and icon in one row
+        alignItems: "center",
+        justifyContent: "center",
     },
     rateUsText: {
         color: COLORS.white,

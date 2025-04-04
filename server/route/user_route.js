@@ -18,6 +18,8 @@ router.get("/get-seller's-ratings", authMiddleware, userController.getSellersWit
 
 router.get("/get-mechanic's-ratings", authMiddleware, userController.getMechanicsWithRatings);
 
+router.get("/get-mechanics-with-location", authMiddleware, userController.getMechanicsWithLocation);
+
 router.get("/get-user-by-id/:id", authMiddleware, userController.getUsersById);
 
 router.put("/reset-password", userController.resetPassword);
