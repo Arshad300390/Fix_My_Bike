@@ -177,7 +177,7 @@ const CartManager = () => {
                                 <View key={item.productId} style={styles.cartItem}>
                                     <View style={styles.itemDetails}>
                                         <Text style={styles.itemName}>{item.product_name}</Text>
-                                        <Text style={styles.itemPrice}>Price: ${item.quantity * item.product_price}</Text>
+                                        <Text style={styles.itemPrice}>Price: {item.quantity * item.product_price}</Text>
                                     </View>
 
                                     {/* Quantity Controls */}
@@ -214,7 +214,7 @@ const CartManager = () => {
 
                             {/* Shop Total */}
                             <View style={styles.shopTotalContainer}>
-                                <Text style={styles.shopTotalText}>Total for this Shop: ${total.toFixed(2)}</Text>
+                                <Text style={styles.shopTotalText}>Total for this Shop: {total.toFixed(2)}</Text>
                                 <Pressable
                                     style={styles.checkoutButton}
                                     onPress={() => navigation.navigate('Checkout', { shopOwnerId, userId, trackingId, items, total })}>

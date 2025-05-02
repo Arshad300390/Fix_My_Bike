@@ -2,17 +2,30 @@ const Product = require("../model/product_model");
 const User = require("../model/user_model");
 const HttpError = require("../model/http_error");
 const mongoose = require("mongoose");
+const { cloudinaryProductImageUpload, deleteImageFromCloudinary, } = require("../middleware/file-upload-product");
+const { v2: cloudinary } = require("cloudinary");
+
+
+
 
 const addProduct = async (req, res, next) => {
   try {
     const { product_name, product_price, product_company_name,product_description } = req.body;
     const shopOwnerId = req.userId;
+
+
+    let productImageUrl = null;
+    if (req.file) {
+      productImageUrl = await cloudinaryProductImageUpload(req.file);
+    }
+
     const newProduct = new Product({
       product_name,
       product_price,
       product_company_name,
       product_description,
       shop_owner: shopOwnerId,
+      img:productImageUrl,
     });
 
     await newProduct.save();
@@ -137,28 +150,50 @@ const updateProduct = async (req, res, next) => {
     const { product_name, product_price, product_company_name, product_description } = req.body;
     const productId = req.params.id;
 
-   
-
+    // Fetch the product from the database
     const product = await Product.findById(productId);
     if (!product) {
       return next(new HttpError("Product not found.", 404));
     }
 
+    // Check if the user is the shop owner
     if (!product.shop_owner.equals(new mongoose.Types.ObjectId(req.userId))) {
       return next(new HttpError("You do not have permission to update this product.", 403));
     }
+
+    // Update product details (excluding image for now)
     product.product_name = product_name || product.product_name;
     product.product_price = product_price || product.product_price;
     product.product_company_name = product_company_name || product.product_company_name;
-    product.product_description = product_description || product.product_description; 
+    product.product_description = product_description || product.product_description;
+
+    // Check if a new image is uploaded
+    let productImageUrl = product.img; 
+    if (req.file) {
+      if (product.img && product.img.startsWith("https://res.cloudinary.com/")) {
+        const publicId = product.img.split("/").pop().split(".")[0]; 
+        await cloudinary.uploader.destroy(publicId); // Delete old image from Cloudinary
+      }
+
+      // Upload the new image to Cloudinary
+      productImageUrl = await cloudinaryProductImageUpload(req.file);
+    }
+
+    // If image URL was updated, save the new image URL to the product
+    if (productImageUrl !== product.img) {
+      product.img = productImageUrl;
+    }
+    // Save the updated product to the database
     await product.save();
 
+    // Return success response
     res.status(200).json({ message: "Product updated successfully", product });
   } catch (err) {
     console.error("Error updating product:", err);
     return next(new HttpError("Error updating product!", 500));
   }
 };
+
 
 
 const deleteProduct = async (req, res, next) => {
@@ -173,7 +208,7 @@ const deleteProduct = async (req, res, next) => {
     if (!product.shop_owner.equals(new mongoose.Types.ObjectId(req.userId))) {
       return next(new HttpError("You do not have permission to delete this product.", 403));
     }
-
+    await deleteImageFromCloudinary(product.img);
     await product.deleteOne();
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (err) {

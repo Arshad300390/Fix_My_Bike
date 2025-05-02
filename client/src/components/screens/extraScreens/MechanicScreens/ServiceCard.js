@@ -8,13 +8,18 @@ import { COLORS, FONTS } from "../../../constants/Constants";
 const { width, height } = Dimensions.get("window");
 
 const ServiceCard = ({ service, onEdit, onDelete, service_image }) => {
+  console.log('service image', service.Img)
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: service_image }}
+          source={
+            service.Img
+              ? { uri: service.Img }
+              : require('./../../../../assets/shop/default_img.png')
+          }
           style={styles.image}
-          onError={(e) => console.log("Image failed to load:", e.nativeEvent.error)}
+          onError={(e) => console.log("Image Load Error:", e.nativeEvent.error)}
         />
       </View>
 
@@ -62,7 +67,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: height * 0.25,
+    height: height * 0.30,
     overflow: 'hidden',
     borderRadius: width * 0.02,
   },

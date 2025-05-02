@@ -1,10 +1,12 @@
+/* eslint-disable quotes */
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { COLORS, FONTS } from "../../../constants/Constants";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import ImagePicker from "react-native-image-crop-picker"; // Make sure you installed this
 
 const { width } = Dimensions.get("window");
 
@@ -13,7 +15,19 @@ const ProductForm = ({ onSubmit }) => {
   const [productPrice, setProductPrice] = useState("");
   const [productCompanyName, setProductCompanyName] = useState("");
   const [productDescription, setProductDescription] = useState("");
+  const [image, setImage] = useState(null); // State to hold the selected image
   const navigation = useNavigation();
+
+  const handlePickImage = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true,
+    }).then((image) => {
+      console.log("Selected image:", image);
+      setImage(image); // Set the selected image
+    });
+  };
 
   const handleSubmit = async () => {
     if (!productName || !productPrice || !productCompanyName || !productDescription) {
@@ -29,21 +43,27 @@ const ProductForm = ({ onSubmit }) => {
         return;
       }
 
-      const productData = {
-        product_name: productName,
-        product_price: parseFloat(productPrice),
-        product_company_name: productCompanyName,
-        product_description: productDescription,
-      };
+      const formData = new FormData();
+      formData.append("product_name", productName);
+      formData.append("product_price", parseFloat(productPrice));
+      formData.append("product_company_name", productCompanyName);
+      formData.append("product_description", productDescription);
 
-      const response = await axios.post("http://10.0.2.2:5000/api/add-product", 
-        productData, 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      if (image) {
+        // Appending image to FormData
+        formData.append("product_image", {
+          uri: image.path,
+          type: image.mime,
+          name: image.filename || "product.jpg", // Add a default filename if missing
+        });
+      }
+      console.log("FormData:", formData); // Log FormData for debugging
+      const response = await axios.post("http://10.0.2.2:5000/api/add-product", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 201) {
         Alert.alert("Success", "Product added successfully!");
@@ -51,6 +71,7 @@ const ProductForm = ({ onSubmit }) => {
         setProductPrice("");
         setProductCompanyName("");
         setProductDescription("");
+        setImage(null); // Clear image after submission
         navigation.goBack();
       }
     } catch (error) {
@@ -62,23 +83,45 @@ const ProductForm = ({ onSubmit }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Product Form</Text>
-      <Text style={styles.label}>Select Product</Text>
-      <View style={styles.pickerContainer}>
-        <Picker selectedValue={productName} onValueChange={(itemValue) => setProductName(itemValue)} style={styles.picker}>
-          <Picker.Item label="Select Product" value="" />
-          <Picker.Item label="Filter" value="filter" />
-          <Picker.Item label="Chain" value="chain" />
-          <Picker.Item label="Oil" value="oil" />
-          <Picker.Item label="Tyre" value="tyre" />
-          <Picker.Item label="Headlight" value="headlight" />
-          <Picker.Item label="Meter" value="meter" />
-          <Picker.Item label="Battery" value="battery" />
-        </Picker>
-      </View>
-      <TextInput placeholder="Price" value={productPrice} onChangeText={setProductPrice} keyboardType="numeric" style={styles.input} />
-      <TextInput placeholder="Company Name" value={productCompanyName} onChangeText={setProductCompanyName} style={styles.input} />
-      <TextInput placeholder="Product Description" value={productDescription}
-       onChangeText={setProductDescription} multiline numberOfLines={4} style={styles.input} />
+      <TextInput
+        placeholder="Product Name"
+        value={productName}
+        onChangeText={setProductName}
+        style={styles.input}
+      />
+
+      <TextInput
+        placeholder="Price"
+        value={productPrice}
+        onChangeText={setProductPrice}
+        keyboardType="numeric"
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Company Name"
+        value={productCompanyName}
+        onChangeText={setProductCompanyName}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Product Description"
+        value={productDescription}
+        onChangeText={setProductDescription}
+        multiline
+        numberOfLines={4}
+        style={styles.input}
+      />
+
+      {/* Image Picker Button */}
+      <TouchableOpacity style={styles.imagePicker} onPress={handlePickImage}>
+        <Text style={styles.imagePickerText}>
+          {image ? "Change Image" : "Select Product Image"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Image Preview */}
+      {image && <Image source={{ uri: image.path }} style={styles.previewImage} />}
+
       <TouchableOpacity style={styles.addProduct} onPress={handleSubmit}>
         <Text style={styles.productText}>Add Product</Text>
       </TouchableOpacity>
@@ -130,6 +173,23 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: width * 0.045,
     fontFamily: FONTS.bold,
+  },
+  imagePicker: {
+    backgroundColor: COLORS.secondary,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: "center",
+  },
+  imagePickerText: {
+    color: COLORS.white,
+    fontSize: 16,
+  },
+  previewImage: {
+    width: 100,
+    height: 100,
+    marginTop: 10,
+    borderRadius: 5,
   },
 });
 

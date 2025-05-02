@@ -2,6 +2,11 @@ const Service = require("../model/service_model");
 const HttpError = require("../model/http_error");
 const mongoose = require("mongoose");
 
+const { createUploadMiddleware,
+  uploadImageToCloudinary,
+  deleteImageFromCloudinary, } = require("../middleware/file-upload-services");
+
+
 exports.createService = async (req, res, next) => {
   try {
     const { service_name, service_description, service_price, service_model, engine_power } = req.body;
@@ -11,13 +16,23 @@ exports.createService = async (req, res, next) => {
       return next(new HttpError("All fields are required", 400));
     }
 
+    let imageUrl = null;
+    if (req.file) {
+      const folder = "fix_my_bike/uploads/service_images";
+      imageUrl = await uploadImageToCloudinary(req.file, folder);
+      console.log("Image URL:", imageUrl);
+    }
+
+
     const newService = new Service({
       service_name,
       service_description,
       service_price,
       service_model,
       engine_power,
+      Img:imageUrl,
       shop_owner: shopOwnerId,
+
     });
 
     await newService.save();
@@ -155,39 +170,74 @@ exports.getServiceById = async (req, res, next) => {
 
 
 exports.updateService = async (req, res, next) => {
+  console.log("Update service request received:", req.body);
   try {
-    const { service_name, service_description, service_price, service_model, engine_power } = req.body;
+    const {
+      service_name,
+      service_description,
+      service_price,
+      service_model,
+      engine_power
+    } = req.body;
     const userId = req.userId;
 
-    const updatedService = await Service.findOneAndUpdate(
-      { _id: req.params.id, shop_owner: userId }, 
-      { service_name, service_description, service_price, service_model, engine_power },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedService) {
+    const existingService = await Service.findOne({ _id: req.params.id, shop_owner: userId });
+    if (!existingService) {
       return next(new HttpError("Service not found or unauthorized access.", 404));
     }
 
-    res.status(200).json(updatedService);
+    const uploadFolder = "fix_my_bike/uploads/service_images";
+    let imageUrl = existingService.Img;
+
+    if (req.file) {
+      // Delete old image from same folder
+      if (existingService.Img && existingService.Img.startsWith("https://res.cloudinary.com/")) {
+        await deleteImageFromCloudinary(existingService.Img, uploadFolder);
+      }
+
+      // Upload new image to the same folder
+      imageUrl = await uploadImageToCloudinary(req.file, uploadFolder);
+      console.log("New image uploaded to:", imageUrl);
+    }
+
+    // Update fields
+    existingService.service_name = service_name;
+    existingService.service_description = service_description;
+    existingService.service_price = service_price;
+    existingService.service_model = service_model;
+    existingService.engine_power = engine_power;
+    existingService.Img = imageUrl;
+
+    await existingService.save();
+
+    res.status(200).json(existingService);
   } catch (error) {
+    console.error("Service update error:", error);
     return next(new HttpError("Error updating service!", 500));
   }
 };
+
 
 // Delete a service (Only for the owner)
 exports.deleteService = async (req, res, next) => {
   try {
     const userId = req.userId;
-    console.log(userId);
-    const deletedService = await Service.findOneAndDelete({ _id: req.params.id, shop_owner: userId });
+    const service = await Service.findOne({ _id: req.params.id, shop_owner: userId });
 
-    if (!deletedService) {
+    if (!service) {
       return next(new HttpError("Service not found or unauthorized access.", 404));
     }
 
+    // Use the utility function to delete the image
+    if (service.Img) {
+      await deleteImageFromCloudinary(service.Img, "fix_my_bike/uploads/service_images");
+    }
+
+    await Service.findByIdAndDelete(req.params.id);
+
     res.status(200).json({ message: "Service deleted successfully" });
   } catch (error) {
+    console.error("Error deleting service:", error);
     return next(new HttpError("Error deleting service!", 500));
   }
 };

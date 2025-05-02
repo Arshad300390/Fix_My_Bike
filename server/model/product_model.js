@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const productSchema = new Schema({
   product_name: {
     type: String,
-    enum: ["filter", "chain","oil","tyre","headlight","meter","battery"],
     required: true,
   },
 
@@ -27,6 +26,10 @@ const productSchema = new Schema({
     ref: "User",
     required: true,
   },
+  img: {
+    type: String,
+    required: false,
+  }
 });
 
 const Product = mongoose.model("Product", productSchema);

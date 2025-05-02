@@ -10,6 +10,7 @@ import {
     StyleSheet,
     View,
     Text,
+    TextInput,
     Dimensions,
     useColorScheme,
     FlatList,
@@ -21,6 +22,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
+import Feather from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import StarRating, { StarRatingDisplay } from 'react-native-star-rating-widget';
@@ -41,6 +43,11 @@ const ItemsDashboard = () => {
     const [cartCount, setCartCount] = useState(0); // Ensuring accurate count
     const [userId, setUserId] = useState(null);
     const [shopOwnerId, setShopOwnerId] = useState(null); // Added for tracking ID
+    const [searchBorderColor, setSearchBorderColor] = useState(COLORS.lightGray);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+
+
     useFocusEffect(
         useCallback(() => {
             getAllItems();
@@ -69,6 +76,7 @@ const ItemsDashboard = () => {
     }, []); // Runs only once on mount
 
     const getAllItems = async () => {
+        console.log(allShop, 'all shop');
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -209,7 +217,7 @@ const ItemsDashboard = () => {
                 return;
             }
 
-    
+
             const response = await axios.post(
                 "http://10.0.2.2:5000/api/save-rating",
                 {
@@ -222,13 +230,25 @@ const ItemsDashboard = () => {
                     },
                 }
             );
-    
+
             console.log(response.data.message);
         } catch (error) {
             console.error("Error saving rating:", error);
         }
     };
-    
+
+    const filteredServices = customServices.filter(service =>
+        (role === 'seller'
+          ? service.product_name?.toLowerCase()
+          : service.service_name?.toLowerCase()
+        )?.includes(searchQuery.toLowerCase())
+      );
+
+    const handleSearch = text => {
+        setSearchQuery(text);
+        setIsSearching(true);
+        setTimeout(() => setIsSearching(false), 500);
+    };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -257,7 +277,7 @@ const ItemsDashboard = () => {
 
                             <Text style={{ color: 'white' }}>Rate Us Here:</Text>
                             <TouchableOpacity >
-                                 <StarRating
+                                <StarRating
                                     rating={rating ? rating.toFixed(2) : "0.00"}  // Ensure rating is valid
                                     onChange={handleRating}
                                     enableSwiping={true}
@@ -284,10 +304,44 @@ const ItemsDashboard = () => {
                         </View>
                     </View>
                 )}
+                {!allShop && (
+                    <View style={styles.searchContainer}>
+                        <View
+                            style={[
+                                styles.searchBarContainer,
+                                { borderColor: searchBorderColor },
+                            ]}>
+                            <Feather
+                                name="search"
+                                size={width * 0.045}
+                                color={colorScheme === 'dark' ? COLORS.white : COLORS.dark}
+                                style={styles.searchIcon}
+                            />
+                            <TextInput
+                                style={[
+                                    styles.searchInputField,
+                                    { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+                                ]}
+                                placeholder="Search!"
+                                placeholderTextColor={
+                                    colorScheme === 'dark' ? COLORS.gray : COLORS.lightGray
+                                }
+                                onFocus={() => setSearchBorderColor(COLORS.primary)}
+                                onBlur={() => setSearchBorderColor(COLORS.lightGray)}
+                                value={searchQuery}
+                                onChangeText={handleSearch}
+                            />
+                        </View>
+                    </View>
+                )
 
-                {customServices.length > 0 ? (
+                }
+
+
+
+                {filteredServices.length > 0 ? (
                     <FlatList
-                        data={customServices}
+                        data={filteredServices}
                         keyExtractor={(item) => item._id.toString()}
                         renderItem={({ item }) => (
                             <ItemCard
@@ -429,5 +483,8 @@ const styles = StyleSheet.create({
         fontFamily: FONTS.bold,
         textAlign: "center",
     },
+
+
+
 });
 

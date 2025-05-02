@@ -34,7 +34,10 @@ const serviceSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-
+  Img: {
+    type: String,
+    required: false,  
+  },
   createdAt: {
     type: Date,
     default: Date.now,

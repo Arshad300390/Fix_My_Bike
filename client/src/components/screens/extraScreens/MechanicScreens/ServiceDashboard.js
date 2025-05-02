@@ -12,7 +12,7 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import ServiceCard from './ServiceCard';
 import Feather from 'react-native-vector-icons/Feather';
-
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 const { width } = Dimensions.get('window');
 
 const ServiceDashboard = () => {
@@ -20,8 +20,9 @@ const ServiceDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
+  // const [latitude, setLatitude] = useState('');
+  // const [longitude, setLongitude] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const navigation = useNavigation();
 
   const fetchServices = async () => {
@@ -64,7 +65,19 @@ const ServiceDashboard = () => {
     }, [])
   );
 
+  const handleMapPress = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setSelectedLocation({ latitude, longitude });
+    console.log("Selected Location:", { latitude, longitude });
+  };
+
   const saveShopLocation = async () => {
+    if (!selectedLocation) {
+      Alert.alert('Error', 'Please select a location on the map first.');
+      return;
+    }
+  
+    const { latitude, longitude } = selectedLocation;
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
@@ -72,17 +85,13 @@ const ServiceDashboard = () => {
         navigation.replace('Signin');
         return;
       }
-
-      if (!latitude || !longitude) {
-        Alert.alert('Error', 'Please enter both latitude and longitude.');
-        return;
-      }
-      console.log("Latitude:", latitude, "Longitude:", longitude);
-      const response = await axios.put('http://10.0.2.2:5000/api/shop/set-coordinates',
+  
+      const response = await axios.put(
+        'http://10.0.2.2:5000/api/shop/set-coordinates',
         { latitude, longitude },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
       Alert.alert('Success', response.data.message);
       setModalVisible(false);
     } catch (error) {
@@ -90,7 +99,7 @@ const ServiceDashboard = () => {
       Alert.alert('Error', 'Failed to save coordinates.');
     }
   };
-
+  
   const handleEdit = (service) => {
     navigation.navigate('Edit_Service', { service });
   };
@@ -148,20 +157,10 @@ const ServiceDashboard = () => {
           data={services}
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => {
-            let imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg"; // Default image
-
-            if (item.service_name.toLowerCase().includes("oil change")) {
-              imageUrl = "https://media.istockphoto.com/id/1174788025/photo/the-process-of-pouring-new-oil-into-the-motorcycle-engine.jpg?s=612x612&w=0&k=20&c=IQHgBZ4SdLc6urAyfY-srbXaXeTxBZpWvbEUMPlj2_U=";
-            } else if (item.service_name.toLowerCase().includes("tyre change")) {
-              imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2dC1oSGcqSdmccoXHsSbh_0Rs1qoC4vKwY3K6r9uP5zVR7qQJsEOpihapFg6OXqxD9jc&usqp=CAU";
-            } else if (item.service_name.toLowerCase().includes("head light change")) {
-              imageUrl = "https://www.shutterstock.com/shutterstock/photos/329460197/display_1500/stock-photo-headlight-and-wheel-of-an-old-motorcycle-329460197.jpg";
-            }
-
+            
             return (
               <ServiceCard
                 service={item}
-                service_image={imageUrl}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
@@ -171,46 +170,40 @@ const ServiceDashboard = () => {
         />
       )}
 
-      {/* Modal for Adding Shop Location */}
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {/* Modal Header */}
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Shop Location</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Feather name="x" size={24} color={COLORS.black} />
-              </TouchableOpacity>
-            </View>
 
-            {/* Form Fields */}
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Latitude"
-              value={latitude}
-              onChangeText={setLatitude}
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Longitude"
-              value={longitude}
-              onChangeText={setLongitude}
-              keyboardType="numeric"
-            />
+<Modal
+  visible={modalVisible}
+  animationType="slide"
+  transparent={false}
+  onRequestClose={() => setModalVisible(false)}
+>
+  <View style={{ flex: 1 }}>
+    <MapView
+      style={{ flex: 1 }}
+      initialRegion={{
+        latitude: 30.3753,
+        longitude: 69.3451,
+        latitudeDelta: 10,
+        longitudeDelta: 10,
+      }}
+      onPress={handleMapPress}
+    >
+      {selectedLocation && (
+        <Marker coordinate={selectedLocation} />
+      )}
+    </MapView>
 
-            {/* Save Button */}
-            <TouchableOpacity style={styles.saveButton} onPress={saveShopLocation}>
-              <Text style={styles.saveButtonText}>Save Location</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+    <View style={{ padding: 10 }}>
+      <TouchableOpacity style={styles.saveButton} onPress={saveShopLocation}>
+        <Text style={styles.saveButtonText}>Save Location</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => setModalVisible(false)}>
+        <Text style={{ color: 'red', textAlign: 'center' }}>Cancel</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
 
     </View>
   );

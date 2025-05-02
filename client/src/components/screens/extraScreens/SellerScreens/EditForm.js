@@ -1,16 +1,20 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable quotes */
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, Dimensions, TouchableOpacity, Alert, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { COLORS, FONTS } from "../../../constants/Constants";
 import { useNavigation } from "@react-navigation/native";
+import ImagePicker from "react-native-image-crop-picker"; // Make sure you installed this
 import axios from "axios";
 
 const { width } = Dimensions.get("window");
 
 const ProductForm = ({ route }) => {
   const navigation = useNavigation();
-  
+
   const product = route.params?.product;
 
   if (!product) {
@@ -23,64 +27,99 @@ const ProductForm = ({ route }) => {
   const [productPrice, setProductPrice] = useState(product.product_price.toString());
   const [productCompanyName, setProductCompanyName] = useState(product.product_company_name);
   const [productDescription, setProductDescription] = useState(product.product_description);
+  const [productImage, setProductImage] = useState(product.img || "");
 
-  const handleSubmit = async () => {
-    if (!productName || !productPrice || !productCompanyName || !productDescription) {
-      Alert.alert("Error", "Please fill all fields");
+const handleSelectImage = () => {
+  ImagePicker.openPicker({
+    width: 300,
+    height: 300,
+    cropping: true,
+  }).then((image) => {
+    setProductImage(image.path);  // Set the selected image path
+  });
+};
+
+const handleSubmit = async () => {
+  if (!productName || !productPrice || !productCompanyName || !productDescription) {
+    Alert.alert("Error", "Please fill all fields");
+    return;
+  }
+
+  try {
+    const token = await AsyncStorage.getItem("token");
+    if (!token) {
+      Alert.alert("Authentication Error", "Please sign in first.");
+      navigation.replace("Signin");
       return;
     }
 
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        Alert.alert("Authentication Error", "Please sign in first.");
-        navigation.replace("Signin");
-        return;
-      }
+    const formData = new FormData();
+    formData.append("product_name", productName);
+    formData.append("product_price", parseFloat(productPrice));
+    formData.append("product_company_name", productCompanyName);
+    formData.append("product_description", productDescription);
 
-      const productData = {
-        product_name: productName,
-        product_price: parseFloat(productPrice),
-        product_company_name: productCompanyName,
-        product_description: productDescription,
-      };
-
-      const response = await axios.patch(`http://10.0.2.2:5000/api/update-product/${product._id}`, productData, {
-        headers: { Authorization: `Bearer ${token}` },
+    if (productImage && !productImage.includes("http")) { // Checking if it's not an existing URL
+      formData.append("product_image", {
+        uri: productImage,
+        type: "image/jpeg",
+        name: "product.jpg", // You can change the name here
       });
-
-      if (response.status === 200) {
-        Alert.alert("Success", "Product updated successfully!");
-        navigation.goBack();
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      Alert.alert("Error", "Failed to update product. Please try again.");
+    } else if (productImage && productImage.includes("http")) {
+      // If there's an existing image URL, just send it without uploading
+      formData.append("product_image", productImage);  // You can send it as a URL
     }
-  };
+
+    // Make the API request to add the product
+    const response = await axios.patch(`http://10.0.2.2:5000/api/update-product/${product._id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    if (response.status === 200) {
+      Alert.alert("Success", "Product added successfully!");
+      setProductName("");
+      setProductPrice("");
+      setProductCompanyName("");
+      setProductDescription("");
+      setProductImage(null); // Clear the image after submission
+      navigation.goBack();
+    }
+  } catch (error) {
+    console.error("Error updating product:", error);
+    Alert.alert("Error", "Failed to add product. Please try again.");
+  }
+};
+
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Edit Product</Text>
 
-      <Text style={styles.label}>Select Product</Text>
-      <View style={styles.pickerContainer}>
-        <Picker selectedValue={productName} onValueChange={(itemValue) => setProductName(itemValue)} style={styles.picker}>
-          <Picker.Item label="Select Product" value="" />
-          <Picker.Item label="Filter" value="filter" />
-          <Picker.Item label="Chain" value="chain" />
-          <Picker.Item label="Oil" value="oil" />
-          <Picker.Item label="Tyre" value="tyre" />
-          <Picker.Item label="Headlight" value="headlight" />
-          <Picker.Item label="Meter" value="meter" />
-          <Picker.Item label="Battery" value="battery" />
-        </Picker>
-      </View>
-
+      <TextInput
+        placeholder="Enter product name"
+        value={productName}
+        onChangeText={setProductName}
+        style={styles.input}
+      />
       <TextInput placeholder="Price" value={productPrice} onChangeText={setProductPrice} keyboardType="numeric" style={styles.input} />
       <TextInput placeholder="Company Name" value={productCompanyName} onChangeText={setProductCompanyName} style={styles.input} />
       <TextInput placeholder="Product Description" value={productDescription} onChangeText={setProductDescription} multiline numberOfLines={4} style={styles.input} />
-
+      <TouchableOpacity onPress={handleSelectImage} style={styles.selectImageButton}>
+  <Text style={styles.selectImageText}>Select Image</Text>
+</TouchableOpacity>
+      <Image
+    source={
+      productImage
+        ? { uri: productImage }
+        : require("./../../../../assets/shop/default_img.png") // Update path if necessary
+    }
+    style={{ width: 200, height: 200, borderRadius: 10, alignSelf: "center", marginBottom: 10 }}
+    resizeMode="cover"
+    onError={(e) => console.log("Image Load Error:", e.nativeEvent.error)}
+  />
       <TouchableOpacity style={styles.addProduct} onPress={handleSubmit}>
         <Text style={styles.productText}>Update Product</Text>
       </TouchableOpacity>
@@ -132,6 +171,17 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: width * 0.045,
     fontFamily: FONTS.bold,
+  },
+  selectImageButton: {
+    backgroundColor: "#ddd",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  selectImageText: {
+    fontSize: 16,
+    color: "#333",
   },
 });
 

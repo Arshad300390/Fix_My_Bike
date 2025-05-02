@@ -83,7 +83,7 @@ const Home = () => {
         if (user && user.role) {
           setRole(user.role);
           if (user.role === 'customer') {
-           // oilChange();
+            // oilChange();
             getAllServices();
           }
         } else {
@@ -214,7 +214,7 @@ const Home = () => {
     {
       id: '7',
       service_image:
-        'https://motoxtasy.com/wp-content/uploads/2023/07/Overheating-Exhaust-System.jpg',
+        'https://m.media-amazon.com/images/I/81SFFJHpEVL.jpg',
       service_name: 'Exhaust System Check',
       service_description:
         'Exhaust pipe inspection for leaks, cleaning, rust prevention, muffler servicing.',
@@ -284,15 +284,16 @@ const Home = () => {
       service_price: '550',
     },
   ];
-
+  //
+const combinedServices = [...services, ...customServices];
   const filteredServices = services.filter(services =>
     services.service_name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-
+ 
   const handleSearch = text => {
     setSearchQuery(text);
     setIsSearching(true);
-    setTimeout(() => setIsSearching(false), 900000);
+    setTimeout(() => setIsSearching(false), 500);
   };
 
   return (
@@ -419,7 +420,7 @@ const Home = () => {
                         )}
                         contentContainerStyle={styles.serviceContainer}
                       />
-                      <Text style={{marginTop:-70, marginBottom:20, textAlign: 'center', color: 'black', fontSize: 40, fontWeight: 'bold'}}>Custom Services</Text>
+                      <Text style={{ marginTop: -70, marginBottom: 20, textAlign: 'center', color: 'black', fontSize: 40, fontWeight: 'bold' }}>Custom Services</Text>
                       <FlatList
                         data={customServices}
                         keyExtractor={(item) => item._id}
@@ -438,7 +439,7 @@ const Home = () => {
 
                           return (
                             <ServicesContainer
-                            service_id = {item._id}
+                              service_id={item._id}
                               service_image={imageUrl}
                               service_name={item.service_name}
                               service_description={item.service_description}
@@ -447,7 +448,7 @@ const Home = () => {
                           );
                         }}
                         contentContainerStyle={styles.serviceContainer}
-                      />
+                      /> 
 
                     </>
                     ) : (

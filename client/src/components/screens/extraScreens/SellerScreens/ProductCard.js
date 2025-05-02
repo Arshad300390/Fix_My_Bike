@@ -9,13 +9,17 @@ const { width } = Dimensions.get("window");
 
 const ProductCard = ({ product, onEdit, onDelete}) => {
   
-
+console.log("Product img:", product.img); // Log the product for debugging
   
 
   return (
     <View style={styles.card}>
       <Image 
-         source={{ uri: `http://10.0.2.2:8081/src/assets/shop/${product.product_name}.jpg` }} 
+         source={
+          product.img
+            ? { uri: product.img }
+            : require('./../../../../assets/shop/default_img.png') // make sure this path is correct
+        }
         style={styles.productImage} 
         resizeMode="cover"
         onError={(e) => console.log("Image Load Error:", e.nativeEvent.error)} 
