@@ -239,10 +239,13 @@ const ItemsDashboard = () => {
 
     const filteredServices = customServices.filter(service =>
         (role === 'seller'
-          ? service.product_name?.toLowerCase()
-          : service.service_name?.toLowerCase()
-        )?.includes(searchQuery.toLowerCase())
+          ? (service.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+             parseFloat(service.product_price) <= parseFloat(searchQuery))  
+          : (service.service_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+             parseFloat(service.service_price) <= parseFloat(searchQuery)) 
+        )
       );
+      
 
     const handleSearch = text => {
         setSearchQuery(text);

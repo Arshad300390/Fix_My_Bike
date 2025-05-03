@@ -13,8 +13,8 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
   console.log(service);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
-  
- 
+
+
 
   // const getUserId = async () => {
   //   try {
@@ -33,32 +33,19 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
   // };
 
   const handleBooking = () => {
+    const service_image = role === 'seller' && service.img ? { uri: service.img }
+      : service.Img ? { uri: service.Img }
+        : require('./../../../../assets/shop/default_img.png');
+
     navigation.navigate('Service_Booking', {
-      service_image: service.service_image,
+      service_image: service_image,  // Pass the dynamically selected service image
       service_name: service.service_name,
       service_description: service.service_description,
       service_price: String(service.service_price),
       service_id: service.service_id,
     });
   };
-  
 
-
-
-  let imageUrl = 'https://';
-  if (role === 'mechanic') {
-    imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg";
-
-    if (service.service_name?.toLowerCase().includes("oil change")) {
-      imageUrl = "https://media.istockphoto.com/id/1174788025/photo/the-process-of-pouring-new-oil-into-the-motorcycle-engine.jpg?s=612x612&w=0&k=20&c=IQHgBZ4SdLc6urAyfY-srbXaXeTxBZpWvbEUMPlj2_U=";
-    } else if (service.service_name?.toLowerCase().includes("tyre change")) {
-      imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2dC1oSGcqSdmccoXHsSbh_0Rs1qoC4vKwY3K6r9uP5zVR7qQJsEOpihapFg6OXqxD9jc&usqp=CAU";
-    } else if (service.service_name?.toLowerCase().includes("head light change")) {
-      imageUrl = "https://www.shutterstock.com/shutterstock/photos/329460197/display_1500/stock-photo-headlight-and-wheel-of-an-old-motorcycle-329460197.jpg";
-    }
-  } else {
-    imageUrl = `http://10.0.2.2:8081/src/assets/shop/${service.product_name}.jpg`;
-  }
 
   return (
     <SafeAreaView style={styles.primaryContainer}>
@@ -68,9 +55,10 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
           <View style={styles.card}>
             <View style={styles.imageContainer}>
               <Image
-                source={{ uri: imageUrl }}
+                source={role === 'seller' && service.img ? { uri: service.img } : service.Img ? { uri: service.Img } : require('./../../../../assets/shop/default_img.png')}
+
                 style={styles.image}
-                onError={(e) => console.log("Image failed to load:", e.nativeEvent.error)}
+                onError={(e) => console.log("Image Load Error:", e.nativeEvent.error)}
               />
             </View>
 
@@ -79,7 +67,7 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
                 {role === "mechanic" ? service.service_name : service.product_name}
               </Text>
               <Text style={styles.servicePrice}>
-                Price: ${role === 'mechanic' ? service.service_price : service.product_price}
+                Price: {role === 'mechanic' ? service.service_price : service.product_price}
               </Text>
             </View>
           </View>
@@ -96,12 +84,29 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <ScrollView>
-              <Image source={{ uri: imageUrl }} style={styles.modalImage} />
-              <Text style={styles.modalTitle}>{service.service_name}</Text>
-              <Text style={styles.modalPrice}>Price: ${service.service_price}</Text>
-              <Text style={styles.modalText}>Model: {service.service_model}</Text>
-              <Text style={styles.modalText}>Engine Power: {service.engine_power}</Text>
-              <Text style={styles.modalText}>Description: {service.service_description}</Text>
+
+              <Image
+                source={service.img && service.img !== null ? { uri: service.img } : require('./../../../../assets/shop/default_img.png')}
+                style={styles.modalImage} />
+              <Text style={styles.modalTitle}>
+                {role === 'seller' ? service.product_name : service.service_name}
+              </Text>
+
+              <Text style={styles.modalPrice}>
+                Price: ${role === 'seller' ? service.product_price : service.service_price}
+              </Text>
+
+              { role !== 'seller' && <Text style={styles.modalText}>
+                Model: {service.service_model}
+              </Text>}
+
+             { role !== 'seller' && <Text style={styles.modalText}>
+                Engine Power: { service.engine_power}
+              </Text>}
+
+              <Text style={styles.modalText}>
+                Description: {role === 'seller' ? service.product_description : service.service_description}
+              </Text>
 
               {/* Fake Reviews */}
               <Text style={styles.reviewTitle}>Customer Reviews</Text>
@@ -172,7 +177,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: height * 0.25,
+    height: height * 0.30,
     overflow: 'hidden',
     borderRadius: width * 0.02,
   },
@@ -214,7 +219,7 @@ const styles = StyleSheet.create({
   },
   modalImage: {
     width: width * 0.65,
-    height: height * 0.2,
+    height: height * 0.3,
     borderRadius: width * 0.025,
     alignSelf: 'center',
   },

@@ -9,10 +9,10 @@ import {
   useColorScheme,
   SafeAreaView,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {COLORS, FONTS} from '../../constants/Constants';
+import { useNavigation } from '@react-navigation/native';
+import { COLORS, FONTS } from '../../constants/Constants';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const ServicesContainer = ({
   service_image,
@@ -33,7 +33,7 @@ const ServicesContainer = ({
       service_id,
     });
   };
-
+console.log('image', service_image);
   return (
     <SafeAreaView style={styles.primaryContainer}>
       <TouchableOpacity
@@ -46,7 +46,14 @@ const ServicesContainer = ({
           },
         ]}>
         <View style={styles.imageContainer}>
-          <Image source={{uri: service_image}} style={styles.image} />
+          <Image
+            source={
+              service_image
+                ? { uri: service_image }
+                : require('./../../../assets/shop/default_img.png')
+            }
+            style={styles.image}
+          />
         </View>
 
         {service_name && (
@@ -54,21 +61,21 @@ const ServicesContainer = ({
             <Text
               style={[
                 styles.serviceText,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.white},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.white },
               ]}>
               {service_name}
             </Text>
             <Text
               style={[
                 styles.descriptionText,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.white},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.white },
               ]}>
               {service_description}
             </Text>
             <Text
               style={[
                 styles.priceText,
-                {color: colorScheme === 'dark' ? COLORS.primary : COLORS.white},
+                { color: colorScheme === 'dark' ? COLORS.primary : COLORS.white },
               ]}>
               Starting from Rs.{service_price}
             </Text>
@@ -93,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 10,
     shadowColor: COLORS.white,
-    shadowOffset: {width: 5, height: 5},
+    shadowOffset: { width: 5, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
@@ -101,7 +108,7 @@ const styles = StyleSheet.create({
 
   imageContainer: {
     width: '100%',
-    height: height * 0.25,
+    height: height * 0.30,
     overflow: 'hidden',
     borderRadius: 8,
   },

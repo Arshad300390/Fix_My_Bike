@@ -159,137 +159,154 @@ const Home = () => {
   const services = [
     {
       id: '1',
-      service_image:
+      Img:
         'https://cdn.dealerspike.com/imglib/seo/stock/ps/ps_bike_mechanic_a.jpg',
       service_name: 'Basic Inspection and Safety Checks',
       service_description:
         'Quick inspection of essential parts, fluid levels, and tire pressure adjustment.',
       service_price: '200',
+      custom: false,
     },
     {
       id: '2',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/R.2a777d5b415a819f3ac3542922df3df1?rik=sc1oKFyTje2e9A&pid=ImgRaw&r=0',
       service_name: 'Battery and Electrical System Check',
       service_description:
         'Battery testing and replacement, terminal cleaning, headlight, taillight, and indicator check.',
       service_price: '250',
+      custom: false,
     },
     {
       id: '3',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/OIP.JR8YkKNYvBdN7kpm4R_xqQHaEK?rs=1&pid=ImgDetMain',
       service_name: 'Cleaning and Detailing Services',
       service_description:
         'Full bike wash, detailing, polishing, waxing, rust removal, and prevention.',
       service_price: '300',
+      custom: false,
     },
     {
       id: '4',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/R.f4362e6fb570750fc1e8d1aba6d0be8b?rik=wL6028BFJxJ2Vw&pid=ImgRaw&r=0&sres=1&sresct=1',
       service_name: 'Pre-ride Inspection for Long Trips',
       service_description:
         'Comprehensive check for long journeys, including fluids, brakes, and lighting.',
       service_price: '300',
+      custom: false,
     },
     {
       id: '5',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/OIP.DT5JvbSS2XEp46EAgEImkQHaE6?rs=1&pid=ImgDetMain',
       service_name: 'Chain and Sprocket Maintenance',
       service_description:
         'Chain cleaning, lubrication, tension adjustment, and sprocket inspection.',
       service_price: '300',
+      custom: false,
     },
     {
       id: '6',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/R.30ccb893250467820b3a0816c7a5324d?rik=te4wHb5Hez4yzg&pid=ImgRaw&r=0',
       service_name: 'Fuel System Services',
       service_description:
         'Fuel filter replacement, carburetor cleaning, fuel line inspection for leaks or clogs.',
       service_price: '400',
+      custom: false,
     },
     {
       id: '7',
-      service_image:
+      Img:
         'https://m.media-amazon.com/images/I/81SFFJHpEVL.jpg',
       service_name: 'Exhaust System Check',
       service_description:
         'Exhaust pipe inspection for leaks, cleaning, rust prevention, muffler servicing.',
       service_price: '350',
+      custom: false,
     },
     {
       id: '8',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/OIP.2YZjkYJ1EghXIfybOX3pzQHaEK?rs=1&pid=ImgDetMain',
       service_name: 'Engine Maintenance',
       service_description:
         'Oil change, oil filter replacement, spark plug replacement, air filter cleaning.',
       service_price: '600',
+      custom: false,
     },
     {
       id: '9',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/OIP.iSSb2EXFkzfmD5XoqQrHMQHaE8?rs=1&pid=ImgDetMain',
       service_name: 'Tire and Wheel Services',
       service_description:
         'Tire replacement and balancing, puncture repair, tread depth check, wheel alignment.',
       service_price: '500',
+      custom: false,
     },
     {
       id: '10',
-      service_image:
+      Img:
         'https://thumbs.dreamstime.com/b/motorbike-mechanic-replacing-cooling-radiator-replacement-radiator-maintenance-motorbike-mechanic-replacing-cooling-154095399.jpg',
       service_name: 'Cooling System Maintenance',
       service_description:
         'Radiator and coolant check, coolant flush, and hose inspection.',
       service_price: '450',
+      custom: false,
     },
     {
       id: '11',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/OIP.ToBKyziCrwl5w02R3h0mrgHaE5?rs=1&pid=ImgDetMain',
       service_name: 'Suspension Services',
       service_description:
         'Front and rear suspension adjustment, fork oil change, shock absorber inspection.',
       service_price: '800',
+      custom: false,
     },
     {
       id: '12',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/OIP.7_xsLQ5V0sm4zZI93GwdIQHaFi?rs=1&pid=ImgDetMain',
       service_name: 'Comprehensive Diagnostic Check',
       service_description:
         'Full diagnostics for engine, brakes, exhaust, and electrical systems.',
       service_price: '1000',
+      custom: false,
     },
     {
       id: '13',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/OIP.Y59CgLVJSoFNM3D6OEzumQHaD4?rs=1&pid=ImgDetMain',
       service_name: 'Customization and Upgrades',
       service_description:
         'Accessory installation, performance upgrades, paint and decal services.',
       service_price: '1500',
+      custom: false,
     },
     {
       id: '14',
-      service_image:
+      Img:
         'https://th.bing.com/th/id/R.7a88474dcfc940971ae72abf742f6d00?rik=0Aiexy0aFKgo8w&riu=http%3a%2f%2fwww.johnmason.com%2fwp-content%2fuploads%2f2011%2f06%2fmotorbike-004.jpg&ehk=aFTtFonUMU2Ag4OyLjB2eyOxtbRRAjv0N5j8joENbgk%3d&risl=&pid=ImgRaw&r=0',
       service_name: 'Winterization and Storage Preparation',
       service_description:
         'Fuel stabilizer application, battery storage prep, and full cover for off-season storage.',
       service_price: '550',
+      custom: false,
     },
   ];
   //
-const combinedServices = [...services, ...customServices];
-  const filteredServices = services.filter(services =>
-    services.service_name.toLowerCase().includes(searchQuery.toLowerCase()),
+  const combinedServices = [...services, ...customServices];
+  console.log('Combined Services:', combinedServices);
+  const filteredServices = combinedServices.filter(services =>
+    services.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    parseFloat(services.service_price) <= parseFloat(searchQuery)
+    //services.service_price.toString().includes(searchQuery.toLowerCase())
   );
- 
+
   const handleSearch = text => {
     setSearchQuery(text);
     setIsSearching(true);
@@ -412,35 +429,23 @@ const combinedServices = [...services, ...customServices];
                         keyExtractor={item => item.id}
                         renderItem={({ item }) => (
                           <ServicesContainer
-                            service_image={item.service_image}
+                            service_image={item.Img}
                             service_name={item.service_name}
                             service_description={item.service_description}
-                            service_price={item.service_price}
+                            service_price={item.service_price.toString()}
                           />
                         )}
                         contentContainerStyle={styles.serviceContainer}
                       />
-                      <Text style={{ marginTop: -70, marginBottom: 20, textAlign: 'center', color: 'black', fontSize: 40, fontWeight: 'bold' }}>Custom Services</Text>
+                      {/* <Text style={{ marginTop: -70, marginBottom: 20, textAlign: 'center', color: 'black', fontSize: 40, fontWeight: 'bold' }}>Custom Services</Text>
                       <FlatList
                         data={customServices}
                         keyExtractor={(item) => item._id}
                         renderItem={({ item }) => {
-                          // Declare imageUrl inside the function block
-                          let imageUrl = "https://img.freepik.com/premium-photo/motorcycle-set-tuning-customizing-shop_1098-7606.jpg"; // Default image
-
-                          // Assign custom images based on service_name
-                          if (item.service_name.toLowerCase().includes("oil change")) {
-                            imageUrl = "https://media.istockphoto.com/id/1174788025/photo/the-process-of-pouring-new-oil-into-the-motorcycle-engine.jpg?s=612x612&w=0&k=20&c=IQHgBZ4SdLc6urAyfY-srbXaXeTxBZpWvbEUMPlj2_U="; // Replace with your oil change image URL
-                          } else if (item.service_name.toLowerCase().includes("tyre change")) {
-                            imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2dC1oSGcqSdmccoXHsSbh_0Rs1qoC4vKwY3K6r9uP5zVR7qQJsEOpihapFg6OXqxD9jc&usqp=CAU"; // Replace with your tyre change image URL
-                          } else if (item.service_name.toLowerCase().includes("head light change")) {
-                            imageUrl = "https://www.shutterstock.com/shutterstock/photos/329460197/display_1500/stock-photo-headlight-and-wheel-of-an-old-motorcycle-329460197.jpg"; // Replace with your headlight change image URL
-                          }
-
                           return (
                             <ServicesContainer
                               service_id={item._id}
-                              service_image={imageUrl}
+                              service_image={item.Img}
                               service_name={item.service_name}
                               service_description={item.service_description}
                               service_price={String(item.service_price)}
@@ -448,7 +453,7 @@ const combinedServices = [...services, ...customServices];
                           );
                         }}
                         contentContainerStyle={styles.serviceContainer}
-                      /> 
+                      />  */}
 
                     </>
                     ) : (
@@ -590,7 +595,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     marginTop: height * 0.01,
-    marginLeft: height * 0.01,
+    // marginLeft: height * 0.01,
   },
 
   noServiceContainer: {
