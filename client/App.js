@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {StatusBar} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StatusBar, Alert} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {COLORS} from './src/components/constants/Constants';
@@ -33,12 +33,11 @@ import ItemsDashboard from './src/components/screens/extraScreens/CustomerScreen
 import CartManager from './src/components/screens/extraScreens/CartScreen/CartManager';
 import Checkout from './src/components/screens/extraScreens/CheckoutScreen/Checkout';
 
-
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   const [statusBarColor, setStatusBarColor] = useState(COLORS.primary);
-
+ 
   return (
     <NavigationContainer>
       <StatusBar backgroundColor={statusBarColor} barStyle="light-content" />

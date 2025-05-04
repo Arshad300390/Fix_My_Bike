@@ -20,7 +20,7 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
       }
       <Text style={styles.details}>Bike: {item.bikeName}</Text>
       <Text style={styles.details}>Comments: {item.comments}</Text>
-      <Text style={styles.price}>Total Price: ${item.totalPrice}</Text>
+      <Text style={styles.price}>Total Price: {item.totalPrice}</Text>
       <Text
         style={[
           styles.status,

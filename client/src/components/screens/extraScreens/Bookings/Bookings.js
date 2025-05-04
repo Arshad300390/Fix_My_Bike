@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 /* eslint-disable curly */
 import React, { useEffect, useState } from 'react';
@@ -12,6 +13,8 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
+  PermissionsAndroid, Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -19,6 +22,7 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ServicesContainer from '../../../utils/ServiceHistoryCard/ServiceHistoryCard';
+import messaging from '@react-native-firebase/messaging';
 const { width, height } = Dimensions.get('window');
 
 const Bookings = () => {
@@ -29,6 +33,48 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shouldRefresh, setShouldRefresh] = useState(false);
+  const [fcmToken, setFcmToken] = useState(null);
+
+//for fcm
+useEffect(() => {
+  const setupFCM = async () => {
+    try {
+      // Step 1: Android 13+ needs runtime notification permission
+      // if (Platform.OS === 'android' && Platform.Version >= 33) {
+      //   const granted = await PermissionsAndroid.request(
+      //     PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      //   );
+
+      //   if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      //     Alert.alert('Permission required', 'Notification permission not granted');
+      //     return;
+      //   }
+      // }
+
+      // Step 2: Request permission (for all platforms)
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        // Step 3: Get FCM Token
+        const fcm_Token = await messaging().getToken();
+        setFcmToken(fcm_Token);
+        console.log('FCM Token:', fcmToken);
+
+        // Optional: Send this token to your backend
+        // await axios.post('https://your-api.com/save-fcm-token', { fcmToken });
+      } else {
+        Alert.alert('Notifications not enabled');
+      }
+    } catch (error) {
+      console.error('FCM setup error:', error);
+    }
+  };
+
+  setupFCM();
+}, []);
 
 
   useEffect(() => {
@@ -121,7 +167,12 @@ const Bookings = () => {
     fetchBookings();
   }, [role, shouldRefresh]);
 
-  const handleUpdateStatus = async (id, status) => {
+  const handleUpdateStatus = async (id, status, ) => {
+    if (!fcmToken) {
+      console.error("FCM token is not available yet.");
+      Alert.alert('Error', 'FCM token is missing. Please try again later.');
+      return;  // Exit early if no token is available
+    }
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios({
@@ -132,6 +183,7 @@ const Bookings = () => {
         },
         data: {
           status: status,
+          fcmToken: fcmToken, 
         },
       });
       setShouldRefresh((prev) => !prev);

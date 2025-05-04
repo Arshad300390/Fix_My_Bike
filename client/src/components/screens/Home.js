@@ -16,6 +16,7 @@ import {
   Image,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -27,6 +28,11 @@ import ServicesContainer from '../utils/ServicesCard/ServicesCard';
 import ScheduleCard from '../utils/SheduleCard/SheduleCard';
 import SellerDashboard from './extraScreens/SellerScreens/SellerDashboard';
 import ServiceDashboard from './extraScreens/MechanicScreens/ServiceDashboard';
+import { requestUserPermission, getFcmToken } from './../../../notificationService';
+
+import { getMessaging, onMessage, onBackgroundMessage   } from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -43,7 +49,37 @@ const Home = () => {
   const [notSchedule, setNotSchedule] = useState(0);
   const [customServices, setCustomServices] = useState([]);
   const [rating, setRating] = useState('');
+//notification
 
+useEffect(()=>{
+  requestUserPermission();
+  getFcmToken(); // Call the function to get the FCM token
+  //notificationListener(); //listener but without this full working
+  console.log('called');
+  },[]);
+  const messaging = getMessaging(getApp());
+
+
+  useEffect(() => {
+    const unsubscribe = onMessage(messaging, async (remoteMessage) => {
+      console.log('FCM Message Data:', remoteMessage);
+  
+      // Handle the notification here
+      Alert.alert(
+        remoteMessage.notification?.title || 'New FCM Message',
+        remoteMessage.notification?.body || JSON.stringify(remoteMessage)
+      );
+    });
+  
+    return () => {
+      // Clean up the foreground message listener
+      unsubscribe();
+    };
+  }, []);
+
+
+
+//end notification
   useEffect(() => {
     const fetchUserData = async () => {
       try {

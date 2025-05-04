@@ -74,7 +74,7 @@ const login = async (req, res, next) => {
       if (err) {
         return next(new HttpError("Error Generating Token!", 500));
       }
-      console.log(token);
+      console.log('jwt token',token);
       res.json({ message: "Login Successfully", token });
     });
   } catch (err) {

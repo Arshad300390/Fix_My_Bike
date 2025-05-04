@@ -2,7 +2,7 @@ const Booking = require("../model/booking_model");
 const HttpError = require("../model/http_error");
 const User = require("../model/user_model");
 const Service = require("../model/service_model");
-
+const { sendNotification } = require("../src/service/fcmService");
 const createBooking = async (req, res, next) => {
   try {
     let {
@@ -27,15 +27,15 @@ const createBooking = async (req, res, next) => {
       status
     } = req.body;
     console.log('scheduleDate', sheduleDate);
-    if(service_id){
+    if (service_id) {
       const shop_owner = await Service.findById(service_id).select('shop_owner');
       if (shop_owner) {
         const mechanic = await User.findById(shop_owner.shop_owner).select("full_name phone_number");
         mechanicName = mechanic.full_name;
-        mechanicNumber= mechanic.phone_number;
-        mechanicId= mechanic._id;
+        mechanicNumber = mechanic.phone_number;
+        mechanicId = mechanic._id;
       }
-      
+
     }
     const bookingData = {
       userId: req.userId,
@@ -80,7 +80,7 @@ const getAllUserBookings = async (req, res, next) => {
       $and: [
         {
           $or: [
-            { status: { $regex: /^in progress$/i } }, 
+            { status: { $regex: /^in progress$/i } },
             { status: { $regex: /^accepted$/i } } // Also match "accepted"
           ]
         },
@@ -88,7 +88,7 @@ const getAllUserBookings = async (req, res, next) => {
         { mechanicId: req.user._id } // Match the mechanicId
       ]
     });
-    
+
     if (!bookings.length) {
       return next(new HttpError("No booking yet.", 404));
     }
@@ -110,7 +110,7 @@ const getUserBookings = async (req, res, next) => {
       userId,
       status: { $in: ["in progress", "accepted"] },
     });
-    
+
 
     if (!bookings.length) {
       return next(new HttpError("No bookings found for this user.", 404));
@@ -133,7 +133,7 @@ const getNotSheduleBookings = async (req, res, next) => {
         { mechanicId: null } // No mechanic assigned
       ]
     });
-    
+
     res.status(200).json({
       count: bookings.length,
       Bookings: bookings, // Always send the array, even if it's empty
@@ -185,6 +185,7 @@ const getAllUserBookingHistory = async (req, res, next) => {
 
 
 const getBookingById = async (req, res) => {
+
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
@@ -197,7 +198,12 @@ const getBookingById = async (req, res) => {
 };
 
 const updateBookingStatus = async (req, res) => {
-  
+  console.log(req.body);
+  const { status, fcmToken } = req.body;
+  const userId = req.userId;// Assuming the token is stored in the user model
+  console.log("userId", userId);
+  console.log("fcmToken", fcmToken);
+
   try {
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
@@ -210,6 +216,15 @@ const updateBookingStatus = async (req, res) => {
     );
     if (!updatedBooking)
       return res.status(404).json({ message: "Booking not found" });
+
+    if (userId && fcmToken) {
+      await sendNotification(
+        fcmToken,
+        'hello' ,
+        `Your booking is now ${req.body.status}`
+      );
+    }
+
     res
       .status(200)
       .json({ message: "Booking status updated", data: updatedBooking });
@@ -282,9 +297,9 @@ const getOilChange = async (req, res, next) => {
       timestamp: { $lt: sixtyDaysAgo },
     });
     // If no old oil change requests are found, return an empty array with a message
-    res.status(200).json({ 
-      Bookings: bookings, 
-      message: bookings.length ? "Old oil change requests found." : "No old oil change required." 
+    res.status(200).json({
+      Bookings: bookings,
+      message: bookings.length ? "Old oil change requests found." : "No old oil change required."
     });
 
   } catch (error) {
