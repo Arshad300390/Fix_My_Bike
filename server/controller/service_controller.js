@@ -115,6 +115,7 @@ exports.getServicesByUserId = async (req, res, next) => {
           service_price: 1,
           service_model: 1,
           engine_power: 1,
+          Img: 1,
           full_name: 1,  // Include full_name from users
           email: 1,      // Include email from users
           rating: 1      // Include average rating

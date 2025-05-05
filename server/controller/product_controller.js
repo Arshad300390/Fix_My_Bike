@@ -124,6 +124,7 @@ const getProductsByUserId = async (req, res, next) => {
           product_price: 1,
           product_category: 1,
           full_name: 1,
+          img: 1,
           email: 1,
           rating: 1
         },

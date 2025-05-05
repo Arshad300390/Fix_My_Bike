@@ -1,8 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable no-alert */
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-unused-vars */
 /* eslint-disable quotes */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView, Modal, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, SafeAreaView, Modal, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Dimensions, ScrollView, TextInput, KeyboardAvoidingView, } from 'react-native';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,12 +13,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width, height } = Dimensions.get('window');
 
 const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
-  console.log(service);
+  console.log('userid', userId, 'setAllShop', setAllShop);
+  console.log('service', service);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
 
-
-
+  const [reviewText, setReviewText] = useState('');
+  const [rating, setRating] = useState('');
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
   // const getUserId = async () => {
   //   try {
   //     const token = await AsyncStorage.getItem("token");
@@ -32,6 +38,14 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
   //   }
   // };
 
+
+  useEffect(() => {
+    if (modalVisible) {
+      getReviews();
+    }
+  }, [modalVisible]);
+
+
   const handleBooking = () => {
     const service_image = role === 'seller' && service.img ? { uri: service.img }
       : service.Img ? { uri: service.Img }
@@ -45,6 +59,83 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
       service_id: service.service_id,
     });
   };
+  const handleSubmitReview = async () => {
+    if (!rating || !reviewText) {
+      alert('Please enter both rating and review.');
+      return;
+    }
+
+    const itemId = service._id;
+    const itemType = role === 'seller' ? 'Product' : 'Service';
+    try {
+
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        navigation.replace('Signin');
+        return;
+      }
+
+      const response = await fetch(`http://10.0.2.2:5000/api/reviews/create-review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          itemId,
+          itemType,
+          rating: Number(rating),
+          comment: reviewText,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert('Review submitted!');
+        setReviewText('');
+        setRating('');
+      } else {
+        alert(data.error || 'Something went wrong.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error submitting review');
+    }
+  };
+
+  const getReviews = async () => {
+    try {
+      setLoadingReviews(true);
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        navigation.replace('Signin');
+        return;
+      }
+      console.log('in side get reviews');
+      const itemId = service._id;
+      const itemType = role === 'seller' ? 'Product' : 'Service';
+      console.log(itemId, itemType);
+      const response = await fetch(`http://10.0.2.2:5000/api/reviews/get-review-by-id/${itemType}/${itemId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      console.log('data', data);
+      if (response.ok) {
+        setReviews(data || []);
+      } else {
+        console.warn('Failed to fetch reviews:', data.error || 'Unknown error');
+        setReviews([]);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+      setReviews([]);
+    }
+  };
+
 
 
   return (
@@ -81,80 +172,133 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
         transparent={true}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <ScrollView>
+        <TouchableWithoutFeedback
+          onPress={Keyboard.dismiss} // Dismiss keyboard only when tapping outside
+          accessible={false}
+        >
+          <View style={styles.modalContainer}>
+            <KeyboardAvoidingView style={styles.modalContent}>
+              <ScrollView>
 
-              <Image
-                source={service.img && service.img !== null ? { uri: service.img } : require('./../../../../assets/shop/default_img.png')}
-                style={styles.modalImage} />
-              <Text style={styles.modalTitle}>
-                {role === 'seller' ? service.product_name : service.service_name}
-              </Text>
-
-              <Text style={styles.modalPrice}>
-                Price: ${role === 'seller' ? service.product_price : service.service_price}
-              </Text>
-
-              { role !== 'seller' && <Text style={styles.modalText}>
-                Model: {service.service_model}
-              </Text>}
-
-             { role !== 'seller' && <Text style={styles.modalText}>
-                Engine Power: { service.engine_power}
-              </Text>}
-
-              <Text style={styles.modalText}>
-                Description: {role === 'seller' ? service.product_description : service.service_description}
-              </Text>
-
-              {/* Fake Reviews */}
-              <Text style={styles.reviewTitle}>Customer Reviews</Text>
-              <View style={styles.reviewContainer}>
-                <Text style={styles.reviewText}>⭐ 4.5 - "Great service, highly recommended!"</Text>
-                <Text style={styles.reviewText}>⭐ 4.0 - "Fast and efficient, worth the price!"</Text>
-                <Text style={styles.reviewText}>⭐ 5.0 - "Amazing experience, will book again!"</Text>
-              </View>
-
-              {/* Buttons for Booking & Visiting Shop */}
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.bookButton}
-                  onPress={() => {
-                    if (role === "mechanic") {
-                      handleBooking();
-                    } else if (role === "seller") {
-                      handleAddToCart(userId, service,);
-                      console.log("I am click");
+                {(role === 'seller' && service.img) || service.Img ? (
+                  <Image
+                    source={
+                      role === 'seller' && service.img
+                        ? { uri: service.img }
+                        : { uri: service.Img }
                     }
-                  }}
-                >
-                  <Text style={styles.buttonText}>{role === 'mechanic' ? 'Book Service' : 'Add to Cart'}</Text>
+                    style={styles.modalImage}
+                  />
+                ) : (
+                  <View style={[styles.modalImage, styles.noImageContainer]}>
+                    <Text style={styles.noImageText}>No Image Available</Text>
+                  </View>
+                )}
+
+                <Text style={styles.modalTitle}>
+                  {role === 'seller' ? service.product_name : service.service_name}
+                </Text>
+
+                <Text style={styles.modalPrice}>
+                  Price: ${role === 'seller' ? service.product_price : service.service_price}
+                </Text>
+
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  {role !== 'seller' && <Text style={styles.modalText}>
+                    Model: {service.service_model}
+                  </Text>}
+                  <View />
+                  {role !== 'seller' && <Text style={styles.modalText}>
+                    Engine Power: {service.engine_power}
+                  </Text>}
+                </View>
+
+
+                <Text style={styles.modalText}>
+                  Description: {role === 'seller' ? service.product_description : service.service_description}
+                </Text>
+
+                {/* Fake Reviews */}
+                <Text style={styles.reviewTitle}>Customer Reviews</Text>
+                <View style={styles.reviewContainer}>
+                  <Text style={styles.reviewText}>⭐ 4.5 - "Great service, highly recommended!"</Text>
+                  <Text style={styles.reviewText}>⭐ 4.0 - "Fast and efficient, worth the price!"</Text>
+                  <Text style={styles.reviewText}>⭐ 5.0 - "Amazing experience, will book again!"</Text>
+                  {reviews.length > 0 && (
+                    reviews.map((review, index) => (
+                      <Text key={index} style={styles.reviewText}>
+                        ⭐ {review.rating} - "{review.comment}"
+                      </Text>
+                    ))
+                  )}
+
+                </View>
+                <View>
+                  <Text style={styles.reviewTitle}>Write a Review</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Your review"
+                    value={reviewText}
+                    onChangeText={setReviewText}
+                    multiline
+                  />
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Rating (1-5)"
+                    value={rating}
+                    onChangeText={setRating}
+                    keyboardType="numeric"
+                  />
+
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={handleSubmitReview}
+                  >
+                    <Text style={styles.submitButtonText}>Submit Review</Text>
+                  </TouchableOpacity>
+                </View>
+                {/* Buttons for Booking & Visiting Shop */}
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.bookButton}
+                    onPress={() => {
+                      if (role === "mechanic") {
+                        handleBooking();
+                      } else if (role === "seller") {
+                        handleAddToCart(userId, service,);
+                        console.log("I am click");
+                      }
+                    }}
+                  >
+                    <Text style={styles.buttonText}>{role === 'mechanic' ? 'Book Service' : 'Add to Cart'}</Text>
+                  </TouchableOpacity>
+
+
+                  <TouchableOpacity
+                    style={styles.visitButton}
+                    onPress={() => {
+                      console.log('Visiting single shop...');
+                      setAllShop(service.shop_owner);
+                      setModalVisible(false); // Close modal
+                      //navigation.navigate('Shop', { role: role, allShop: service.shop_owner });
+                    }}
+                  >
+                    <Text style={styles.buttonText}>Visit Shop</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Close Button */}
+                <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.closeButtonText}>Close</Text>
                 </TouchableOpacity>
-
-
-                <TouchableOpacity
-                  style={styles.visitButton}
-                  onPress={() => {
-                    console.log('Visiting single shop...');
-                    setAllShop(service.shop_owner);
-                    setModalVisible(false); // Close modal
-                    //navigation.navigate('Shop', { role: role, allShop: service.shop_owner });
-                  }}
-                >
-                  <Text style={styles.buttonText}>Visit Shop</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Close Button */}
-              <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-            </ScrollView>
+              </ScrollView>
+            </KeyboardAvoidingView>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 
@@ -219,7 +363,7 @@ const styles = StyleSheet.create({
   },
   modalImage: {
     width: width * 0.65,
-    height: height * 0.3,
+    height: height * 0.15,
     borderRadius: width * 0.025,
     alignSelf: 'center',
   },
@@ -260,7 +404,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: height * 0.015,
+    marginTop: height * 0.005,
   },
   bookButton: {
     backgroundColor: COLORS.primary,
@@ -294,6 +438,37 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     color: COLORS.darkColor,
   },
+  input: {
+    borderWidth: 1,
+    borderColor: '#000', // Black border
+    backgroundColor: '#fff', // White background for contrast
+    color: '#000', // Ensure text is visible
+    padding: 5,
+    borderRadius: 5,
+    marginVertical: 2,
+  },
+
+  submitButton: {
+    backgroundColor: COLORS.primary,
+    padding: 8,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  noImageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ddd',
+  },
+  noImageText: {
+    fontSize: 16,
+    color: '#555',
+    fontStyle: 'italic',
+  }
 });
 
 

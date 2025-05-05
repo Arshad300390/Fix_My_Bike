@@ -351,6 +351,7 @@ const ItemsDashboard = () => {
                                 service={item}
                                 role={role}
                                 setAllShop={setAllShop}
+                                userId={userId}
                                 handleAddToCart={() => handleAddToCart(item)}
                                 disableScrollViewPanResponder={true}
                             />
