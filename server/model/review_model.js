@@ -9,7 +9,7 @@ const reviewSchema = new mongoose.Schema({
   itemType: {
     type: String,
     required: true,
-    enum: ['Product', 'Service'], // Must match your model names
+    enum: ['Product', 'Service', 'Multiple'], // Must match your model names
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

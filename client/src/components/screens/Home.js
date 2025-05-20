@@ -2,7 +2,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable quotes */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -30,8 +30,9 @@ import SellerDashboard from './extraScreens/SellerScreens/SellerDashboard';
 import ServiceDashboard from './extraScreens/MechanicScreens/ServiceDashboard';
 import { requestUserPermission, getFcmToken } from './../../../notificationService';
 
-import { getMessaging, onMessage, onBackgroundMessage   } from '@react-native-firebase/messaging';
+import { getMessaging, onMessage, onBackgroundMessage } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
+import AdminDashboard from './extraScreens/AdminDashboard/AdminDashboard';
 
 
 const { width, height } = Dimensions.get('window');
@@ -49,28 +50,30 @@ const Home = () => {
   const [notSchedule, setNotSchedule] = useState(0);
   const [customServices, setCustomServices] = useState([]);
   const [rating, setRating] = useState('');
-//notification
+  const [sortOrder, setSortOrder] = useState('default');
+  const [filteredServices, setFilteredServices] = useState([]);
+  //notification
 
-useEffect(()=>{
-  requestUserPermission();
-  getFcmToken(); // Call the function to get the FCM token
-  //notificationListener(); //listener but without this full working
-  console.log('called');
-  },[]);
+  useEffect(() => {
+    requestUserPermission();
+    getFcmToken(); // Call the function to get the FCM token
+    //notificationListener(); //listener but without this full working
+    console.log('called');
+  }, []);
   const messaging = getMessaging(getApp());
 
 
   useEffect(() => {
     const unsubscribe = onMessage(messaging, async (remoteMessage) => {
       console.log('FCM Message Data:', remoteMessage);
-  
+
       // Handle the notification here
       Alert.alert(
         remoteMessage.notification?.title || 'New FCM Message',
         remoteMessage.notification?.body || JSON.stringify(remoteMessage)
       );
     });
-  
+
     return () => {
       // Clean up the foreground message listener
       unsubscribe();
@@ -79,7 +82,7 @@ useEffect(()=>{
 
 
 
-//end notification
+  //end notification
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -335,20 +338,35 @@ useEffect(()=>{
     },
   ];
   //
-  const combinedServices = [...services, ...customServices];
-  console.log('Combined Services:', combinedServices);
-  const filteredServices = combinedServices.filter(services =>
-    services.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    parseFloat(services.service_price) <= parseFloat(searchQuery)
-    //services.service_price.toString().includes(searchQuery.toLowerCase())
+  const combinedServices = useMemo(
+    () => [...services, ...customServices],
+    [services, customServices]
   );
 
+  useEffect(() => {
+    let tempServices = [...combinedServices];
+  
+    // Apply search filter
+    if (searchQuery.trim() !== '') {
+      tempServices = tempServices.filter(service =>
+        service.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        parseFloat(service.service_price) <= parseFloat(searchQuery)
+      );
+    }
+  
+    // Apply sorting
+    if (sortOrder === 'asc') {
+      tempServices.sort((a, b) => parseFloat(a.service_price) - parseFloat(b.service_price));
+    } else if (sortOrder === 'desc') {
+      tempServices.sort((a, b) => parseFloat(b.service_price) - parseFloat(a.service_price));
+    }
+  
+    setFilteredServices(tempServices);
+  }, [searchQuery, sortOrder, customServices]);
+  
   const handleSearch = text => {
     setSearchQuery(text);
-    setIsSearching(true);
-    setTimeout(() => setIsSearching(false), 500);
   };
-
   return (
     <SafeAreaView
       style={[
@@ -412,7 +430,12 @@ useEffect(()=>{
               <>
                 <ScheduleCard notSchedule={notSchedule} navigation={navigation} />
                 <View style={[styles.card, { height: height * 0.63 }]}>
-                  <ServiceDashboard />
+                  {/* <ServiceDashboard /> */}
+                  <TouchableOpacity
+                    style={styles.gotoDashboard}  
+                    onPress={() => navigation.navigate('ServiceDashboard')}>
+                    <Text style={styles.cardText}>Go to Service Dashboard</Text>
+                  </TouchableOpacity>
                 </View>
               </>
             )
@@ -446,6 +469,26 @@ useEffect(()=>{
                       onChangeText={handleSearch}
                     />
                   </View>
+                </View>
+                
+                <View style={styles.sortContainer}>
+                  <TouchableOpacity
+                    style={styles.radioButton}
+                    onPress={() => setSortOrder('asc')}>
+                    <View style={styles.radioCircle}>
+                      {sortOrder === 'asc' && <View style={styles.selectedRb} />}
+                    </View>
+                    <Text style={styles.radioText}>Lowest to Highest</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.radioButton}
+                    onPress={() => setSortOrder('desc')}>
+                    <View style={styles.radioCircle}>
+                      {sortOrder === 'desc' && <View style={styles.selectedRb} />}
+                    </View>
+                    <Text style={styles.radioText}>Highest to Lowest</Text>
+                  </TouchableOpacity>
                 </View>
 
                 <View style={styles.homeContainer}>
@@ -513,7 +556,9 @@ useEffect(()=>{
             ) : role === 'seller' ? (
               <View><SellerDashboard /></View>
             ) : (
-              <Text>Role not recognized</Text>
+              role === 'admin' && (
+                <AdminDashboard />
+              )
             )
         }
       </ScrollView>
@@ -666,7 +711,7 @@ const styles = StyleSheet.create({
   },
   cardText: {
     fontSize: 16, // Text size
-    color: '#333', // Text color
+    color: COLORS.white, // Text color
     textAlign: 'center', // Center text
   },
   gotoDashboard: {
@@ -680,5 +725,39 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3, // Shadow for Android
   },
-
+  sortContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  
+  radioButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  
+  radioCircle: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#444',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
+  },
+  
+  selectedRb: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.primary,
+  },
+  
+  radioText: {
+    fontSize: 14,
+    color: COLORS.dark,
+  },
+  
 });

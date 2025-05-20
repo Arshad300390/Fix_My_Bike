@@ -13,13 +13,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width, height } = Dimensions.get('window');
 
 const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
-  console.log('userid', userId, 'setAllShop', setAllShop);
-  console.log('service', service);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [reviewText, setReviewText] = useState('');
-  const [rating, setRating] = useState('');
+  // const [reviewText, setReviewText] = useState('');
+  // const [rating, setRating] = useState('');
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   // const getUserId = async () => {
@@ -59,49 +57,49 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
       service_id: service.service_id,
     });
   };
-  const handleSubmitReview = async () => {
-    if (!rating || !reviewText) {
-      alert('Please enter both rating and review.');
-      return;
-    }
+  // const handleSubmitReview = async () => {
+  //   if (!rating || !reviewText) {
+  //     alert('Please enter both rating and review.');
+  //     return;
+  //   }
 
-    const itemId = service._id;
-    const itemType = role === 'seller' ? 'Product' : 'Service';
-    try {
+  //   const itemId = service._id;
+  //   const itemType = role === 'seller' ? 'Product' : 'Service';
+  //   try {
 
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        navigation.replace('Signin');
-        return;
-      }
+  //     const token = await AsyncStorage.getItem('token');
+  //     if (!token) {
+  //       navigation.replace('Signin');
+  //       return;
+  //     }
 
-      const response = await fetch(`http://10.0.2.2:5000/api/reviews/create-review`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          itemId,
-          itemType,
-          rating: Number(rating),
-          comment: reviewText,
-        }),
-      });
+  //     const response = await fetch(`http://10.0.2.2:5000/api/reviews/create-review`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({
+  //         itemId,
+  //         itemType,
+  //         rating: Number(rating),
+  //         comment: reviewText,
+  //       }),
+  //     });
 
-      const data = await response.json();
-      if (response.ok) {
-        alert('Review submitted!');
-        setReviewText('');
-        setRating('');
-      } else {
-        alert(data.error || 'Something went wrong.');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error submitting review');
-    }
-  };
+  //     const data = await response.json();
+  //     if (response.ok) {
+  //       alert('Review submitted!');
+  //       setReviewText('');
+  //       setRating('');
+  //     } else {
+  //       alert(data.error || 'Something went wrong.');
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert('Error submitting review');
+  //   }
+  // };
 
   const getReviews = async () => {
     try {
@@ -111,7 +109,7 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
         navigation.replace('Signin');
         return;
       }
-      console.log('in side get reviews');
+      
       const itemId = service._id;
       const itemType = role === 'seller' ? 'Product' : 'Service';
       console.log(itemId, itemType);
@@ -123,7 +121,6 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
       });
 
       const data = await response.json();
-      console.log('data', data);
       if (response.ok) {
         setReviews(data || []);
       } else {
@@ -159,6 +156,9 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
               </Text>
               <Text style={styles.servicePrice}>
                 Price: {role === 'mechanic' ? service.service_price : service.product_price}
+              </Text>
+              <Text style={styles.serviceDescription}>
+                {role === 'mechanic' ? service.service_description : service.product_description}
               </Text>
             </View>
           </View>
@@ -234,7 +234,7 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
                   )}
 
                 </View>
-                <View>
+                {/* <View>
                   <Text style={styles.reviewTitle}>Write a Review</Text>
                   <TextInput
                     style={styles.input}
@@ -258,7 +258,7 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
                   >
                     <Text style={styles.submitButtonText}>Submit Review</Text>
                   </TouchableOpacity>
-                </View>
+                </View> */}
                 {/* Buttons for Booking & Visiting Shop */}
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
@@ -268,7 +268,6 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
                         handleBooking();
                       } else if (role === "seller") {
                         handleAddToCart(userId, service,);
-                        console.log("I am click");
                       }
                     }}
                   >
@@ -279,7 +278,6 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
                   <TouchableOpacity
                     style={styles.visitButton}
                     onPress={() => {
-                      console.log('Visiting single shop...');
                       setAllShop(service.shop_owner);
                       setModalVisible(false); // Close modal
                       //navigation.navigate('Shop', { role: role, allShop: service.shop_owner });
@@ -344,7 +342,13 @@ const styles = StyleSheet.create({
   servicePrice: {
     fontSize: width * 0.045,
     fontFamily: FONTS.medium,
-    color: COLORS.primary,
+    color: COLORS.warning,
+    textAlign: 'center',
+  },
+  serviceDescription: {
+    fontSize: width * 0.045,
+    fontFamily: FONTS.medium,
+    color: COLORS.lightGray,
     textAlign: 'center',
   },
   modalContainer: {
@@ -468,7 +472,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
     fontStyle: 'italic',
-  }
+  },
 });
 
 

@@ -33,9 +33,16 @@ exports.createCheckout = async (req, res) => {
 };
 
 // Get all checkout records
-exports.getAllCheckouts = async (req, res) => {
+exports.getAllCheckoutsOfSpecificShop = async (req, res) => {
+    console.log(req.userId);
+    console.log('in controller get all checkouts');
+    const shopOwnerId = req.userId;
     try {
-        const checkouts = await Checkout.find().populate('userId shopOwnerId cartItems.productId');
+        const checkouts = await Checkout.find({shopOwnerId})
+        .populate('userId', 'full_name')
+        .populate('shopOwnerId', 'full_name');
+
+        console.log('in controller',checkouts);
         res.status(200).json(checkouts);
     } catch (error) {
         res.status(500).json({ error: error.message });

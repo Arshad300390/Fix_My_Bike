@@ -32,7 +32,10 @@ import NotificationsManager from './src/components/screens/extraScreens/Notifica
 import ItemsDashboard from './src/components/screens/extraScreens/CustomerScreen/ItemsDashboard';
 import CartManager from './src/components/screens/extraScreens/CartScreen/CartManager';
 import Checkout from './src/components/screens/extraScreens/CheckoutScreen/Checkout';
-
+import CustomerOrders from './src/components/screens/extraScreens/CustomerOrders/CustomerOrders';
+import AdminDashboard from './src/components/screens/extraScreens/AdminDashboard/AdminDashboard';
+import ServiceDashboard from './src/components/screens/extraScreens/MechanicScreens/ServiceDashboard';
+import ReviewScreen from './src/components/screens/extraScreens/CustomerScreen/ReviewScreen';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -195,6 +198,26 @@ const App = () => {
         <Stack.Screen name="Checkout">
           {props => (
             <Checkout {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="CustomerOrders">
+          {props => (
+            <CustomerOrders {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="adminDashboard">
+          {props => (
+            <AdminDashboard {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ServiceDashboard">
+          {props => (
+            <ServiceDashboard {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ReviewScreen">
+          {props => (
+            <ReviewScreen {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

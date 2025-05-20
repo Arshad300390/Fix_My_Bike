@@ -46,7 +46,7 @@ const ItemsDashboard = () => {
     const [searchBorderColor, setSearchBorderColor] = useState(COLORS.lightGray);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
-
+ const [sortOrder, setSortOrder] = useState(""); 
 
     useFocusEffect(
         useCallback(() => {
@@ -237,14 +237,22 @@ const ItemsDashboard = () => {
         }
     };
 
-    const filteredServices = customServices.filter(service =>
-        (role === 'seller'
-          ? (service.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-             parseFloat(service.product_price) <= parseFloat(searchQuery))  
-          : (service.service_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-             parseFloat(service.service_price) <= parseFloat(searchQuery)) 
-        )
-      );
+    const filteredServices = customServices
+    .filter(service =>
+      role === 'seller'
+        ? (service.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           parseFloat(service.product_price) <= parseFloat(searchQuery))
+        : (service.service_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           parseFloat(service.service_price) <= parseFloat(searchQuery))
+    )
+    .sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return parseFloat(a.product_price || a.service_price) - parseFloat(b.product_price || b.service_price);
+      } else if (sortOrder === 'desc') {
+        return parseFloat(b.product_price || b.service_price) - parseFloat(a.product_price || a.service_price);
+      }
+      return 0; // No sorting if sortOrder is empty
+    });
       
 
     const handleSearch = text => {
@@ -308,6 +316,7 @@ const ItemsDashboard = () => {
                     </View>
                 )}
                 {!allShop && (
+                    <>
                     <View style={styles.searchContainer}>
                         <View
                             style={[
@@ -336,6 +345,26 @@ const ItemsDashboard = () => {
                             />
                         </View>
                     </View>
+                     <View style={styles.sortContainer}>
+                            <TouchableOpacity
+                              style={styles.radioButton}
+                              onPress={() => setSortOrder('asc')}>
+                              <View style={styles.radioCircle}>
+                                {sortOrder === 'asc' && <View style={styles.selectedRb} />}
+                              </View>
+                              <Text style={styles.radioText}>Lowest to Highest</Text>
+                            </TouchableOpacity>
+                    
+                            <TouchableOpacity
+                              style={styles.radioButton}
+                              onPress={() => setSortOrder('desc')}>
+                              <View style={styles.radioCircle}>
+                                {sortOrder === 'desc' && <View style={styles.selectedRb} />}
+                              </View>
+                              <Text style={styles.radioText}>Highest to Lowest</Text>
+                            </TouchableOpacity>
+                          </View>
+                          </>
                 )
 
                 }
@@ -489,6 +518,40 @@ const styles = StyleSheet.create({
     },
 
 
+    sortContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 10,
+        marginBottom: 10,
+      },
+    
+      radioButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+    
+      radioCircle: {
+        height: 20,
+        width: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#444',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 6,
+      },
+    
+      selectedRb: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: COLORS.primary,
+      },
+    
+      radioText: {
+        fontSize: 14,
+        color: COLORS.dark,
+      },
 
 });
 
