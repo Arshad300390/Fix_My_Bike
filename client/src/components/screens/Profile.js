@@ -700,7 +700,7 @@ const Profile = () => {
                 </View>
               </View>
 
-              <View
+              {/* <View
                 style={[
                   styles.card,
                   {
@@ -804,7 +804,7 @@ const Profile = () => {
                     </View>
                   </View>
                 </View>
-              </View>
+              </View> */}
             </>
           )
           }

@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react/no-unstable-nested-components */
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Image,
@@ -6,17 +7,22 @@ import {
   Dimensions,
   useColorScheme,
 } from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {COLORS, FONTS} from '../constants/Constants';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { COLORS, FONTS } from '../constants/Constants';
 import Home from '../screens/Home';
 import Profile from '../screens/Profile';
+import Map from '../screens/extraScreens/Map/Map';
+import ItemsDashboard from '../screens/extraScreens/CustomerScreen/ItemsDashboard';
 
 const Tab = createBottomTabNavigator();
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const BottomNavigator = () => {
   const colorScheme = useColorScheme();
-
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    console.log('User role in BottomNavigator:', user); // Console the role
+  }, [user]);
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -35,11 +41,13 @@ const BottomNavigator = () => {
       }}>
       <Tab.Screen
         name="Home"
-        component={Home}
+        children={(props) => (
+          <Home {...props} setUser={setUser} />
+        )}
         options={{
           tabBarLabel: 'Home',
           // eslint-disable-next-line react/no-unstable-nested-components
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <View style={styles.imageContainer}>
               <Image
                 source={
@@ -49,7 +57,7 @@ const BottomNavigator = () => {
                 }
                 style={[
                   styles.image,
-                  {tintColor: focused ? COLORS.primary : COLORS.lightGray},
+                  { tintColor: focused ? COLORS.primary : COLORS.lightGray },
                 ]}
               />
             </View>
@@ -57,13 +65,91 @@ const BottomNavigator = () => {
         }}
       />
 
+      {user === 'mechanic' && (<Tab.Screen
+        name="Map"
+        children={(props) => (
+          <Map {...props} />
+        )}
+        options={{
+          tabBarLabel: 'Map',
+          // eslint-disable-next-line react/no-unstable-nested-components
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.imageContainer}>
+              <Image
+                source={
+                  focused
+                    ? require('../../assets/navigatorIcons/home-fill.png')
+                    : require('../../assets/navigatorIcons/home.png')
+                }
+                style={[
+                  styles.image,
+                  { tintColor: focused ? COLORS.primary : COLORS.lightGray },
+                ]}
+              />
+            </View>
+          ),
+        }}
+      />)
+      }
+      {user == 'customer' && (
+        <>
+        <Tab.Screen
+          name="Shops"
+          component={ItemsDashboard}
+          initialParams={{ role: 'seller', allShop: null }}
+          options={{
+            tabBarLabel: 'Products',
+            // eslint-disable-next-line react/no-unstable-nested-components
+            tabBarIcon: ({ focused }) => (
+              <View style={styles.imageContainer}>
+                <Image
+                  source={
+                    focused
+                      ? require('../../assets/navigatorIcons/box-fill.png')
+                      : require('../../assets/navigatorIcons/box.png')
+                  }
+                  style={[
+                    styles.image,
+                    { tintColor: focused ? COLORS.primary : COLORS.lightGray },
+                  ]}
+                />
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+      name="Services"  // another unique name
+      component={ItemsDashboard}
+      initialParams={{ role: 'mechanic', allShop: null, type: 'services' }}
+      options={{
+        tabBarLabel: 'Services',
+        tabBarIcon: ({ focused }) => (
+          <View style={styles.imageContainer}>
+            <Image
+              source={
+                focused
+                ? require('../../assets/navigatorIcons/service-fill.png')
+                : require('../../assets/navigatorIcons/service.png')
+              }
+              style={[
+                styles.image,
+                { tintColor: focused ? COLORS.primary : COLORS.lightGray },
+              ]}
+            />
+          </View>
+        ),
+      }}
+    />
+    </>
+      )
+      }
       <Tab.Screen
         name="Profile"
         component={Profile}
         options={{
           tabBarLabel: 'Profile',
           // eslint-disable-next-line react/no-unstable-nested-components
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <View style={styles.imageContainer}>
               <Image
                 source={
@@ -73,7 +159,7 @@ const BottomNavigator = () => {
                 }
                 style={[
                   styles.image,
-                  {tintColor: focused ? COLORS.primary : COLORS.lightGray},
+                  { tintColor: focused ? COLORS.primary : COLORS.lightGray },
                 ]}
               />
             </View>

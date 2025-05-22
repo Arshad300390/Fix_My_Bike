@@ -5,33 +5,33 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
   SafeAreaView,
   Dimensions,
+  ActivityIndicator,
+  FlatList,
   TouchableOpacity,
-  useColorScheme,
-  Modal,
+  Animated,
+  colorScheme
 } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
-import { COLORS } from '../../../constants/Constants';
-import { useNavigation } from '@react-navigation/native';
+import { COLORS, FONTS } from '../../../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import Feather from 'react-native-vector-icons/Feather';
 
 const { width } = Dimensions.get('window');
 
-const ServiceCenterLocator = () => {
-  const navigation = useNavigation();
-  const colorScheme = useColorScheme();
+const ServiceCenterLocator = ({ navigation }) => {
   const [mechanics, setMechanics] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedMechanic, setSelectedMechanic] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [mapRegion, setMapRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+  const [drawerVisible, setDrawerVisible] = useState(false); // State to toggle drawer visibility
+  const drawerAnimation = useState(new Animated.Value(-width * 0.4))[0]; // Animation for drawer
 
   useEffect(() => {
     getMechanics();
@@ -41,219 +41,214 @@ const ServiceCenterLocator = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
-        navigation.replace('Signin');
+        Alert.alert('Authentication Error', 'Please sign in first.');
         return;
       }
 
-      const url = "http://10.0.2.2:5000/api/users/get-mechanics-with-location";
+      const url = 'http://10.0.2.2:5000/api/users/get-mechanics-with-location';
 
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Mechanics Data:", response.data);
-      setMechanics(response.data.mechanics || []);
+      const mechanicsData = response.data.mechanics || [];
+      setMechanics(mechanicsData);
+
+      // Set the map region to the first mechanic's location if available
+      if (mechanicsData.length > 0) {
+        setMapRegion({
+          latitude: mechanicsData[0].latitude || 37.78825,
+          longitude: mechanicsData[0].longitude || -122.4324,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+      }
     } catch (error) {
-      console.error("Error fetching mechanics:", error);
+      console.error('Error fetching mechanics:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleOpenMapModal = (mechanic) => {
-    setSelectedMechanic(mechanic);
+  const toggleDrawer = () => {
+    if (drawerVisible) {
+      // Hide the drawer
+      Animated.timing(drawerAnimation, {
+        toValue: -width * 0.4,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => setDrawerVisible(false));
+    } else {
+      // Show the drawer
+      setDrawerVisible(true);
+      Animated.timing(drawerAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const goToLocation = (latitude, longitude) => {
     setMapRegion({
-      latitude: mechanic.latitude || 37.78825,
-      longitude: mechanic.longitude || -122.4324,
+      latitude: latitude || 30.1575, // Default latitude
+      longitude: longitude || 71.5249, // Default longitude
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     });
-    setModalVisible(true);
   };
 
+
+  const renderMechanicItem = ({ item }) => (
+    <View style={styles.mechanicRow}>
+      <View style={styles.mechanicInfo}>
+        <Text style={styles.mechanicName}>{item.full_name}</Text>
+        <Text style={styles.mechanicEmail}>{item.email}</Text>
+      </View>
+      <TouchableOpacity
+        style={styles.arrowButton}
+        onPress={() => goToLocation(item.latitude, item.longitude)}
+      >
+        <Feather name="arrow-right" size={20} color={COLORS.lightGray} />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
-    <SafeAreaView
-      style={[
-        styles.primaryContainer,
-        {
-          backgroundColor:
-            colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
-        },
-      ]}
-    >
-      {/* Header */}
-      <View
-        style={[
-          styles.headerContainer,
-          {
-            backgroundColor:
-              colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
-          },
-        ]}
-      >
+    <SafeAreaView style={styles.container}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Feather
+            name="chevron-left"
+            size={30}
+            color={colorScheme === 'dark' ? COLORS.white : COLORS.dark}
+          />
+        </TouchableOpacity>
         <Text style={styles.headerText}>Service Center Locator</Text>
+        <View />
       </View>
 
-      {/* Mechanic List */}
-      <View style={styles.mechanicListContainer}>
-        {mechanics.map((mechanic, index) => (
-          <View key={index} style={styles.mechanicCard}>
-            <View>
-              <Text style={styles.mechanicName}>{mechanic.full_name}</Text>
-              <Text style={styles.mechanicService}>{mechanic.email}</Text>
-              <Text style={styles.mechanicService}>{mechanic.phone_number}</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.viewMapButton}
-              onPress={() => handleOpenMapModal(mechanic)}
-            >
-              <Feather name="arrow-right" size={24} color={COLORS.white} />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
 
-      {/* Modal for Map */}
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={false}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              style={styles.closeButton}
-            >
-              <Feather name="x" size={24} color={COLORS.white} />
-            </TouchableOpacity>
-            <Text style={styles.modalHeaderText}>
-              {selectedMechanic?.full_name}
-            </Text>
-          </View>
-
-          {/* Search Bar */}
-          <View style={styles.searchBoxContainer}>
-            <GooglePlacesAutocomplete
-              placeholder="Search location"
-              fetchDetails
-              onPress={(data, details = null) => {
-                if (details?.geometry?.location) {
-                  setMapRegion({
-                    ...mapRegion,
-                    latitude: details.geometry.location.lat,
-                    longitude: details.geometry.location.lng,
-                  });
-                }
-              }}
-              query={{
-                key: 'YOUR_GOOGLE_API_KEY', // Replace with your Google Maps API key
-                language: 'en',
-              }}
-              styles={{
-                textInput: {
-                  height: 44,
-                  color: '#000',
-                  backgroundColor: '#fff',
-                  borderRadius: 5,
-                  paddingHorizontal: 10,
-                  fontSize: 16,
-                },
-              }}
+      {loading ? (
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      ) : (
+        <View style={styles.contentContainer}>
+          {/* Drawer */}
+          <Animated.View
+            style={[
+              styles.drawerContainer,
+              { transform: [{ translateX: drawerAnimation }] },
+            ]}
+          >
+            <FlatList
+              data={mechanics}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderMechanicItem}
             />
-          </View>
+          </Animated.View>
 
+          {/* Map */}
           <MapView
             provider={PROVIDER_GOOGLE}
             style={styles.map}
             region={mapRegion}
             onRegionChangeComplete={(region) => setMapRegion(region)}
           >
-            <Marker
-              coordinate={{
-                latitude: selectedMechanic?.latitude || 37.78825,
-                longitude: selectedMechanic?.longitude || -122.4324,
-              }}
-              title={selectedMechanic?.full_name}
-              description={selectedMechanic?.service_name}
-            />
+            {mechanics.map((mechanic, index) => (
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: mechanic.latitude || 30.1575, // Default latitude
+                  longitude: mechanic.longitude || 71.5249, // Default longitude
+                }}
+                title={mechanic.full_name}
+                description={mechanic.service_name}
+              />
+            ))}
           </MapView>
-        </SafeAreaView>
-      </Modal>
+
+          {/* Toggle Drawer Button */}
+          <TouchableOpacity
+            style={[
+              styles.drawerToggle,
+              { left: drawerVisible ? '40%' : 0 }, // Adjust position based on drawer visibility
+            ]}
+            onPress={toggleDrawer}
+          >
+            <Feather
+              name={drawerVisible ? 'chevron-left' : 'chevron-right'}
+              size={24}
+              color={COLORS.white}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  primaryContainer: {
+  container: {
     flex: 1,
-    padding: 10,
-  },
-  headerContainer: {
-    padding: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: COLORS.white,
   },
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+    color: COLORS.primary,
   },
-  mechanicListContainer: {
+  contentContainer: {
     flex: 1,
-    marginTop: 20,
+    flexDirection: 'row',
   },
-  mechanicCard: {
-    backgroundColor: COLORS.lightDark,
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 8,
+  drawerContainer: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: '40%',
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    zIndex: 1,
+  },
+  mechanicRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.warning,
+  },
+  mechanicInfo: {
+    flex: 1,
   },
   mechanicName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.warning,
-  },
-  mechanicService: {
-    fontSize: 14,
-    color: COLORS.white,
-  },
-  viewMapButton: {
-    backgroundColor: COLORS.primary,
-    padding: 8,
-    borderRadius: 50,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  modalHeader: {
-    padding: 15,
-    backgroundColor: COLORS.primary,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  modalHeaderText: {
-    color: COLORS.white,
     fontSize: 20,
     fontWeight: 'bold',
+    color: COLORS.white,
   },
-  closeButton: {
-    backgroundColor: COLORS.primary,
+  mechanicEmail: {
+    fontSize: 14,
+    color: COLORS.gray,
+  },
+  arrowButton: {
     padding: 5,
-    borderRadius: 50,
-  },
-  searchBoxContainer: {
-    zIndex: 1,
-    position: 'absolute',
-    top: 70,
-    left: 10,
-    right: 10,
   },
   map: {
     flex: 1,
+  },
+  drawerToggle: {
+    position: 'absolute',
+    top: '50%',
+    width: 40,
+    height: 40,
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2,
   },
 });
 

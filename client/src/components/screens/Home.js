@@ -37,10 +37,11 @@ import AdminDashboard from './extraScreens/AdminDashboard/AdminDashboard';
 
 const { width, height } = Dimensions.get('window');
 
-const Home = () => {
+const Home = ({setUser: updateUser}) => {
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
+  const [user, setUser] = useState('');
   const [searchBorderColor, setSearchBorderColor] = useState(COLORS.lightGray);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -121,6 +122,7 @@ const Home = () => {
 
         if (user && user.role) {
           setRole(user.role);
+          updateUser(user.role); 
           if (user.role === 'customer') {
             // oilChange();
             getAllServices();
