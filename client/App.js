@@ -180,11 +180,11 @@ const App = () => {
             <ShopItemScreen {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
-        <Stack.Screen name="Shops">
+        {/* <Stack.Screen name="Shops">
           {props => (
             <ItemsDashboard {...props} setStatusBarColor={setStatusBarColor} />
           )}
-        </Stack.Screen>
+        </Stack.Screen> */}
         <Stack.Screen name="Notifications">
           {props => (
             <NotificationsManager {...props} setStatusBarColor={setStatusBarColor} />

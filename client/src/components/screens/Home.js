@@ -122,7 +122,7 @@ const Home = ({setUser: updateUser}) => {
 
         if (user && user.role) {
           setRole(user.role);
-          updateUser(user.role); 
+          updateUser(user.role);
           if (user.role === 'customer') {
             // oilChange();
             getAllServices();
