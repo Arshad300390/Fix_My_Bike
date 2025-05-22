@@ -20,18 +20,21 @@ const ServicesContainer = ({
   service_description,
   service_price,
   service_id,
+  isTouchable = true,
 }) => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
 
   const handleServicePress = () => {
-    navigation.navigate('Service_Booking', {
-      service_image,
-      service_name,
-      service_description,
-      service_price,
-      service_id,
-    });
+    if (isTouchable) {
+      navigation.navigate('Service_Booking', {
+        service_image,
+        service_name,
+        service_description,
+        service_price,
+        service_id,
+      });
+    }
   };
 console.log('image', service_image);
   return (

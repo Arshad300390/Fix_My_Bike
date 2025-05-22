@@ -36,6 +36,11 @@ import CustomerOrders from './src/components/screens/extraScreens/CustomerOrders
 import AdminDashboard from './src/components/screens/extraScreens/AdminDashboard/AdminDashboard';
 import ServiceDashboard from './src/components/screens/extraScreens/MechanicScreens/ServiceDashboard';
 import ReviewScreen from './src/components/screens/extraScreens/CustomerScreen/ReviewScreen';
+import UserManagement from './src/components/screens/extraScreens/AdminDashboard/UserManagement';
+import BookingManagement from './src/components/screens/extraScreens/AdminDashboard/BookingManagement';
+import ProductManagement from './src/components/screens/extraScreens/AdminDashboard/ProductManagement';
+import ServiceManagement from './src/components/screens/extraScreens/AdminDashboard/ServiceManagement';
+import OrderManagement from './src/components/screens/extraScreens/AdminDashboard/OrderManagement';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -205,11 +210,7 @@ const App = () => {
             <CustomerOrders {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
-        <Stack.Screen name="adminDashboard">
-          {props => (
-            <AdminDashboard {...props} setStatusBarColor={setStatusBarColor} />
-          )}
-        </Stack.Screen>
+       
         <Stack.Screen name="ServiceDashboard">
           {props => (
             <ServiceDashboard {...props} setStatusBarColor={setStatusBarColor} />
@@ -218,6 +219,37 @@ const App = () => {
         <Stack.Screen name="ReviewScreen">
           {props => (
             <ReviewScreen {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        {/* admin screens */}
+        <Stack.Screen name="adminDashboard">
+          {props => (
+            <AdminDashboard {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="UserManagement">
+          {props => (
+            <UserManagement {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="BookingManagement">
+          {props => (
+            <BookingManagement {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ProductManagement">
+          {props => (
+            <ProductManagement {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ServiceManagement">
+          {props => (
+            <ServiceManagement {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="OrderManagement">
+          {props => (
+            <OrderManagement {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

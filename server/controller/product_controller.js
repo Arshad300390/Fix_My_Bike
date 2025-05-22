@@ -37,6 +37,19 @@ const addProduct = async (req, res, next) => {
   }
 };
 
+const getProductsToAdmin = async(req, res, next)=>{
+  try {
+    const products = await Product.find();
+
+    if (!products.length) {
+      return next(new HttpError("No products found .", 404));
+    }
+    res.json({ products });
+  } catch (err) {
+    console.log('error fetching products', err);
+  }
+}
+
 const getshopProducts = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -225,4 +238,5 @@ module.exports = {
   deleteProduct,
   getProductsByUserId,
   getAllProducts,
+  getProductsToAdmin,
 };

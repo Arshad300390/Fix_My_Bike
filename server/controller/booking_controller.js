@@ -74,6 +74,23 @@ const createBooking = async (req, res, next) => {
   }
 };
 
+
+const getBookingsToAdmin = async (req, res, next) => {
+  try {
+    const bookings = await Booking.find();
+
+    if (!bookings.length) {
+      return next(new HttpError("No bookings yet.", 404));
+    }
+
+    res.status(200).json({ bookings });
+  } catch (error) {
+    console.error('Error fetching bookings for admin:', error);
+    return next(new HttpError("Failed to fetch bookings.", 500));
+  }
+};
+
+
 const getAllUserBookings = async (req, res, next) => {
   try {
     const bookings = await Booking.find({
@@ -321,4 +338,5 @@ module.exports = {
   updateBookingStatus,
   deleteBooking,
   getOilChange,
+  getBookingsToAdmin,
 };

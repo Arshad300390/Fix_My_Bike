@@ -83,6 +83,70 @@ const login = async (req, res, next) => {
   }
 };
 
+//for admin
+const getUsersToAdmin = async (req, res, next) => {
+  try {
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: "ratings",
+          localField: "_id",
+          foreignField: "shop_owner", // Update if your field is different
+          as: "ratings",
+        },
+      },
+      {
+        $lookup: {
+          from: "shops",
+          localField: "_id",
+          foreignField: "user", // Update this field as per your Shop schema
+          as: "shop",
+        },
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: [
+              { $gt: [{ $size: "$ratings" }, 0] },
+              { $avg: "$ratings.rating" },
+              0, // Default if no ratings
+            ],
+          },
+          shopLocation: {
+            $cond: [
+              { $gt: [{ $size: "$shop" }, 0] },
+              { $ifNull: [{ $arrayElemAt: ["$shop.location", 0] }, null] },
+              null, // Default if no shop
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          full_name: 1,
+          email: 1,
+          role: 1,
+          profile_image: 1,
+          averageRating: 1,
+          shopLocation: 1,
+        },
+      },
+    ]);
+
+    if (!users.length) {
+      return next(new HttpError("No users found.", 404));
+    }
+
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error("Error fetching users with rating and shop:", error);
+    return next(new HttpError("Failed to fetch users.", 500));
+  }
+};
+
+//end for admin
+
+
 const getUsers = async (req, res, next) => {
   try {
     const { userId, userType } = req;
@@ -516,4 +580,5 @@ module.exports = {
   getSellersWithRatings,
   getMechanicsWithRatings,
   getMechanicsWithLocation,
+  getUsersToAdmin,
 };

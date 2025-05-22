@@ -12,6 +12,13 @@ router.get(
   authMiddleware,
   productController.getshopProducts
 );
+
+router.get(
+  "/admin/get-products",
+  authMiddleware,
+  productController.getProductsToAdmin
+);
+
 router.get("/get-products/:userId", authMiddleware, productController.getProductsByUserId);
 
 router.get("/all/products", authMiddleware, productController.getAllProducts);

@@ -14,7 +14,11 @@ router.get(
   authMiddleware,
   bookingController.getAllUserBookings
 );
-
+router.get(
+  "/admin/getBookings",
+  authMiddleware,
+  bookingController.getBookingsToAdmin
+);
 router.get(
   "/service-bookings",
   authMiddleware,

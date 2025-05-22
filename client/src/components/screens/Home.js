@@ -27,7 +27,6 @@ import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import ServicesContainer from '../utils/ServicesCard/ServicesCard';
 import ScheduleCard from '../utils/SheduleCard/SheduleCard';
 import SellerDashboard from './extraScreens/SellerScreens/SellerDashboard';
-import ServiceDashboard from './extraScreens/MechanicScreens/ServiceDashboard';
 import { requestUserPermission, getFcmToken } from './../../../notificationService';
 
 import { getMessaging, onMessage, onBackgroundMessage } from '@react-native-firebase/messaging';
@@ -162,7 +161,7 @@ const Home = ({setUser: updateUser}) => {
 
       setCustomServices(response.data.Items);
     } catch (error) {
-      console.log('Error fetching oil change data:', error);
+      console.log('Error fetching  change data:', error);
     }
   };
 

@@ -10,6 +10,8 @@ router.post("/signin", userController.login);
 
 router.get("/get-users", authMiddleware, userController.getUsers);
 
+router.get("/admin/get-Users", authMiddleware, userController.getUsersToAdmin);
+
 router.get("/get-mechanics", authMiddleware, userController.getMechanics);
 
 router.get("/get-sellers", authMiddleware, userController.getSellers);

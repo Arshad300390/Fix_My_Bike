@@ -32,6 +32,23 @@ exports.createCheckout = async (req, res) => {
     }
 };
 
+exports.getCheckOutsToAdmin = async (req, res, next) => {
+    try {
+      const checkouts = await Checkout.find()
+        .populate('userId', 'full_name')
+        .populate('shopOwnerId', 'full_name');
+  
+      if (!checkouts.length) {
+        return next(new HttpError('No checkouts found.', 404));
+      }
+  
+      res.status(200).json({ checkouts });
+    } catch (error) {
+      console.log('Error getting checkouts:', error);
+      return next(new HttpError('Fetching checkouts failed, please try again later.', 500));
+    }
+  };
+
 // Get all checkout records
 exports.getAllCheckoutsOfSpecificShop = async (req, res) => {
     console.log(req.userId);
