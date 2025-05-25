@@ -20,7 +20,6 @@ const {width, height} = Dimensions.get('window');
 const EmergencyAssistance = ({mechanic}) => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  console.log('mechanic object', mechanic);
 
   return (
      <View

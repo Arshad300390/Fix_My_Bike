@@ -18,6 +18,8 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 
 const { width } = Dimensions.get('window');
 
@@ -45,7 +47,7 @@ const ServiceCenterLocator = ({ navigation }) => {
         return;
       }
 
-      const url = 'http://10.0.2.2:5000/api/users/get-mechanics-with-location';
+      const url = `${Base_Endpoint}/api/users/get-mechanics-with-location`;
 
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },

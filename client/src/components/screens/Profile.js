@@ -21,6 +21,8 @@ import DeleteAccountModal from '../utils/Modals/DeleteAccountModal';
 import CustomModal from '../utils/Modals/CustomModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import BASE_URL from '../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 
 const { width, height } = Dimensions.get('window');
 
@@ -47,7 +49,7 @@ const Profile = () => {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
           method: 'GET',
-          url: 'http://10.0.2.2:5000/api/users/get-users',
+          url: `${Base_Endpoint}/api/users/get-users`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -161,8 +163,8 @@ const Profile = () => {
               </View>
             </View>
           </View>
-          {role !== 'admin' && (
-            <>
+         
+           
               {role === 'customer' && (
                 <>
                   <View
@@ -269,114 +271,115 @@ const Profile = () => {
                       </View>
                     </View>
                   </View>
-
-                  <View
-                    style={[
-                      styles.card,
-                      {
-                        backgroundColor:
-                          colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-                      },
-                    ]}>
-                    <View style={styles.container}>
-                      <View style={styles.leftContainer}>
-                        <View style={styles.iconContainer}>
-                          <Feather
-                            name="book"
-                            size={25}
-                            style={[
-                              styles.icon,
-                              {
-                                color:
-                                  colorScheme === 'dark'
-                                    ? COLORS.white
-                                    : COLORS.primary,
-                              },
-                            ]}
-                          />
-                        </View>
-                        <View style={styles.textContainer}>
-                          <Text
-                            style={{
-                              color:
-                                colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                              fontSize: width * 0.045,
-                              marginLeft: 10,
-                            }}>
-                            My Bookings:{' '}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View style={styles.rightContainer}>
-                        <View style={styles.iconContainer}>
-                          <TouchableOpacity
-                            onPress={() => navigation.navigate('My_Bookings')}>
-                            <Feather
-                              name="chevron-right"
-                              size={30}
-                              color={COLORS.primary}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-
-                  <View
-                    style={[
-                      styles.card,
-                      {
-                        backgroundColor:
-                          colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-                      },
-                    ]}>
-                    <View style={styles.container}>
-                      <View style={styles.leftContainer}>
-                        <View style={styles.iconContainer}>
-                          <Feather
-                            name="grid"
-                            size={25}
-                            style={[
-                              styles.icon,
-                              {
-                                color:
-                                  colorScheme === 'dark'
-                                    ? COLORS.white
-                                    : COLORS.primary,
-                              },
-                            ]}
-                          />
-                        </View>
-                        <View style={styles.textContainer}>
-                          <Text
-                            style={{
-                              color:
-                                colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                              fontSize: width * 0.045,
-                              marginLeft: 10,
-                            }}>
-                            Services History:{' '}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View style={styles.rightContainer}>
-                        <View style={styles.iconContainer}>
-                          <TouchableOpacity
-                            onPress={() => navigation.navigate('Services')}>
-                            <Feather
-                              name="chevron-right"
-                              size={30}
-                              color={COLORS.primary}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
                 </>
               )}
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.container}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="book"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        My Bookings:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('My_Bookings')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.container}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="grid"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        Services History:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Services')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+
               {role === 'mechanic' && (
                 <>
                   <View
@@ -805,9 +808,7 @@ const Profile = () => {
                   </View>
                 </View>
               </View> */}
-            </>
-          )
-          }
+          
           <View
             style={[
               styles.card,

@@ -9,7 +9,8 @@ import { COLORS, FONTS } from "../../../constants/Constants";
 import { useNavigation } from "@react-navigation/native";
 import ImagePicker from "react-native-image-crop-picker"; // Make sure you installed this
 import axios from "axios";
-
+import BASE_URL from "../../../constants/BASE_URL";
+const { Base_Endpoint } = BASE_URL;
 const { width } = Dimensions.get("window");
 
 const ProductForm = ({ route }) => {
@@ -71,7 +72,7 @@ const handleSubmit = async () => {
     }
 
     // Make the API request to add the product
-    const response = await axios.patch(`http://10.0.2.2:5000/api/update-product/${product._id}`, formData, {
+    const response = await axios.patch(`${Base_Endpoint}/api/update-product/${product._id}`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",

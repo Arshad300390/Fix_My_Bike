@@ -16,7 +16,8 @@ import {COLORS, FONTS} from '../../../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomModal from '../../../utils/Modals/CustomModal';
 import axios from 'axios';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 const {width, height} = Dimensions.get('window');
 
 const AddBikes = () => {
@@ -120,7 +121,7 @@ const AddBikes = () => {
       const token = await AsyncStorage.getItem('token');
 
       const response = await axios.post(
-        'http://10.0.2.2:5000/api/bikes/add-bike',
+        `${Base_Endpoint}/api/bikes/add-bike`,
         bikeData,
         {
           headers: {

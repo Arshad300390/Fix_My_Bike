@@ -8,7 +8,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Feather from 'react-native-vector-icons/Feather'; // Import Feather icons
 import { COLORS, FONTS } from '../../../constants/Constants';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const UserManagement = ({ navigation }) => {
   const [mechanics, setMechanics] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -29,7 +30,7 @@ const UserManagement = ({ navigation }) => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/users/admin/get-Users',
+          `${Base_Endpoint}/api/users/admin/get-Users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

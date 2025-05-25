@@ -29,7 +29,7 @@ import EditService from './src/components/screens/extraScreens/MechanicScreens/E
 import ShopsDashboard from './src/components/screens/extraScreens/CustomerScreen/ShopsDashboard';
 import ShopItemScreen from './src/components/screens/extraScreens/CustomerScreen/ShopItemScreen';
 import NotificationsManager from './src/components/screens/extraScreens/NotificationsScreen/NotificationsManager';
-import ItemsDashboard from './src/components/screens/extraScreens/CustomerScreen/ItemsDashboard';
+//import ItemsDashboard from './src/components/screens/extraScreens/CustomerScreen/ItemsDashboard';
 import CartManager from './src/components/screens/extraScreens/CartScreen/CartManager';
 import Checkout from './src/components/screens/extraScreens/CheckoutScreen/Checkout';
 import CustomerOrders from './src/components/screens/extraScreens/CustomerOrders/CustomerOrders';
@@ -143,12 +143,17 @@ const App = () => {
             <Bookings {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
-
-        <Stack.Screen name="Services">
+         <Stack.Screen name="Services">
           {props => (
             <Services {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
+
+        {/* <Stack.Screen name="Services">
+          {props => (
+            <Services {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen> */}
 
         <Stack.Screen name="Service_Booking">
           {props => (
@@ -210,7 +215,7 @@ const App = () => {
             <CustomerOrders {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
-       
+
         <Stack.Screen name="ServiceDashboard">
           {props => (
             <ServiceDashboard {...props} setStatusBarColor={setStatusBarColor} />

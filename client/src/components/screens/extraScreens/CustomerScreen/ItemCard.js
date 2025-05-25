@@ -9,6 +9,9 @@ import { View, Text, StyleSheet, Image, SafeAreaView, Modal, TouchableWithoutFee
 import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL; // Extract the base endpoint from the URL
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -113,7 +116,7 @@ const ItemCard = ({ service, role, setAllShop, userId, handleAddToCart, }) => {
       const itemId = service._id;
       const itemType = role === 'seller' ? 'Product' : 'Service';
       console.log(itemId, itemType);
-      const response = await fetch(`http://10.0.2.2:5000/api/reviews/get-review-by-id/${itemType}/${itemId}`, {
+      const response = await fetch(`${Base_Endpoint}/api/reviews/get-review-by-id/${itemType}/${itemId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

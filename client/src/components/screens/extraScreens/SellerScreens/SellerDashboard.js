@@ -10,6 +10,9 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import ProductCard from "./ProductCard"; // Adjust the path based on your file structure
 import Feather from 'react-native-vector-icons/Feather';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
+
 const { width, height } = Dimensions.get('window');
 
 const SellerDashboard = () => {
@@ -31,7 +34,7 @@ const SellerDashboard = () => {
         return;
       }
 
-      const response = await axios.get("http://10.0.2.2:5000/api/get-products", {
+      const response = await axios.get(`{Base_Endpoint}/api/get-products`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -99,7 +102,7 @@ const SellerDashboard = () => {
               navigation.replace("Signin");
               return;
             }
-            await axios.delete(`http://10.0.2.2:5000/api/remove-product/${productId}`, {
+            await axios.delete(`${Base_Endpoint}/api/remove-product/${productId}`, {
               headers: {
                 Authorization: `Bearer ${token}`,
               }

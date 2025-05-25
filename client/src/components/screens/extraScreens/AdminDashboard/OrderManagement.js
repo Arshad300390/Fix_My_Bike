@@ -5,7 +5,8 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Feather from 'react-native-vector-icons/Feather';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const OrderManagement = ({ navigation }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null); // To store the selected order
@@ -22,7 +23,7 @@ const OrderManagement = ({ navigation }) => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/admin/get-checkouts',
+          `${Base_Endpoint}/api/admin/get-checkouts`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

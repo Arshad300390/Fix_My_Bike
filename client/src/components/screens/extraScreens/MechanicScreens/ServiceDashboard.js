@@ -19,6 +19,8 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import ServiceCard from './ServiceCard';
 import Feather from 'react-native-vector-icons/Feather';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,7 +44,7 @@ const ServiceDashboard = () => {
         return;
       }
 
-      const response = await axios.get('http://10.0.2.2:5000/api/shop/services', {
+      const response = await axios.get(`${Base_Endpoint}/api/shop/services`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -118,7 +120,7 @@ const ServiceDashboard = () => {
               navigation.replace('Signin');
               return;
             }
-            await axios.delete(`http://10.0.2.2:5000/api/shop/services/${serviceId}`, {
+            await axios.delete(`${Base_Endpoint}/api/shop/services/${serviceId}`, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },

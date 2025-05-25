@@ -31,7 +31,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 const { width, height } = Dimensions.get('window');
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const ServiceBooking = () => {
   const route = useRoute();
   const service_name = route.params?.service_name;
@@ -124,7 +125,7 @@ const ServiceBooking = () => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/users/get-users',
+          `${Base_Endpoint}/api/users/get-users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -177,7 +178,7 @@ const ServiceBooking = () => {
 
           const response = await axios.get(
 
-            `http://10.0.2.2:5000/api/bikes/get-user-selected-bike/${userId}`,
+            `${Base_Endpoint}/api/bikes/get-user-selected-bike/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -374,7 +375,7 @@ const ServiceBooking = () => {
           mechanicNumber: '',
         };
         const response = await axios.post(
-          'http://10.0.2.2:5000/api/service-booking',
+          `${Base_Endpoint}/api/service-booking`,
           bookingData,
           {
             headers: {

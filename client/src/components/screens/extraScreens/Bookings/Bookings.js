@@ -24,7 +24,8 @@ import axios from 'axios';
 import ServicesContainer from '../../../utils/ServiceHistoryCard/ServiceHistoryCard';
 import messaging from '@react-native-firebase/messaging';
 const { width, height } = Dimensions.get('window');
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const Bookings = () => {
 
   const navigation = useNavigation();
@@ -83,7 +84,7 @@ useEffect(() => {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
           method: 'GET',
-          url: 'http://10.0.2.2:5000/api/users/get-users',
+          url: `${Base_Endpoint}/api/users/get-users`,
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -136,8 +137,8 @@ useEffect(() => {
       if (!role) return;
       const url =
         role === 'mechanic'
-          ? 'http://10.0.2.2:5000/api/bookings'
-          : 'http://10.0.2.2:5000/api/service-bookings';
+          ? `${Base_Endpoint}/api/bookings`
+          : `${Base_Endpoint}/api/service-bookings`;
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
@@ -177,7 +178,7 @@ useEffect(() => {
       const token = await AsyncStorage.getItem('token');
       const response = await axios({
         method: 'PUT',
-        url: `http://10.0.2.2:5000/api/service-booking/${id}/status`,
+        url: `${Base_Endpoint}/api/service-booking/${id}/status`,
         headers: {
           'Authorization': `Bearer ${token}`,
         },

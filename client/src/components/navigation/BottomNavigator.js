@@ -46,7 +46,6 @@ const BottomNavigator = () => {
         )}
         options={{
           tabBarLabel: 'Home',
-          // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({ focused }) => (
             <View style={styles.imageContainer}>
               <Image
@@ -118,7 +117,7 @@ const BottomNavigator = () => {
           }}
         />
         <Tab.Screen
-      name="Services"  // another unique name
+      name="ItemsDashboard"  // another unique name
       component={ItemsDashboard}
       initialParams={{ role: 'mechanic', allShop: null, type: 'services' }}
       options={{

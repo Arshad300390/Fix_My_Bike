@@ -18,7 +18,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ServicesContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
 const {width, height} = Dimensions.get('window');
-
+import BASE_URL from '../../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 const Bookings = () => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
@@ -31,7 +32,7 @@ const Bookings = () => {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
           method: 'GET',
-          url: 'http://10.0.2.2:5000/api/service-bookings',
+          url: `${Base_Endpoint}/api/service-bookings`,
           headers: {
             'Authorization': `Bearer ${token}`,
           },

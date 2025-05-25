@@ -5,6 +5,9 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import ImagePicker from "react-native-image-crop-picker";
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
+
 const { width } = Dimensions.get('window');
 
 const ServiceForm = ({ onSubmit }) => {
@@ -46,7 +49,7 @@ const ServiceForm = ({ onSubmit }) => {
       }
       console.log("FormData:", formData); // Log FormData for debugging
 
-      const response = await axios.post('http://10.0.2.2:5000/api/shop/services',
+      const response = await axios.post(`${Base_Endpoint}/api/shop/services`,
         formData,
         {
           headers: {

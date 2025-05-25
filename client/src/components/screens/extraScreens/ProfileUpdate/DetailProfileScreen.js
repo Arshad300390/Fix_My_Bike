@@ -20,6 +20,8 @@ import imgPlaceHolder from '../../../../assets/placeholders/default-avatar.png';
 import axios from 'axios';
 import CustomModal from '../../../utils/Modals/CustomModal';
 import ImageUploadModal from '../../../utils/Modals/ImageUploadModal';
+import BASE_URL from '../../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width, height} = Dimensions.get('window');
 
@@ -51,14 +53,14 @@ const DetailProfileScreen = () => {
         setToken(storedToken);
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/users/get-users',
+          `${Base_Endpoint}/api/users/get-users`,
           {
             headers: {
               Authorization: `Bearer ${storedToken}`,
             },
           },
         );
-
+console.log(response.data);
         const user = response.data.User;
         if (user) {
           setUserId(user._id);
@@ -99,7 +101,7 @@ const DetailProfileScreen = () => {
         });
 
       const response = await axios.put(
-        `http://10.0.2.2:5000/api/users/update-user/${userId}`,
+        `${Base_Endpoint}/api/users/update-user/${userId}`,
         formData,
         {
           headers: {

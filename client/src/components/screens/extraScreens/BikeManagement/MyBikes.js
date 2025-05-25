@@ -19,7 +19,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import BikeCard from '../../../utils/BikeCard/BikeCard';
 import CustomModal from '../../../utils/Modals/CustomModal';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 const {width} = Dimensions.get('window');
 
 const MyBikes = () => {
@@ -50,7 +51,7 @@ const MyBikes = () => {
 
     try {
       const userResponse = await axios.get(
-        'http://10.0.2.2:5000/api/users/get-users',
+        '${Base_Endpoint}/api/users/get-users',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,7 +67,7 @@ const MyBikes = () => {
       }
 
       const bikesResponse = await axios.get(
-        `http://10.0.2.2:5000/api/bikes/get-bike-by-user/${user._id}`,
+        `${Base_Endpoint}/api/bikes/get-bike-by-user/${user._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,7 +107,7 @@ const MyBikes = () => {
     }
 
     const response = await axios.patch(
-      `http://10.0.2.2:5000/api/bikes/update-selection/${id}`,
+      `${Base_Endpoint}/api/bikes/update-selection/${id}`,
       { isSelected: value },
       {
         headers: {

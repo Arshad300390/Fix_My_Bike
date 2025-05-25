@@ -17,6 +17,8 @@ import {useNavigation} from '@react-navigation/native';
 import CustomModal from './CustomModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import BASE_URL from '../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width, height} = Dimensions.get('window');
 
@@ -32,7 +34,7 @@ const LogoutModal = ({visible, title, description, onClose}) => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
         await axios.post(
-          'http://10.0.2.2:5000/api/users/logout',
+          `${Base_Endpoint}/api/users/logout`,
           {},
           {
             headers: {Authorization: `Bearer ${token}`},

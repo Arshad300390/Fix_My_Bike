@@ -8,7 +8,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import Feather from 'react-native-vector-icons/Feather'; // Import Feather icons
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const ProductManagement = ({ navigation }) => {
   const [products, setProducts] = useState([]);
 
@@ -23,7 +24,7 @@ const ProductManagement = ({ navigation }) => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/admin/get-products',
+          `${Base_Endpoint}/api/admin/get-products`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

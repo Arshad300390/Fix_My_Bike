@@ -32,11 +32,13 @@ import { requestUserPermission, getFcmToken } from './../../../notificationServi
 import { getMessaging, onMessage, onBackgroundMessage } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
 import AdminDashboard from './extraScreens/AdminDashboard/AdminDashboard';
-
+import BASE_URL from '../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const { width, height } = Dimensions.get('window');
 
 const Home = ({setUser: updateUser}) => {
+
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
@@ -94,7 +96,7 @@ const Home = ({setUser: updateUser}) => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/users/get-users',
+          `${Base_Endpoint}/api/users/get-users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -151,7 +153,7 @@ const Home = ({setUser: updateUser}) => {
       }
 
       const response = await axios.get(
-        'http://10.0.2.2:5000/api/shop/all/services',
+        `${Base_Endpoint}/api/shop/all/services`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -171,7 +173,7 @@ const Home = ({setUser: updateUser}) => {
         try {
           const token = await AsyncStorage.getItem('token');
 
-          const response = await axios.get('http://10.0.2.2:5000/api/to-schedule', {
+          const response = await axios.get(`${Base_Endpoint}/api/to-schedule`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

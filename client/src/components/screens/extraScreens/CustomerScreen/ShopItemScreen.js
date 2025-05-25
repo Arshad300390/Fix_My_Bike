@@ -14,6 +14,8 @@ import ServiceCard from "./ItemCard";
 import StarRating,{ StarRatingDisplay } from 'react-native-star-rating-widget';
 import Feather from 'react-native-vector-icons/Feather';
 import { Tooltip } from "react-native-elements";
+import BASE_URL from "../../../constants/BASE_URL";
+const { Base_Endpoint } = BASE_URL;
 
 const ShopItemScreen = () => {
   const route = useRoute();
@@ -43,7 +45,7 @@ const ShopItemScreen = () => {
         }
 
         const response = await axios.post(
-            "http://10.0.2.2:5000/api/save-rating",
+            `${Base_Endpoint}/api/save-rating`,
             {
                 shop_owner: userId, // Correct field name
                 rating: newRating,
@@ -71,7 +73,7 @@ const ShopItemScreen = () => {
         navigation.replace("Signin");
         return;
       }
-      const response = await axios.get(`http://10.0.2.2:5000/api/${things}/${userId}`, {
+      const response = await axios.get(`${Base_Endpoint}/api/${things}/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

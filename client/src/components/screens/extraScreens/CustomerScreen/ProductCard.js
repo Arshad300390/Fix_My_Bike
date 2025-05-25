@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 import { COLORS, FONTS } from "../../../constants/Constants";
+import BASE_URL from "../../../constants/BASE_URL";
+const { Base_Endpoint } = BASE_URL;
 
 const { width } = Dimensions.get("window");
 
@@ -8,7 +10,7 @@ const ProductCard = ({ product }) => {
   return (
     <View style={styles.card}>
       <Image 
-        source={{ uri: `http://10.0.2.2:8081/src/assets/shop/${product.product_name}.jpg` }} 
+        source={{ uri: `${Base_Endpoint}/src/assets/shop/${product.product_name}.jpg` }} 
         style={styles.productImage} 
         resizeMode="cover"
       />

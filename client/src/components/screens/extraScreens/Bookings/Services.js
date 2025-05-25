@@ -17,8 +17,10 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ServicesHistoryContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
 const { width, height } = Dimensions.get('window');
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const Services = () => {
+  console.log('Services screen rendered');
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [role, setRole] = useState();
@@ -32,7 +34,7 @@ const Services = () => {
          const token = await AsyncStorage.getItem('token');
          const response = await axios({
            method: 'GET',
-           url: 'http://10.0.2.2:5000/api/users/get-users',
+           url: `${Base_Endpoint}/api/users/get-users`,
            headers: {
              'Authorization': `Bearer ${token}`,
            },
@@ -47,11 +49,12 @@ const Services = () => {
 
   useEffect(() => {
     const fetchServices = async () => {
+      console.log('Fetching services for role:', role);
       if (!role) {return;}
       const url =
         role === 'mechanic'
-          ? 'http://10.0.2.2:5000/api/history'
-          : 'http://10.0.2.2:5000/api/service-History';
+          ? `${Base_Endpoint}/api/history`
+          : `${Base_Endpoint}/api/service-History`;
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({

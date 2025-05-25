@@ -36,7 +36,6 @@ const ServicesContainer = ({
       });
     }
   };
-console.log('image', service_image);
   return (
     <SafeAreaView style={styles.primaryContainer}>
       <TouchableOpacity

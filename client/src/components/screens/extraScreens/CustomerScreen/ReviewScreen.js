@@ -16,6 +16,8 @@ import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import { Picker } from '@react-native-picker/picker';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 
 const { width, height } = Dimensions.get('window');
 
@@ -58,7 +60,7 @@ const ReviewScreen = ({ navigation, route }) => {
                 return;
             }
 
-            const response = await fetch(`http://10.0.2.2:5000/api/reviews/create-review`, {
+            const response = await fetch(`${Base_Endpoint}/api/reviews/create-review`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -14,7 +14,8 @@ import axios from 'axios';
 import {COLORS, FONTS} from '../../../constants/Constants';
 import {useNavigation} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 const {width, height} = Dimensions.get('window');
 
 const Bike_Detailed = ({route}) => {
@@ -28,7 +29,7 @@ const Bike_Detailed = ({route}) => {
     const fetch_service_history = async () => {
       try {
         const response = await axios.get(
-          `http://10.0.2.2:5000/api/bikes/get-service-history/${bike._id}`,
+          `${Base_Endpoint}/api/bikes/get-service-history/${bike._id}`,
         );
         if (response.status === 200) {
           setServiceHistory(response.data.serviceHistory || []);

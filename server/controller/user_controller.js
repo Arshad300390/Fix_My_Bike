@@ -362,6 +362,7 @@ const getUsersById = async (req, res, next) => {
 };
 
 const updateUsers = async (req, res, next) => {
+  console.log("Updating user with ID:", req.params.id);
   const userId = req.params.id;
 
   if (!userId) {

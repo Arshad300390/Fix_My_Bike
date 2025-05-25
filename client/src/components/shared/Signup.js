@@ -22,6 +22,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import CustomModal from '../utils/Modals/CustomModal';
 import axios from 'axios';
+import BASE_URL from '../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width, height} = Dimensions.get('window');
 
@@ -317,7 +319,7 @@ const Signup = () => {
     try {
       console.log('Sending signup request...');
       const response = await axios.post(
-        'http://10.0.2.2:5000/api/users/signup',
+        `${Base_Endpoint}/api/users/signup`,
         formData,
         {
           headers: {

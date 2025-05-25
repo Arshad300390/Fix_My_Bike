@@ -7,7 +7,8 @@ import { COLORS, FONTS } from "../../../constants/Constants";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import ImagePicker from "react-native-image-crop-picker"; // Make sure you installed this
-
+import BASE_URL from "../../../constants/BASE_URL";
+const { Base__ } = BASE_URL;
 const { width } = Dimensions.get("window");
 
 const ProductForm = ({ onSubmit }) => {
@@ -58,7 +59,7 @@ const ProductForm = ({ onSubmit }) => {
         });
       }
       console.log("FormData:", formData); // Log FormData for debugging
-      const response = await axios.post("http://10.0.2.2:5000/api/add-product", formData, {
+      const response = await axios.post("${Base_}/api/add-product", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

@@ -17,6 +17,8 @@ import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import AssistanceContainer from './EmergencyAssistanceCard';
+import BASE_URL from '../../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width, height} = Dimensions.get('window');
 
@@ -30,7 +32,7 @@ const EmergencyAssistance = () => {
         const token = await AsyncStorage.getItem('token');
         const response = await axios({
           method: 'GET',
-          url: 'http://10.0.2.2:5000/api/users/get-mechanics',
+          url: `${Base_Endpoint}/api/users/get-mechanics`,
           headers: {
             'Authorization': `Bearer ${token}`,
           },

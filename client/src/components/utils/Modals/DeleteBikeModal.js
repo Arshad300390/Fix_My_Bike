@@ -16,6 +16,8 @@ import {COLORS, FONTS} from '../../constants/Constants';
 import CustomModal from './CustomModal';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BASE_URL from '../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width, height} = Dimensions.get('window');
 
@@ -43,7 +45,7 @@ const DeleteBikeModal = ({
       }
 
       const response = await axios.delete(
-        `http://10.0.2.2:5000/api/bikes/remove-bike/${bikeId}`,
+        `${Base_Endpoint}/api/bikes/remove-bike/${bikeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

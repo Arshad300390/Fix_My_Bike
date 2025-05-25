@@ -5,7 +5,8 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Feather from 'react-native-vector-icons/Feather'; // Import Feather icons
-
+import BASE_URL from '../../../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 const BookingManagement = ({ navigation }) => {
   const [completedBookings, setCompletedBookings] = useState([]);
   const [pendingBookings, setPendingBookings] = useState([]);
@@ -26,7 +27,7 @@ const BookingManagement = ({ navigation }) => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/admin/getBookings',
+          `${Base_Endpoint}/api/admin/getBookings`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

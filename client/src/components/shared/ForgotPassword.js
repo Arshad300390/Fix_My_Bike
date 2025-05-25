@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
@@ -15,6 +16,8 @@ import {COLORS, FONTS} from '../constants/Constants';
 import {useNavigation} from '@react-navigation/native';
 import CustomModal from '../utils/Modals/CustomModal';
 import axios from 'axios'; // Import Axios
+import BASE_URL from '../constants/BASE_URL'; // Import your base URL
+const {Base_Endpoint} = BASE_URL; // Extract the base endpoint from the URL
 
 const {width, height} = Dimensions.get('window');
 
@@ -63,7 +66,7 @@ const ForgotPassword = () => {
     setLoading(true); // Start loading
     try {
       const response = await axios.post(
-        'http://10.0.2.2:5000/api/users/forgot-password',
+        `${Base_Endpoint}/api/users/forgot-password`,
         {
           email,
         },

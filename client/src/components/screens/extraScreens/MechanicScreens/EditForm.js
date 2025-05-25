@@ -6,7 +6,8 @@ import { COLORS, FONTS } from '../../../constants/Constants';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import ImagePicker from "react-native-image-crop-picker"; // Make sure you installed this
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const { width } = Dimensions.get('window');
 
 const ServiceForm = ({ route }) => {
@@ -33,7 +34,6 @@ const handleSelectImage = () => {
     height: 300,
     cropping: true,
   }).then((image) => {
-    console.log("Selected image:", image);
     setServiceImage(image.path);  // Set the selected image path
   });
 };
@@ -68,8 +68,7 @@ const handleSelectImage = () => {
       } else if (serviceImage && serviceImage.includes('http')) {
         formData.append('service_image', serviceImage);
       }
-      console.log('FormData:', formData); // Log FormData for debugging
-      const response = await axios.put(`http://10.0.2.2:5000/api/shop/services/${service._id}`, formData, {
+      const response = await axios.put(`${Base_Endpoint}/api/shop/services/${service._id}`, formData, {
         headers: { Authorization: `Bearer ${token}` ,
       'Content-Type': 'multipart/form-data',
       },

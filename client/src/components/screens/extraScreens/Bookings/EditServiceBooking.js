@@ -19,7 +19,8 @@ import { Picker } from '@react-native-picker/picker';
 import CustomModal from '../../../utils/Modals/CustomModal';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const { width, height } = Dimensions.get('window');
 
 const ServiceBooking = () => {
@@ -71,7 +72,7 @@ const ServiceBooking = () => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/users/get-users',
+          `${Base_Endpoint}/api/users/get-users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -278,7 +279,7 @@ const ServiceBooking = () => {
         console.log('services b',booking.additionalServices);
         console.log('booking data',bookingData);
         const response = await axios.post(
-          'http://10.0.2.2:5000/api/service-booking',
+          `${Base_Endpoint}/api/service-booking`,
           bookingData,
           {
             headers: {

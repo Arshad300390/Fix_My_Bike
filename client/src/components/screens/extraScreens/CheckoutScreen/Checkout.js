@@ -14,7 +14,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { COLORS } from '../../../constants/Constants';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const Checkout = ({ route }) => {
   const navigation = useNavigation();
   const { shopOwnerId, userId, trackingId, items, total } = route.params || {};
@@ -136,7 +137,7 @@ const Checkout = ({ route }) => {
         return;
       }
 
-      const response = await fetch('http://10.0.2.2:5000/api/checkout/create', {
+      const response = await fetch(`${Base_Endpoint}api/checkout/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -30,6 +30,8 @@ import base64 from 'base-64';
 import utf8 from 'utf8';
 import ItemCard from './ItemCard';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL; 
 const { width, height } = Dimensions.get('window');
 
 const ItemsDashboard = () => {
@@ -85,8 +87,8 @@ const ItemsDashboard = () => {
             }
 
             let url = role === "mechanic"
-                ? (allShop ? `http://10.0.2.2:5000/api/shop/get-services/${allShop}` : "http://10.0.2.2:5000/api/shop/all/services")
-                : (allShop ? `http://10.0.2.2:5000/api/get-products/${allShop}` : "http://10.0.2.2:5000/api/all/products");
+                ? (allShop ? `${Base_Endpoint}/api/shop/get-services/${allShop}` : `${Base_Endpoint}/api/shop/all/services`)
+                : (allShop ? `${Base_Endpoint}/api/get-products/${allShop}` : `${Base_Endpoint}/api/all/products`);
 
             const response = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -186,7 +188,7 @@ const ItemsDashboard = () => {
             } else {
                 console.log(`Adding new product ${productId} to cart`);
                 cart[shopOwnerId].products[productId] = {
-                    product_image: `http://10.0.2.2:8081/src/assets/shop/${encodeURIComponent(service.product_name)}.jpg`,
+                    product_image: `${Base_Endpoint}/src/assets/shop/${encodeURIComponent(service.product_name)}.jpg`,
                     product_name: service.product_name,
                     product_price: service.product_price,
                     product_id: service._id,
@@ -219,7 +221,7 @@ const ItemsDashboard = () => {
 
 
             const response = await axios.post(
-                "http://10.0.2.2:5000/api/save-rating",
+                `${Base_Endpoint}/api/save-rating`,
                 {
                     shop_owner: shopOwnerId, // Correct field name
                     rating: newRating,
@@ -302,7 +304,7 @@ const ItemsDashboard = () => {
                     <View style={styles.textContainer}>
                         <View style={styles.middleContainer}>
                             <Text style={[{ fontSize: 30 }, styles.userEmail]}>
-                                {role === 'seller' ? 'Product Dashboard' : 'Services Dashboard'}
+                                {role === 'seller' ? 'Product Dashboard' : 'Services_Dashboard'}
                             </Text>
                             {role === 'seller' &&
                                 <Pressable onPress={() => navigation.navigate('Cart')}>

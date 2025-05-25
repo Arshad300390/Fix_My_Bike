@@ -16,7 +16,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../../constants/Constants';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const CustomerOrders = ({ navigation }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -43,7 +44,7 @@ const CustomerOrders = ({ navigation }) => {
             try {
                 const token = await AsyncStorage.getItem('token');
                 const response = await axios.get(
-                    'http://10.0.2.2:5000/api/checkout/get-checkouts-data',
+                    `${Base_Endpoint}/api/checkout/get-checkouts-data`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

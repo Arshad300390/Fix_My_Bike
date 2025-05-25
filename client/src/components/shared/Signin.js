@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
@@ -20,6 +21,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import CustomModal from '../utils/Modals/CustomModal';
 import axios from 'axios';
+import BASE_URL from '../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width, height} = Dimensions.get('window');
 
@@ -126,7 +129,7 @@ const Signin = () => {
       const idToken = userInfo.idToken;
 
       const response = await axios.post(
-        'http://10.0.2.2/api/social-auth/google-signin',
+        `${Base_Endpoint}/api/social-auth/google-signin`,
         {
           idToken,
         },
@@ -159,7 +162,7 @@ const Signin = () => {
 
     try {
       const response = await axios.post(
-        'http://10.0.2.2:5000/api/users/signin',
+        `${Base_Endpoint}/api/users/signin`,
         data,
       );
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
@@ -16,6 +17,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {COLORS, FONTS} from '../constants/Constants';
 import CustomModal from '../utils/Modals/CustomModal';
+import BASE_URL from '../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width, height} = Dimensions.get('window');
 
@@ -44,7 +47,7 @@ const ChangePassword = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.get(
-        'http://10.0.2.2:5000/api/users/get-users',
+        `${Base_Endpoint}/api/users/get-users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -133,7 +136,7 @@ const ChangePassword = () => {
 
     try {
       const response = await axios.put(
-        'http://10.0.2.2:5000/api/users/reset-password',
+        `${Base_Endpoint}/api/users/reset-password`,
         {
           email,
           newPassword,

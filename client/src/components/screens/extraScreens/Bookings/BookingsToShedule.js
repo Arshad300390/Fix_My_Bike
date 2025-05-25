@@ -21,7 +21,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ServiceToScheduleContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
 const { width, height } = Dimensions.get('window');
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const Bookings = () => {
 
     const navigation = useNavigation();
@@ -35,7 +36,7 @@ const Bookings = () => {
             try {
                 const token = await AsyncStorage.getItem('token');
 
-                const response = await axios.get('http://10.0.2.2:5000/api/to-schedule', {
+                const response = await axios.get(`${Base_Endpoint}/api/to-schedule`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -65,7 +66,7 @@ const Bookings = () => {
             console.log('Date after one day:', formattedDate);
             const response = await axios({
                 method: 'PUT',
-                url: `http://10.0.2.2:5000/api/to-schedule/${id}`,
+                url: `${Base_Endpoint}/api/to-schedule/${id}`,
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

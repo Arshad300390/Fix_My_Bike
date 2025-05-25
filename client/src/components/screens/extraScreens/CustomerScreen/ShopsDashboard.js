@@ -7,7 +7,8 @@ import axios from "axios";
 import { COLORS, FONTS } from "../../../constants/Constants";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import StarRatingDisplay from "react-native-star-rating-widget";
-
+import BASE_URL from "../../../constants/BASE_URL";
+const { Base_Endpoint } = BASE_URL;
 const { width } = Dimensions.get("window");
 
 const ShopsDashboard = ({ route }) => {
@@ -26,7 +27,7 @@ const ShopsDashboard = ({ route }) => {
       }
 
       const response = await axios.get(
-        `http://10.0.2.2:5000/api/users/get-${role}'s-ratings`, // Corrected endpoint
+        `${Base_Endpoint}/api/users/get-${role}'s-ratings`, // Corrected endpoint
         {
           headers: { Authorization: `Bearer ${token}` },
         }

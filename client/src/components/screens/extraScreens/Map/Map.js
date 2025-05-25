@@ -13,6 +13,9 @@ import axios from 'axios';
 import { COLORS } from '../../../constants/Constants';
 import MapView, { Marker } from 'react-native-maps';
 import Feather from 'react-native-vector-icons/Feather';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
+
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.02;
@@ -54,7 +57,7 @@ const Map = ({ navigation }) => {
       }
 
       const response = await axios.put(
-        'http://10.0.2.2:5000/api/shop/set-coordinates',
+        `${Base_Endpoint}/api/shop/set-coordinates`,
         { latitude, longitude },
         { headers: { Authorization: `Bearer ${token}` } }
       );

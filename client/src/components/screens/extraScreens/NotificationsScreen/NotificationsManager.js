@@ -2,17 +2,22 @@
 /* eslint-disable quotes */
 import React, { useState, useEffect } from "react";
 import {
-  View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, FlatList, Dimensions,
+  View, Text, TouchableOpacity, TextInput, Alert, StyleSheet, FlatList, Dimensions, Platform, PermissionsAndroid, Linking,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import PushNotification from "react-native-push-notification";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../../constants/Constants';
-import { jwtDecode } from "jwt-decode";
 import base64 from 'base-64';
 import utf8 from 'utf8';
 
 const { width, height } = Dimensions.get('window');
+
+const openExactAlarmSettings = () => {
+  if (Platform.OS === 'android' && Platform.Version >= 31) {
+    Linking.openSettings(); // Opens app settings, user can enable "Allow exact alarms"
+  }
+};
 
 const NotificationsManager = () => {
   const [date, setDate] = useState(null);
@@ -23,7 +28,6 @@ const NotificationsManager = () => {
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [notifications, setNotifications] = useState([]); // Store all notifications
   const [userId, setUserId] = useState(null);
-
 
   // Show and Hide Date Picker
   const showDatePicker = () => setDatePickerVisibility(true);
@@ -50,16 +54,18 @@ const NotificationsManager = () => {
   };
 
   // Ensure Notification Channel Exists
-  PushNotification.createChannel(
-    {
-      channelId: "local_notifications",
-      channelName: "Local Notifications",
-      channelDescription: "Notifications for local messages",
-      importance: 4, // HIGH priority
-      vibrate: true,
-    },
-    (created) => console.log(`Notification channel created: ${created}`)
-  );
+  useEffect(() => {
+    PushNotification.createChannel(
+      {
+        channelId: "local_notifications",
+        channelName: "Local Notifications",
+        channelDescription: "Notifications for local messages",
+        importance: 4, // HIGH priority
+        vibrate: true,
+      },
+      (created) => console.log(`Notification channel created: ${created}`)
+    );
+  }, []);
 
   const getUserId = async () => {
     try {
@@ -94,13 +100,11 @@ const NotificationsManager = () => {
 
   const loadNotificationsFromStorage = async () => {
     try {
-
       if (!userId) {
         console.error("User ID is missing!");
         return [];
       }
       const notiKey = `notifications_${userId}`;
-
       const storedNotifications = await AsyncStorage.getItem(notiKey);
       if (storedNotifications) {
         setNotifications(JSON.parse(storedNotifications));
@@ -112,37 +116,69 @@ const NotificationsManager = () => {
 
   useEffect(() => {
     getUserId();
-    loadNotificationsFromStorage();
   }, []);
 
-  const setNotificationHandler = async (heading, details, scheduleDate) => {
-    console.log("Scheduling Notification for:", scheduleDate);
+  useEffect(() => {
+    if (userId) {
+      loadNotificationsFromStorage();
+    }
+  }, [userId]);
 
-    PushNotification.localNotificationSchedule({
-      channelId: "local_notifications",
-      title: heading,
-      message: details,
-      date: scheduleDate, // Schedule time
-      allowWhileIdle: true, // Ensure it triggers in Doze mode
-    });
-
-    console.log("Notification Scheduled!");
-    Alert.alert("✅ Notification Set", `Your notification is set for ${date} at ${time}`);
-
-    const newNotification = {
-      id: Date.now(),
-      title: heading,
-      message: details,
-      date,
-      time,
-    };
-
-    const updatedNotifications = [...notifications, newNotification];
-    setNotifications(updatedNotifications);
-    await saveNotificationsToStorage(updatedNotifications);
+  // Request notification permission for Android 13+ at runtime
+  const requestNotificationPermission = async () => {
+    if (Platform.OS === 'android' && Platform.Version >= 33) {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    }
+    return true;
   };
 
-  const handleSetNotification = () => {
+  const setNotificationHandler = async (heading, details, scheduleDate) => {
+    try {
+      PushNotification.localNotificationSchedule({
+        channelId: "local_notifications",
+        title: heading,
+        message: details,
+        date: scheduleDate, // Schedule time
+        allowWhileIdle: true, // Ensure it triggers in Doze mode
+      });
+
+      Alert.alert("✅ Notification Set", `Your notification is set for ${date} at ${time}`);
+
+      const newNotification = {
+        id: Date.now(),
+        title: heading,
+        message: details,
+        date,
+        time,
+      };
+
+      const updatedNotifications = [...notifications, newNotification];
+      setNotifications(updatedNotifications);
+      await saveNotificationsToStorage(updatedNotifications);
+    } catch (error) {
+      if (
+        Platform.OS === 'android' &&
+        Platform.Version >= 31 &&
+        error?.message?.toLowerCase().includes('exact alarm')
+      ) {
+        Alert.alert(
+          "Exact Alarm Permission Needed",
+          "Please enable 'Allow exact alarms' for this app in system settings.",
+          [
+            { text: "Open Settings", onPress: openExactAlarmSettings },
+            { text: "Cancel", style: "cancel" }
+          ]
+        );
+      } else {
+        Alert.alert("Error", error.message || "Failed to schedule notification.");
+      }
+    }
+  };
+
+  const handleSetNotification = async () => {
     if (!title.trim()) {
       Alert.alert("⚠️ Error", "Please enter a title for the notification.");
       return;
@@ -158,12 +194,19 @@ const NotificationsManager = () => {
       return;
     }
 
+    // Request notification permission for Android 13+
+    const hasPermission = await requestNotificationPermission();
+    if (!hasPermission) {
+      Alert.alert("Permission required", "Please allow notification permission in settings.");
+      return;
+    }
+
     const [day, month, year] = date.split("-");
     const [hours, minutes] = time.split(":");
 
     const scheduleDate = new Date(year, month - 1, day, hours, minutes, 0);
 
-    setNotificationHandler(title, message, scheduleDate);
+    await setNotificationHandler(title, message, scheduleDate);
   };
 
   const deleteNotification = async (id) => {
@@ -225,6 +268,11 @@ const NotificationsManager = () => {
 
         <TouchableOpacity onPress={handleSetNotification} style={[styles.dateButton, styles.setNotificationButton]}>
           <Text style={styles.buttonText}>Set Notification</Text>
+        </TouchableOpacity>
+
+        {/* Optional: Button to open exact alarm settings manually */}
+        <TouchableOpacity onPress={openExactAlarmSettings} style={[styles.dateButton, { marginTop: 10 }]}>
+          <Text style={styles.buttonText}>Open Exact Alarm Settings</Text>
         </TouchableOpacity>
       </View>
 

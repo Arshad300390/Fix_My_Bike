@@ -6,7 +6,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Feather from 'react-native-vector-icons/Feather'; // Import Feather icons
 import ServicesContainer from '../../../utils/ServicesCard/ServicesCard';
-
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 const ServiceManagement = ({ navigation }) => {
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
@@ -25,7 +26,7 @@ const ServiceManagement = ({ navigation }) => {
         }
 
         const response = await axios.get(
-          'http://10.0.2.2:5000/api/shop/all/services',
+          `${Base_Endpoint}/api/shop/all/services`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

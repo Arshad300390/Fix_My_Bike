@@ -13,6 +13,8 @@ import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {COLORS, FONTS} from '../constants/Constants';
+import BASE_URL from '../constants/BASE_URL';
+const {Base_Endpoint} = BASE_URL;
 
 const {width} = Dimensions.get('window');
 
@@ -36,7 +38,7 @@ const Splash = () => {
 
         if (token) {
           const response = await axios.get(
-            'http://10.0.2.2:5000/api/users/get-users',
+            `${Base_Endpoint}/api/users/get-users`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
