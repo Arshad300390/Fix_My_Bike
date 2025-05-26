@@ -247,7 +247,6 @@ const ServiceBooking = () => {
       setLoading(true);
       try {
         const token = await AsyncStorage.getItem('token');
-        console.log('Token retrieved:', token);
         if (!token) {
           throw new Error('User token not found');
         }

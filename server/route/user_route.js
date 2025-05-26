@@ -7,6 +7,8 @@ const profileImageUpload = require("../middleware/upload_user_profile_image");
 router.post("/signup", profileImageUpload.upload, userController.signup);
 
 router.post("/signin", userController.login);
+router.post('/update-fcm-token', authMiddleware, userController.updateFcmToken);
+
 
 router.get("/get-users", authMiddleware, userController.getUsers);
 

@@ -47,6 +47,10 @@ const userSchema = new Schema({
       ref: "Bike",
     },
   ],
+  fcm_token: {
+    type: String,
+    default: null,
+  },
 });
 
 const User = mongoose.model("User", userSchema);

@@ -34,48 +34,6 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shouldRefresh, setShouldRefresh] = useState(false);
-  const [fcmToken, setFcmToken] = useState(null);
-
-//for fcm
-useEffect(() => {
-  const setupFCM = async () => {
-    try {
-      // Step 1: Android 13+ needs runtime notification permission
-      // if (Platform.OS === 'android' && Platform.Version >= 33) {
-      //   const granted = await PermissionsAndroid.request(
-      //     PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-      //   );
-
-      //   if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-      //     Alert.alert('Permission required', 'Notification permission not granted');
-      //     return;
-      //   }
-      // }
-
-      // Step 2: Request permission (for all platforms)
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-      if (enabled) {
-        // Step 3: Get FCM Token
-        const fcm_Token = await messaging().getToken();
-        setFcmToken(fcm_Token);
-        console.log('FCM Token:', fcmToken);
-
-        // Optional: Send this token to your backend
-        // await axios.post('https://your-api.com/save-fcm-token', { fcmToken });
-      } else {
-        Alert.alert('Notifications not enabled');
-      }
-    } catch (error) {
-      console.error('FCM setup error:', error);
-    }
-  };
-
-  setupFCM();
-}, []);
 
 
   useEffect(() => {
@@ -96,41 +54,6 @@ useEffect(() => {
     };
     fetchUser();
   }, []);
-
-  // useEffect(() => {
-  //   const fetchBookings = async () => {
-  //     if (!role) {return;}
-  //     const url =
-  //       role === 'mechanic'
-  //         ? 'http://10.0.2.2:5000/api/bookings'
-  //         : 'http://10.0.2.2:5000/api/service-bookings';
-  //     try {
-  //       const token = await AsyncStorage.getItem('token');
-  //       const response = await axios({
-  //         method: 'GET',
-  //         url: url,
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       const serviceBookings = response.data.Bookings;
-
-  //       if (serviceBookings && serviceBookings.length > 0) {
-  //         setBookings(serviceBookings);
-  //       } else {
-  //         console.log('No bookings yet.');
-  //         setBookings([]);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching bookings:', error.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (role || shouldRefresh) fetchBookings();
-  // }, [role, shouldRefresh]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -168,31 +91,26 @@ useEffect(() => {
     fetchBookings();
   }, [role, shouldRefresh]);
 
-  const handleUpdateStatus = async (id, status, ) => {
-    if (!fcmToken) {
-      console.error("FCM token is not available yet.");
-      Alert.alert('Error', 'FCM token is missing. Please try again later.');
-      return;  // Exit early if no token is available
-    }
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const response = await axios({
-        method: 'PUT',
-        url: `${Base_Endpoint}/api/service-booking/${id}/status`,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        data: {
-          status: status,
-          fcmToken: fcmToken, 
-        },
-      });
-      setShouldRefresh((prev) => !prev);
-      navigation.navigate('Profile');
-    } catch (error) {
-      console.error('Error fetching user_ role:', error.message);
-    }
-  };
+  const handleUpdateStatus = async (id, status, customerId) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    await axios({
+      method: 'PUT',
+      url: `${Base_Endpoint}/api/service-booking/${id}/status`,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      data: {
+        status: status,
+        customerId: customerId, // send customerId to backend
+      },
+    });
+    setShouldRefresh((prev) => !prev);
+    navigation.navigate('Profile');
+  } catch (error) {
+    console.error('Error updating booking status:', error.message);
+  }
+};
 
   return (
     <SafeAreaView
@@ -236,7 +154,7 @@ useEffect(() => {
 
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.primary} />
-      ) : bookings.length === 0 ? ( 
+      ) : bookings.length === 0 ? (
         <View style={styles.noBookingsContainer}>
           <Text style={styles.noBookingsText}>No bookings available</Text>
         </View>
@@ -251,8 +169,8 @@ useEffect(() => {
                 item={item}
                 role={role}
                 status={item.status}
-                onShowInProgress={handleUpdateStatus}
-                onComplete={handleUpdateStatus}
+                onShowInProgress={(id, status) => handleUpdateStatus(id, status, item.userId)}
+                onComplete={(id, status) => handleUpdateStatus(id, status, item.userId)}
               />
             )}
             contentContainerStyle={styles.bookingContainer}
@@ -314,5 +232,5 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     textAlign: 'center',
   },
-  
+
 });

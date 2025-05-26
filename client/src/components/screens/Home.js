@@ -33,11 +33,11 @@ import { getMessaging, onMessage, onBackgroundMessage } from '@react-native-fire
 import { getApp } from '@react-native-firebase/app';
 import AdminDashboard from './extraScreens/AdminDashboard/AdminDashboard';
 import BASE_URL from '../constants/BASE_URL';
-const {Base_Endpoint} = BASE_URL;
+const { Base_Endpoint } = BASE_URL;
 
 const { width, height } = Dimensions.get('window');
 
-const Home = ({setUser: updateUser}) => {
+const Home = ({ setUser: updateUser }) => {
 
   const [image, setImage] = useState('');
   const [name, setName] = useState('');
@@ -60,7 +60,7 @@ const Home = ({setUser: updateUser}) => {
     requestUserPermission();
     getFcmToken(); // Call the function to get the FCM token
     //notificationListener(); //listener but without this full working
-    console.log('called');
+
   }, []);
   const messaging = getMessaging(getApp());
 
@@ -147,7 +147,7 @@ const Home = ({setUser: updateUser}) => {
       const token = await AsyncStorage.getItem('token');
 
       if (!token) {
-        console.log(token);
+        console.log('jwt token', token);
         navigation.replace('Signin');
         return;
       }
@@ -348,7 +348,7 @@ const Home = ({setUser: updateUser}) => {
 
   useEffect(() => {
     let tempServices = [...combinedServices];
-  
+
     // Apply search filter
     if (searchQuery.trim() !== '') {
       tempServices = tempServices.filter(service =>
@@ -356,17 +356,17 @@ const Home = ({setUser: updateUser}) => {
         parseFloat(service.service_price) <= parseFloat(searchQuery)
       );
     }
-  
+
     // Apply sorting
     if (sortOrder === 'asc') {
       tempServices.sort((a, b) => parseFloat(a.service_price) - parseFloat(b.service_price));
     } else if (sortOrder === 'desc') {
       tempServices.sort((a, b) => parseFloat(b.service_price) - parseFloat(a.service_price));
     }
-  
+
     setFilteredServices(tempServices);
   }, [searchQuery, sortOrder, customServices]);
-  
+
   const handleSearch = text => {
     setSearchQuery(text);
   };
@@ -435,7 +435,7 @@ const Home = ({setUser: updateUser}) => {
                 <View style={[styles.card, { height: height * 0.63 }]}>
                   {/* <ServiceDashboard /> */}
                   <TouchableOpacity
-                    style={styles.gotoDashboard}  
+                    style={styles.gotoDashboard}
                     onPress={() => navigation.navigate('ServiceDashboard')}>
                     <Text style={styles.cardText}>Go to Service Dashboard</Text>
                   </TouchableOpacity>
@@ -473,7 +473,7 @@ const Home = ({setUser: updateUser}) => {
                     />
                   </View>
                 </View>
-                
+
                 <View style={styles.sortContainer}>
                   <TouchableOpacity
                     style={styles.radioButton}
@@ -509,16 +509,21 @@ const Home = ({setUser: updateUser}) => {
                       <FlatList
                         data={filteredServices}
                         keyExtractor={item => item.id}
-                        renderItem={({ item }) => (
-                          <ServicesContainer
-                            service_image={item.Img}
-                            service_name={item.service_name}
-                            service_description={item.service_description}
-                            service_price={item.service_price.toString()}
-                          />
-                        )}
+                        renderItem={({ item }) => {
+                          return (
+                            <ServicesContainer
+                              service_image={item.Img}
+                              service_name={item.service_name}
+                              service_description={item.service_description}
+                              service_price={item.service_price.toString()}
+                              shop_owner={item.shop_owner}
+                              service_id={item._id}
+                            />
+                          );
+                        }}
                         contentContainerStyle={styles.serviceContainer}
                       />
+
                       {/* <Text style={{ marginTop: -70, marginBottom: 20, textAlign: 'center', color: 'black', fontSize: 40, fontWeight: 'bold' }}>Custom Services</Text>
                       <FlatList
                         data={customServices}
@@ -734,12 +739,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  
+
   radioButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   radioCircle: {
     height: 20,
     width: 20,
@@ -750,17 +755,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 6,
   },
-  
+
   selectedRb: {
     width: 10,
     height: 10,
     borderRadius: 5,
     backgroundColor: COLORS.primary,
   },
-  
+
   radioText: {
     fontSize: 14,
     color: COLORS.dark,
   },
-  
+
 });

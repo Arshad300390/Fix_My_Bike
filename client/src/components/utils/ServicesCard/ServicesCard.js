@@ -15,6 +15,7 @@ import { COLORS, FONTS } from '../../constants/Constants';
 const { width, height } = Dimensions.get('window');
 
 const ServicesContainer = ({
+  shop_owner,
   service_image,
   service_name,
   service_description,
@@ -24,18 +25,24 @@ const ServicesContainer = ({
 }) => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-
   const handleServicePress = () => {
-    if (isTouchable) {
-      navigation.navigate('Service_Booking', {
-        service_image,
-        service_name,
-        service_description,
-        service_price,
-        service_id,
-      });
+  if (isTouchable) {
+    const params = {
+      service_image,
+      service_name,
+      service_description,
+      service_price,
+      service_id,
+    };
+    if (shop_owner !== undefined) {
+      params.shop_owner = shop_owner;
     }
-  };
+    if (service_id !== undefined) {
+      params.shop_owner = shop_owner;
+    }
+    navigation.navigate('Service_Booking', params);
+  }
+};
   return (
     <SafeAreaView style={styles.primaryContainer}>
       <TouchableOpacity

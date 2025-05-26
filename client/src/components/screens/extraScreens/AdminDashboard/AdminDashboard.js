@@ -10,6 +10,7 @@ const sections = [
   { label: 'Services Management', screen: 'ServiceManagement', icon: 'tool' },
   { label: 'Orders Management', screen: 'OrderManagement', icon: 'shopping-cart' },
   { label: 'My Profile', screen: 'Edit_Profile', icon: 'edit' },
+  { label: 'Feedbacks', screen: 'FeedbackScreen', icon: 'headphones' },
 
 ];
 

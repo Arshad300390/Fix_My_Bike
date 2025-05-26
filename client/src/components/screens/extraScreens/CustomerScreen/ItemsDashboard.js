@@ -50,6 +50,14 @@ const ItemsDashboard = () => {
     const [isSearching, setIsSearching] = useState(false);
  const [sortOrder, setSortOrder] = useState(""); 
 
+   useFocusEffect(
+    useCallback(() => {
+      // If this screen is focused and route.params?.allShop is null, reset state
+      if (route.params?.allShop === null) {
+        setAllShop(null);
+      }
+    }, [route.params?.allShop])
+  );
     useFocusEffect(
         useCallback(() => {
             getAllItems();

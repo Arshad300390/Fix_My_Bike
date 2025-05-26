@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   StatusBar,
@@ -15,17 +15,16 @@ import {
   ScrollView,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import {useNavigation} from '@react-navigation/native';
-import {COLORS, FONTS} from '../constants/Constants';
+import { useNavigation } from '@react-navigation/native';
+import { COLORS, FONTS } from '../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import CustomModal from '../utils/Modals/CustomModal';
 import axios from 'axios';
 import BASE_URL from '../constants/BASE_URL';
-const {Base_Endpoint} = BASE_URL;
-
-const {width, height} = Dimensions.get('window');
-
+const { Base_Endpoint } = BASE_URL;
+const { width, height } = Dimensions.get('window');
+// ...existing code...
 const Signin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -135,7 +134,7 @@ const Signin = () => {
         },
       );
 
-      const {token, user} = response.data;
+      const { token, user } = response.data;
       console.log('Login successful:', token, user);
     } catch (error) {
       console.error('Google Sign-In error:', error);
@@ -155,9 +154,24 @@ const Signin = () => {
 
     setShowAuthModal(true);
 
+    // --- FCM TOKEN LOGIC START ---
+    let fcmToken = null;
+    try {
+      fcmToken = await AsyncStorage.getItem('fcmToken');
+      if (fcmToken) {
+        console.log('FCM token retrieved from AsyncStorage:', fcmToken);
+      } else {
+        console.log('No FCM token found in AsyncStorage.');
+      }
+    } catch (fcmError) {
+      console.log('Could not get FCM token:', fcmError);
+    }
+    // --- FCM TOKEN LOGIC END ---
+
     const data = {
       email: email,
       password: password,
+      fcm_token: fcmToken, // send FCM token to backend
     };
 
     try {
@@ -224,14 +238,14 @@ const Signin = () => {
           <Text
             style={[
               styles.welcomeTitleText,
-              {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+              { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
             ]}>
             Welcome Back
           </Text>
           <Text
             style={[
               styles.welcomeDescriptionText,
-              {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+              { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
             ]}>
             Please fill up the form to login.
           </Text>
@@ -242,7 +256,7 @@ const Signin = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Email
             </Text>
@@ -270,11 +284,11 @@ const Signin = () => {
             <Text
               style={[
                 styles.label,
-                {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
+                { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
               ]}>
               Password
             </Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TextInput
                 style={[
                   styles.inputField,

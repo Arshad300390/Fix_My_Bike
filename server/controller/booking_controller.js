@@ -26,11 +26,11 @@ const createBooking = async (req, res, next) => {
       sheduleDate,
       status
     } = req.body;
-    console.log('scheduleDate', sheduleDate);
+    
     if (service_id) {
       const shop_owner = await Service.findById(service_id).select('shop_owner');
       if (shop_owner) {
-        const mechanic = await User.findById(shop_owner.shop_owner).select("full_name phone_number");
+        const mechanic = await User.findById(mechanicId).select("full_name phone_number");
         mechanicName = mechanic.full_name;
         mechanicNumber = mechanic.phone_number;
         mechanicId = mechanic._id;
@@ -215,13 +215,15 @@ const getBookingById = async (req, res) => {
 };
 
 const updateBookingStatus = async (req, res) => {
-  console.log(req.body);
-  const { status, fcmToken } = req.body;
-  const userId = req.userId;// Assuming the token is stored in the user model
-  console.log("userId", userId);
-  console.log("fcmToken", fcmToken);
-
+  console.log('log req body',req.body);
+  const { customerId} = req.body; 
+  const userId = req.userId; // Assuming  the token is stored in the user model
+  
   try {
+    const user = await User.findById(customerId).select('fcm_token');
+    const fcmToken = user ? user.fcm_token : null;
+    console.log("fcmToken in user", fcmToken); // <-- Now it's defined
+
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
       {
@@ -237,7 +239,7 @@ const updateBookingStatus = async (req, res) => {
     if (userId && fcmToken) {
       await sendNotification(
         fcmToken,
-        'hello' ,
+        'hello',
         `Your booking is now ${req.body.status}`
       );
     }

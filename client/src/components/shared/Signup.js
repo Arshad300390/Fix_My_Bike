@@ -22,6 +22,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import imgPlaceHolder from '../../assets/placeholders/default-avatar.png';
 import CustomModal from '../utils/Modals/CustomModal';
 import axios from 'axios';
+import messaging from '@react-native-firebase/messaging';
 import BASE_URL from '../constants/BASE_URL';
 const {Base_Endpoint} = BASE_URL;
 
@@ -250,10 +251,20 @@ const Signup = () => {
     });
   };
 
+const getFcmToken = async () => {
+  try {
+    const token = await messaging().getToken();
+    return token;
+  } catch (error) {
+    console.log('Error getting FCM token:', error);
+    return null;
+  }
+};
+
   const handleRegister = async () => {
     console.log('Starting registration...');
     setLoading(true);
-
+     const fcmToken = await getFcmToken();
     const fullNameError = validateFullName();
     const emailError = validateEmail();
     const phoneError = validatePhone();
@@ -303,7 +314,9 @@ const Signup = () => {
     formData.append('address', address);
     formData.append('password', password);
     formData.append('role', role);
-
+      if (fcmToken) {
+      formData.append('fcm_token', fcmToken);
+    }
     // Add image if available (optional now)
     if (image) {
       console.log('Adding profile image to form data');

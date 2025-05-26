@@ -1,4 +1,6 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-alert */
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,17 +10,140 @@ import {
   TouchableOpacity,
   ScrollView,
   useColorScheme,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {COLORS, FONTS} from '../../../constants/Constants';
-import {useNavigation} from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { COLORS, FONTS } from '../../../constants/Constants';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import BASE_URL from '../../../constants/BASE_URL';
+const { Base_Endpoint } = BASE_URL;
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const CustomerCare = () => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [showForm, setShowForm] = useState(false);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbackTitle, setFeedbackTitle] = useState('');
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+
+  const getFeedback = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      navigation.replace('Signin');
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `${Base_Endpoint}/api/feedback/get-feedback`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setFeedbacks(response.data);
+    } catch (error) {
+      setFeedbacks([]);
+    }
+  };
+
+  useEffect(() => {
+    getFeedback();
+  }, []);
+
+  const handleSendFeedback = async () => {
+    if (!feedbackTitle.trim() || !feedbackMessage.trim()) {
+      alert('Please fill in both title and message.');
+      return;
+    }
+    setFeedbackLoading(true);
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        navigation.replace('Signin');
+        return;
+      }
+      const response = await axios.post(
+        `${Base_Endpoint}/api/feedback/create-feedback`,
+        {
+          title: feedbackTitle,
+          message: feedbackMessage,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setFeedbackTitle('');
+        setFeedbackMessage('');
+        setShowForm(false);
+        getFeedback();
+        alert('Feedback sent!');
+      } else {
+        alert('Failed to send feedback.');
+      }
+    } catch (err) {
+      alert('Failed to send feedback.');
+    }
+    setFeedbackLoading(false);
+  };
+
+  const renderForm = () => (
+    <View style={styles.formModal}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.formContent}
+      >
+        <TouchableOpacity
+          style={styles.closeIcon}
+          onPress={() => setShowForm(false)}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Feather name="x" size={28} color={COLORS.primary} />
+        </TouchableOpacity>
+        <Text style={styles.formTitle}>Send Feedback</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Title"
+          placeholderTextColor={COLORS.gray}
+          value={feedbackTitle}
+          onChangeText={setFeedbackTitle}
+        />
+        <TextInput
+          style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
+          placeholder="Message"
+          placeholderTextColor={COLORS.gray}
+          value={feedbackMessage}
+          onChangeText={setFeedbackMessage}
+          multiline
+          numberOfLines={4}
+        />
+        <TouchableOpacity
+          style={styles.sendButton}
+          onPress={handleSendFeedback}
+          disabled={feedbackLoading}
+        >
+          <Text style={styles.sendButtonText}>
+            {feedbackLoading ? 'Sending...' : 'Send'}
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </View>
+  );
 
   return (
     <SafeAreaView
@@ -28,7 +153,8 @@ const CustomerCare = () => {
           backgroundColor:
             colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
         },
-      ]}>
+      ]}
+    >
       <View
         style={[
           styles.headerContainer,
@@ -36,7 +162,8 @@ const CustomerCare = () => {
             backgroundColor:
               colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
           },
-        ]}>
+        ]}
+      >
         <TouchableOpacity onPress={() => navigation.goBack('Home')}>
           <Feather
             name="chevron-left"
@@ -46,37 +173,41 @@ const CustomerCare = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.headerTextContainer}>
-        <Text
-          style={[
-            styles.headerTitleText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
-          ]}>
-          Customer Care
-        </Text>
-        <Text
-          style={[
-            styles.headerDescriptionText,
-            {color: colorScheme === 'dark' ? COLORS.white : COLORS.dark},
-          ]}>
-          Talk With Our Customer Care.
-        </Text>
-      </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.headerTextContainer}>
+          <Text
+            style={[
+              styles.headerTitleText,
+              { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+            ]}
+          >
+            Customer Care
+          </Text>
+          <Text
+            style={[
+              styles.headerDescriptionText,
+              { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
+            ]}
+          >
+            Talk With Our Customer Care.
+          </Text>
+        </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View
-          style={[
-            styles.cardContainer,
-            colorScheme === 'dark' ? COLORS.darkColor : COLORS.white,
-          ]}>
+        <View style={styles.cardContainer}>
           <View
             style={[
               styles.customerCareCard,
               {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                backgroundColor: COLORS.white,
+                borderColor: COLORS.primary,
+                borderWidth: 1.5,
               },
-            ]}>
+            ]}
+          >
             <View style={styles.customerCareContainer}>
               <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
@@ -88,7 +219,7 @@ const CustomerCare = () => {
                       {
                         color:
                           colorScheme === 'dark'
-                            ? COLORS.white
+                            ? COLORS.primary
                             : COLORS.primary,
                       },
                     ]}
@@ -98,10 +229,12 @@ const CustomerCare = () => {
                   <Text
                     style={{
                       color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                        colorScheme === 'dark' ? COLORS.primary : COLORS.dark,
                       fontSize: width * 0.045,
                       marginLeft: 10,
-                    }}>
+                      fontFamily: FONTS.bold,
+                    }}
+                  >
                     Chat With Us!
                   </Text>
                 </View>
@@ -110,7 +243,8 @@ const CustomerCare = () => {
               <View style={styles.rightContainer}>
                 <View style={styles.iconContainer}>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Chat_Bot')}>
+                    onPress={() => navigation.navigate('Chat_Bot')}
+                  >
                     <Feather
                       name="chevron-right"
                       size={30}
@@ -121,70 +255,62 @@ const CustomerCare = () => {
               </View>
             </View>
           </View>
-
-          <View
-            style={[
-              styles.contactCard,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.contactContainer}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <Feather
-                    name="phone-call"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                      fontWeight: 'bold',
-                    }}>
-                    Contact With Us!
-                  </Text>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.04,
-                      marginLeft: 10,
-                      marginTop: 5,
-                    }}>
-                    Phone: (048) 3657832
-                  </Text>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.04,
-                      marginLeft: 10,
-                      marginTop: 5,
-                    }}>
-                    Email: fixmybike@gmail.com
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
         </View>
+
+        {/* Feedback List */}
+        <View style={styles.feedbackListContainer}>
+          <Text style={styles.feedbackListHeading}>Your Feedback</Text>
+          {feedbacks.length === 0 ? (
+            <Text style={styles.noFeedbackText}>There is no feedback.</Text>
+          ) : (
+            feedbacks.map(item => (
+              <View key={item._id} style={styles.feedbackCard}>
+                <Text style={styles.feedbackTitle}>{item.title}</Text>
+                <Text style={styles.feedbackMessage}>{item.message}</Text>
+                <Text
+                  style={[
+                    styles.feedbackStatus,
+                    item.status === 'responded' && { color: COLORS.success },
+                  ]}
+                >
+                  Status:{' '}
+                  <Text
+                    style={{
+                      color:
+                        item.status === 'pending'
+                          ? COLORS.errorColor
+                          : COLORS.success,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {item.status}
+                  </Text>
+                </Text>
+                {item.status === 'responded' && item.response && (
+                  <View style={styles.responseBox}>
+                    <Text style={styles.responseLabel}>Response:</Text>
+                    <Text style={styles.responseText}>{item.response}</Text>
+                  </View>
+                )}
+              </View>
+            ))
+          )}
+        </View>
+
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Floating Plus Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setShowForm(true)}
+        activeOpacity={0.7}
+      >
+        <MaterialCommunityIcons name="plus" size={32} color={COLORS.white} />
+      </TouchableOpacity>
+
+      {/* Feedback Form Modal */}
+      {showForm && renderForm()}
+    </SafeAreaView >
   );
 };
 
@@ -210,12 +336,14 @@ const styles = StyleSheet.create({
   },
 
   scrollContainer: {
-    paddingTop: height * 0.025,
+    paddingTop: height * 0.12,
+    paddingBottom: 30,
+    minHeight: height,
   },
 
   headerTextContainer: {
-    marginTop: height * 0.12,
     marginLeft: width * 0.05,
+    marginBottom: 20,
   },
 
   headerTitleText: {
@@ -229,25 +357,25 @@ const styles = StyleSheet.create({
     fontSize: width * 0.042,
     fontFamily: FONTS.medium,
     left: width * 0.01,
+    marginTop: 4,
   },
 
   cardContainer: {
     alignItems: 'center',
-    paddingVertical: height * 0.02,
-    gap: 20,
+    marginBottom: 24,
   },
 
   customerCareCard: {
     backgroundColor: COLORS.white,
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
+    width: width * 0.92,
+    marginBottom: 10,
   },
 
   customerCareContainer: {
@@ -256,34 +384,150 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  contactCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-    width: width * 0.9,
-    gap: 10,
-    marginVertical: 10,
-  },
-
-  contactContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-
   leftContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
-    marginTop: 5,
     gap: 5,
   },
 
   icon: {
+    color: COLORS.dark,
+  },
+
+  // Floating Action Button
+  fab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 32,
+    backgroundColor: COLORS.primary,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    zIndex: 100,
+  },
+
+  // Feedback Modal
+  formModal: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 200,
+  },
+  formContent: {
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    padding: 24,
+    width: '90%',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 10,
+  },
+  formTitle: {
+    fontSize: 20,
+    color: COLORS.primary,
+    fontFamily: FONTS.bold,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 12,
+    fontSize: 16,
+    color: COLORS.dark,
+    fontFamily: FONTS.semiBold,
+    backgroundColor: COLORS.white,
+  },
+  sendButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    marginTop: 18,
+    width: '100%',
+    alignItems: 'center',
+  },
+  sendButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontFamily: FONTS.bold,
+  },
+  feedbackListContainer: {
+    marginHorizontal: 10,
+    marginTop: 0, // move up
+    marginBottom: 20,
+    backgroundColor: COLORS.white,
+    borderRadius: 18,
+    padding: 18,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 4,
+    alignItems: 'center',
+  },
+  feedbackListHeading: {
+    fontSize: 20,
+    fontFamily: FONTS.bold,
+    color: COLORS.primary,
+    marginBottom: 16,
+    alignSelf: 'center',
+  },
+  noFeedbackText: {
+    color: COLORS.gray,
+    fontSize: 16,
+    fontFamily: FONTS.medium,
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  feedbackCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    paddingVertical: 22,
+    paddingHorizontal: 22,
+    marginBottom: 18,
+    width: width * 0.92,
+    minHeight: 90,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    justifyContent: 'center',
+  },
+  feedbackTitle: {
+    fontSize: 20,
+    fontFamily: FONTS.bold,
+    color: COLORS.primary,
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  feedbackStatus: {
+    fontSize: 16,
+    fontFamily: FONTS.medium,
+    marginTop: 2,
     color: COLORS.dark,
   },
 });

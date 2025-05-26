@@ -12,7 +12,13 @@ const checkoutRoutes = require("./route/checkout_route");
 const googleSigninRoutes = require("./route/google_signin_route");
 const shopLocationRoutes = require("./route/shop_location_route"); 
 const reviewRoutes = require("./route/review_route"); 
+const feedbackRoutes = require("./route/feedback_route"); 
 
+// const getAccessToken = require("./src/service/fcmService").getAccessToken;
+// (async () => {
+//   const token = await getAccessToken();
+//   console.log("Access Token:", token);
+// })();
 require("dotenv").config();
 
 const app = express();
@@ -42,7 +48,7 @@ app.use("/api", ratingRoutes);
 app.use("/api", checkoutRoutes);
 app.use("/api/shop", shopLocationRoutes); 
 app.use("/api", reviewRoutes);
-
+app.use("/api", feedbackRoutes);
 
 mongoose
   .connect(process.env.MONGODB_URI)

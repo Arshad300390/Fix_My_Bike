@@ -41,6 +41,8 @@ import BookingManagement from './src/components/screens/extraScreens/AdminDashbo
 import ProductManagement from './src/components/screens/extraScreens/AdminDashboard/ProductManagement';
 import ServiceManagement from './src/components/screens/extraScreens/AdminDashboard/ServiceManagement';
 import OrderManagement from './src/components/screens/extraScreens/AdminDashboard/OrderManagement';
+import Feedback from './src/components/screens/extraScreens/AdminDashboard/feedback';
+
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -224,6 +226,11 @@ const App = () => {
         <Stack.Screen name="ReviewScreen">
           {props => (
             <ReviewScreen {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="FeedbackScreen">
+          {props => (
+            <Feedback {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
         {/* admin screens */}

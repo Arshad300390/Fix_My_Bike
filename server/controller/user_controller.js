@@ -11,7 +11,7 @@ const Shop = require("../model/shop_location_model");
 
 const signup = async (req, res, next) => {
   try {
-    const { full_name, email, password, phone_number, address, role } =
+    const { full_name, email, password, phone_number, address, role, fcm_token } =
       req.body;
 
     let existingUser = await User.findOne({ email });
@@ -36,6 +36,7 @@ const signup = async (req, res, next) => {
       address,
       role,
       profile_image: userProfileImageUrl,
+      
     });
     console.log(user);
     await user.save();
@@ -48,10 +49,48 @@ const signup = async (req, res, next) => {
   }
 };
 
+// const login = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     let user = await User.findOne({ email });
+//     if (!user) {
+//       return next(new HttpError("User Not Found!", 404));
+//     }
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return next(new HttpError("Invalid Password!", 401));
+//     }
+
+//     const payload = {
+//       userType: user.role,
+//       user: {
+//         id: user.id,
+//         email: user.email,
+//       },
+//     };
+
+//     jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
+//       if (err) {
+//         return next(new HttpError("Error Generating Token!", 500));
+//       }
+//       console.log('jwt token',token);
+//       res.json({ message: "Login Successfully", token });
+//     });
+//   } catch (err) {
+//     console.error("Error:", err);
+//     return next(new HttpError("Error Logging In!", 500));
+//   }
+// };
+
+//for admin
+
+
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-
+    const { email, password, fcm_token } = req.body;
+console.log('login fcm ',fcm_token);
     let user = await User.findOne({ email });
     if (!user) {
       return next(new HttpError("User Not Found!", 404));
@@ -60,6 +99,12 @@ const login = async (req, res, next) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return next(new HttpError("Invalid Password!", 401));
+    }
+
+    // Update FCM token if provided and different
+    if (fcm_token && user.fcm_token !== fcm_token) {
+      user.fcm_token = fcm_token;
+      await user.save();
     }
 
     const payload = {
@@ -82,8 +127,19 @@ const login = async (req, res, next) => {
     return next(new HttpError("Error Logging In!", 500));
   }
 };
+const updateFcmToken = async (req, res, next) => {
+  console.log('updating fcm');
+  try {
+    const userId = req.userId; // from auth middleware
+    const { fcm_token } = req.body;
+    if (!fcm_token) return res.status(400).json({ message: 'FCM token required' });
+    await User.findByIdAndUpdate(userId, { fcm_token });
+    res.json({ message: 'FCM token updated' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating FCM token', error: error.message });
+  }
+};
 
-//for admin
 const getUsersToAdmin = async (req, res, next) => {
   try {
     const users = await User.aggregate([
@@ -582,4 +638,5 @@ module.exports = {
   getMechanicsWithRatings,
   getMechanicsWithLocation,
   getUsersToAdmin,
+  updateFcmToken,
 };

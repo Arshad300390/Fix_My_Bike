@@ -38,7 +38,8 @@ const ServiceBooking = () => {
   const service_name = route.params?.service_name;
   const service_price = route.params?.service_price;
   const service_id = route.params?.service_id;
-
+  const mechanicId = route.params?.shop_owner;
+  
   const [totalPrice, setTotalPrice] = useState(service_price);
   const [userId, setUserId] = useState('');
   const [name, setName] = useState('');
@@ -374,6 +375,12 @@ const ServiceBooking = () => {
           mechanicName: '',
           mechanicNumber: '',
         };
+
+        if (mechanicId !== undefined) {
+        bookingData.mechanicId = mechanicId;
+      }
+
+
         const response = await axios.post(
           `${Base_Endpoint}/api/service-booking`,
           bookingData,

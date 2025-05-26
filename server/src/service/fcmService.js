@@ -33,6 +33,8 @@ async function sendNotification(token, title, body) {
     if (error.code === 'messaging/registration-token-not-registered') {
       console.warn('Invalid FCM token, consider removing:', token);
       // Optionally delete token from DB here
+            await User.updateOne({ fcm_token: token }, { $set: { fcm_token: null } });
+
     } else {
       console.error("Error sending notification:", error);
     }

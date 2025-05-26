@@ -8,7 +8,7 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
   const toggleExpand = () => {
     setExpanded(!expanded);
   };
-
+  console.log('complete item ', item);
   //console.log(item.status);
   return (
     <TouchableOpacity onPress={toggleExpand} style={styles.card}>
@@ -30,31 +30,30 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
         Status: {item.status}
       </Text>
       <Text style={styles.timestamp}>
-      ScheduleDate: {item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : 'Not Scheduled Yet'}
+        ScheduleDate: {item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : 'Not Scheduled Yet'}
       </Text>
       {role === 'mechanic' && item.scheduleDate && (
-  <View style={styles.buttonContainer}>
-    {/* Show "In Progress" button only if the status is "pending" */}
-    {item.status === 'accepted' && (
-      <TouchableOpacity
-        style={styles.showInProgressButton}
-        onPress={() => onShowInProgress(item._id, 'in progress')}
-      >
-        <Text style={styles.showInProgressButtonText}>In Progress</Text>
-      </TouchableOpacity>
-    )}
+        <View style={styles.buttonContainer}>
+          {/* Show "In Progress" button only if the status is "pending" */}
+          {item.status === 'accepted' && (
+            <TouchableOpacity
+              style={styles.showInProgressButton}
+              onPress={() => onShowInProgress(item._id, 'in progress', item.userId)}
+            >
+              <Text style={styles.showInProgressButtonText}>In Progress</Text>
+            </TouchableOpacity>
+          )}
 
-    {/* Show "Complete" button only if the status is "pending" or "in progress" */}
-    {(item.status === 'accepted' || item.status === 'in progress') && (
-      <TouchableOpacity
-        style={styles.completeButton}
-        onPress={() => onComplete(item._id, 'completed')}
-      >
-        <Text style={styles.completeButtonText}>Complete</Text>
-      </TouchableOpacity>
-    )}
-  </View>
-)}
+          {(item.status === 'accepted' || item.status === 'in progress') && (
+            <TouchableOpacity
+              style={styles.completeButton}
+              onPress={() => onComplete(item._id, 'completed', item.userId)}
+            >
+              <Text style={styles.completeButtonText}>Complete</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       {/* Conditional rendering for additional information */}
       {expanded && (
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 5,
     textAlign: 'center',
-},
+  },
   price: {
     fontSize: 14,
     fontWeight: '600',
