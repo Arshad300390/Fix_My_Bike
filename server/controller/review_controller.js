@@ -32,8 +32,19 @@ const getReviewsByItem = async (req, res) => {
     }
   };
   
+const getReviews = async (req, res) => {
+    try {
+      const userId = req.userId;
+      const reviews = await Review.find({ userId: userId });
+      console.log('reviews', reviews);
+      res.status(200).json(reviews);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 
 module.exports = {
     createReview,
     getReviewsByItem,
+    getReviews
 };

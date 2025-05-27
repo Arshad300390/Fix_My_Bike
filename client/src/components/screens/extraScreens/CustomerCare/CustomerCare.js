@@ -264,36 +264,41 @@ const CustomerCare = () => {
             <Text style={styles.noFeedbackText}>There is no feedback.</Text>
           ) : (
             feedbacks.map(item => (
-              <View key={item._id} style={styles.feedbackCard}>
-                <Text style={styles.feedbackTitle}>{item.title}</Text>
-                <Text style={styles.feedbackMessage}>{item.message}</Text>
-                <Text
-                  style={[
-                    styles.feedbackStatus,
-                    item.status === 'responded' && { color: COLORS.success },
-                  ]}
-                >
-                  Status:{' '}
-                  <Text
-                    style={{
-                      color:
-                        item.status === 'pending'
-                          ? COLORS.errorColor
-                          : COLORS.success,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {item.status}
-                  </Text>
-                </Text>
-                {item.status === 'responded' && item.response && (
-                  <View style={styles.responseBox}>
-                    <Text style={styles.responseLabel}>Response:</Text>
-                    <Text style={styles.responseText}>{item.response}</Text>
-                  </View>
-                )}
-              </View>
-            ))
+  <View key={item._id} style={styles.feedbackCard}>
+    <Text style={styles.feedbackTitle}>{item.title}</Text>
+    <Text style={styles.feedbackMessage}>{item.message}</Text>
+    <View style={styles.statusRow}>
+      <Text
+        style={[
+          styles.feedbackStatus,
+          item.status === 'responded' && { color: COLORS.success },
+        ]}
+      >
+        Status:{' '}
+        <Text
+          style={{
+            color:
+              item.status === 'pending'
+                ? COLORS.errorColor
+                : COLORS.success,
+            fontWeight: 'bold',
+          }}
+        >
+          {item.status}
+        </Text>
+      </Text>
+      {item.status === 'responded' && (
+        <Feather name="check-circle" size={22} color={COLORS.success} style={{ marginLeft: 8 }} />
+      )}
+    </View>
+    {item.status === 'responded' && item.response && (
+      <View style={styles.responseBox}>
+        <Text style={styles.responseLabel}>Response:</Text>
+        <Text style={styles.responseText}>{item.response}</Text>
+      </View>
+    )}
+  </View>
+))
           )}
         </View>
 
@@ -501,33 +506,59 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   feedbackCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 16,
-    paddingVertical: 22,
-    paddingHorizontal: 22,
-    marginBottom: 18,
-    width: width * 0.92,
-    minHeight: 90,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.10,
-    shadowRadius: 6,
-    elevation: 2,
-    borderWidth: 1.5,
-    borderColor: COLORS.primary,
-    justifyContent: 'center',
-  },
-  feedbackTitle: {
-    fontSize: 20,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
+  backgroundColor: COLORS.white,
+  borderRadius: 20,
+  paddingVertical: 26,
+  paddingHorizontal: 26,
+  marginBottom: 22,
+  width: width * 0.96,
+  minHeight: 110,
+  shadowColor: COLORS.primary,
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.13,
+  shadowRadius: 10,
+  elevation: 4,
+  borderWidth: 2,
+  borderColor: COLORS.primary,
+  justifyContent: 'center',
+  alignSelf: 'center',
+},
+feedbackTitle: {
+  fontSize: 22,
+  fontFamily: FONTS.bold,
+  color: COLORS.primary,
+  marginBottom: 6,
+  letterSpacing: 0.5,
+  textTransform: 'capitalize',
+},
+statusRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 4,
+},
   feedbackStatus: {
-    fontSize: 16,
-    fontFamily: FONTS.medium,
-    marginTop: 2,
-    color: COLORS.dark,
-  },
+  fontSize: 16,
+  fontFamily: FONTS.bold,
+  color: COLORS.dark,
+},
+responseBox: {
+  marginTop: 12,
+  backgroundColor: '#eafaf1',
+  borderRadius: 10,
+  padding: 14,
+  borderWidth: 1.5,
+  borderColor: COLORS.success,
+},
+responseLabel: {
+  fontSize: 15,
+  fontFamily: FONTS.bold,
+  color: COLORS.success,
+  marginBottom: 4,
+},
+responseText: {
+  fontSize: 15,
+  fontFamily: FONTS.medium,
+  color: COLORS.dark,
+  lineHeight: 20,
+},
 });

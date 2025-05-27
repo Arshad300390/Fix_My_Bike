@@ -19,6 +19,10 @@ import ServicesHistoryContainer from '../../../utils/ServiceHistoryCard/ServiceT
 const { width, height } = Dimensions.get('window');
 import BASE_URL from '../../../constants/BASE_URL';
 const { Base_Endpoint } = BASE_URL;
+import ServiceToSheduleCardList from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
+
+
+
 const Services = () => {
   console.log('Services screen rendered');
   const navigation = useNavigation();
@@ -27,6 +31,7 @@ const Services = () => {
 
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+const [userReviews, setUserReviews] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -46,6 +51,27 @@ const Services = () => {
      };
      fetchUser();
    }, []);
+
+
+useEffect(() => {
+  const fetchReviews = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios({
+        method: 'GET',
+        url: `${Base_Endpoint}/api/reviews/get-all-reviews`, // Adjust endpoint as needed
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      setUserReviews(response.data); // Adjust according to your API response
+    } catch (error) {
+      console.error('Error fetching user reviews:', error.message);
+      setUserReviews([]);
+    }
+  };
+  fetchReviews();
+}, []);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -130,15 +156,21 @@ const Services = () => {
             <Text style={styles.noBookingsText}>No History available</Text>
           </View>
         ) : (
-          <FlatList
-            data={services}
-            scrollEnabled={false}
-            keyExtractor={(item) => item._id.toString()}
-            renderItem={({ item }) => (
-              <ServicesHistoryContainer item={item} />
-            )}
-            contentContainerStyle={styles.bookingContainer}
-          />
+          // <FlatList
+          //   data={services}
+          //   scrollEnabled={false}
+          //   keyExtractor={(item) => item._id.toString()}
+          //   renderItem={({ item }) => (
+          //     <ServicesHistoryContainer item={item} />
+          //   )}
+          //   contentContainerStyle={styles.bookingContainer}
+          // />
+           <ServiceToSheduleCardList
+           data={services}
+           role={role}
+           navigation={navigation}
+           userReviews={userReviews}
+           />
         )
       }
     </SafeAreaView>

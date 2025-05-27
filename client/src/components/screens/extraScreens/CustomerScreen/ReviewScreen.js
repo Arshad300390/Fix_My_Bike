@@ -9,8 +9,6 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
-    Modal,
-    Pressable,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,17 +24,25 @@ const ReviewScreen = ({ navigation, route }) => {
     const [rating, setRating] = useState('');
     const [ratingError, setRatingError] = useState('');
     const isFormValid = reviewText.trim() !== '' && rating.trim() !== '';
-    const { shopOwnerId, productSummary = [] } = route.params;
-    const [selectedProduct, setSelectedProduct] = useState(productSummary[0] || null);
-    useEffect(() => {
-        console.log(productSummary, 'productSummary');
-    }, []);
 
+    // Safely destructure params with defaults
+    const {
+        shopOwnerId = null,
+        productSummary = [],
+        itemId: paramItemId = null,
+        serviceName = null,
+    } = route?.params || {};
+
+    const [selectedProduct, setSelectedProduct] = useState(productSummary[0] || null);
+
+    useEffect(() => {
+        // Debug log
+        console.log(productSummary, 'productSummary', paramItemId, 'itemId');
+    }, []);
 
     const handleSubmitReview = async () => {
         const numericRating = Number(rating);
 
-        // Clear previous error
         setRatingError('');
 
         if (!rating || !reviewText) {
@@ -49,9 +55,18 @@ const ReviewScreen = ({ navigation, route }) => {
             return;
         }
 
-        const itemId = selectedProduct.product_id;
-        const itemType = 'Product';
-        console.log(itemId, 'itemId');
+        // Determine itemId and itemType safely
+        let itemId, itemType;
+        if (paramItemId !== null) {
+            itemId = paramItemId;
+            itemType = 'Service';
+        } else if (selectedProduct && selectedProduct.product_id) {
+            itemId = selectedProduct.product_id;
+            itemType = 'Product';
+        } else {
+            setRatingError('No item selected for review.');
+            return;
+        }
 
         try {
             const token = await AsyncStorage.getItem('token');
@@ -96,34 +111,35 @@ const ReviewScreen = ({ navigation, route }) => {
         >
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Text style={styles.title}>Write a Review for product</Text>
-
-                {/* <Pressable style={styles.input} onPress={() => setShowModal(true)}>
-                    <Text>{selectedProduct?.product_name || 'Select a Product'}</Text>
-                </Pressable> */}
-                <Text style={styles.label}>Select a Product</Text>
-<View style={styles.pickerWrapper}>
-    <Picker
-        selectedValue={selectedProduct?.product_id}
-        onValueChange={(itemValue, itemIndex) => {
-            const product = productSummary.find(p => p.product_id === itemValue);
-            setSelectedProduct(product);
-        }}
-        mode="dropdown" // or "dialog" on Android
-    >
-        <Picker.Item label="Select a product..." value={null} />
-        {productSummary.map((product) => (
-            <Picker.Item
-                key={product.product_id}
-                label={product.product_name}
-                value={product.product_id}
-            />
-        ))}
-    </Picker>
-</View>
-
-
-
-
+{
+    paramItemId && (
+        <Text style={styles.label}>{serviceName}</Text>
+    )
+}
+                {Array.isArray(productSummary) && productSummary.length > 0 && (
+                    <>
+                        <Text style={styles.label}>Select a Product</Text>
+                        <View style={styles.pickerWrapper}>
+                            <Picker
+                                selectedValue={selectedProduct?.product_id}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    const product = productSummary.find(p => p.product_id === itemValue);
+                                    setSelectedProduct(product);
+                                }}
+                                mode="dropdown"
+                            >
+                                <Picker.Item label="Select a product..." value={null} />
+                                {productSummary.map((product) => (
+                                    <Picker.Item
+                                        key={product.product_id}
+                                        label={product.product_name}
+                                        value={product.product_id}
+                                    />
+                                ))}
+                            </Picker>
+                        </View>
+                    </>
+                )}
 
                 <TextInput
                     style={[styles.input, styles.textArea]}
@@ -139,7 +155,7 @@ const ReviewScreen = ({ navigation, route }) => {
                     value={rating}
                     onChangeText={(val) => {
                         setRating(val);
-                        setRatingError(''); // Clear error as user types
+                        setRatingError('');
                     }}
                     keyboardType="numeric"
                     maxLength={1}
@@ -148,7 +164,6 @@ const ReviewScreen = ({ navigation, route }) => {
                 {ratingError ? (
                     <Text style={styles.errorText}>{ratingError}</Text>
                 ) : null}
-
 
                 <TouchableOpacity
                     style={[
@@ -165,8 +180,6 @@ const ReviewScreen = ({ navigation, route }) => {
                         Submit Review
                     </Text>
                 </TouchableOpacity>
-
-
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -239,6 +252,4 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: COLORS.lightGray,
     },
-    
-
 });
