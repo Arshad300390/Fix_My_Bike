@@ -11,5 +11,8 @@ router.get('/feedback/get-feedback', authMiddleware, feedbackController.getFeedb
 
 // Admin responds to a feedback
 router.put('/feedback/update-response/:id/respond', authMiddleware, feedbackController.respondToFeedback);
+//by id
+router.get('/feedback/get-feedback-by-id:id', authMiddleware, feedbackController.getFeedbackById);
+
 
 module.exports = router;

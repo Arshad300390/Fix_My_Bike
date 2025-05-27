@@ -51,6 +51,7 @@ const getProductsToAdmin = async(req, res, next)=>{
 }
 
 const getshopProducts = async (req, res, next) => {
+  console.log("Fetching products for shop owner:", req.userId);
   try {
     const userId = req.userId;
     const products = await Product.find({ shop_owner: userId });

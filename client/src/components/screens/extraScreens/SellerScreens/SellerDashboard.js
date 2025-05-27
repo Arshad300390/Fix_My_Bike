@@ -34,7 +34,7 @@ const SellerDashboard = () => {
         return;
       }
 
-      const response = await axios.get(`{Base_Endpoint}/api/get-products`, {
+      const response = await axios.get(`${Base_Endpoint}/api/get-products`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

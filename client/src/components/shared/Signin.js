@@ -13,6 +13,7 @@ import {
   Image,
   useColorScheme,
   ScrollView,
+  Alert,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -38,7 +39,7 @@ const Signin = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
-
+  const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
@@ -198,10 +199,22 @@ const Signin = () => {
       console.error('Error during login:', error);
 
       setShowAuthModal(false);
-      setShowErrorModal(true);
-      setTimeout(() => {
-        setShowErrorModal(false);
-      }, 2000);
+
+      // Debug: log the error message
+      const backendMsg = error?.response?.data?.message;
+      console.log('Login error message:', backendMsg);
+
+      if (
+        backendMsg &&
+        backendMsg.toLowerCase().includes("blocked")
+      ) {
+        setShowBlockedModal(true);
+      } else {
+        setShowErrorModal(true);
+        setTimeout(() => {
+          setShowErrorModal(false);
+        }, 2000);
+      }
     } finally {
       setLoading(false);
     }
@@ -442,6 +455,15 @@ const Signin = () => {
         animationSource={require('../../assets/animations/error.json')}
         onClose={() => setShowErrorModal(false)}
       />
+
+      <CustomModal
+        visible={showBlockedModal}
+        title="User Blocked"
+        description="Your account is blocked. Please contact support."
+        animationSource={require('../../assets/animations/error.json')}
+        onClose={() => setShowBlockedModal(false)}
+      />
+
     </SafeAreaView>
   );
 };

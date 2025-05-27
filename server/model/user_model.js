@@ -41,6 +41,11 @@ const userSchema = new Schema({
     default: "customer",
   },
 
+blocked: {
+    type: Boolean,
+    default: false,
+  },
+  
   bikes: [
     {
       type: mongoose.Schema.Types.ObjectId,

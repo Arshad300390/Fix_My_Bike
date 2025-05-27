@@ -86,6 +86,33 @@ const signup = async (req, res, next) => {
 
 //for admin
 
+const blockUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { blocked: true },
+      { new: true }
+    );
+    if (!user) return next(new HttpError("User not found.", 404));
+    res.json({ message: "User blocked successfully." });
+  } catch (err) {
+    return next(new HttpError("Error blocking user!", 500));
+  }
+};
+
+const unblockUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { blocked: false },
+      { new: true }
+    );
+    if (!user) return next(new HttpError("User not found.", 404));
+    res.json({ message: "User unblocked successfully." });
+  } catch (err) {
+    return next(new HttpError("Error unblocking user!", 500));
+  }
+};
 
 const login = async (req, res, next) => {
   try {
@@ -95,7 +122,9 @@ console.log('login fcm ',fcm_token);
     if (!user) {
       return next(new HttpError("User Not Found!", 404));
     }
-
+if (user.blocked) {
+      return next(new HttpError("Your account is blocked. Please contact support.", 403));
+    }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return next(new HttpError("Invalid Password!", 401));
@@ -185,6 +214,7 @@ const getUsersToAdmin = async (req, res, next) => {
           profile_image: 1,
           averageRating: 1,
           shopLocation: 1,
+          blocked: 1,
         },
       },
     ]);
@@ -639,4 +669,6 @@ module.exports = {
   getMechanicsWithLocation,
   getUsersToAdmin,
   updateFcmToken,
+  blockUser,
+  unblockUser,
 };

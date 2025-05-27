@@ -389,112 +389,116 @@ const Profile = () => {
             </View>
           </View> */}
 
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.container}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <Feather
-                    name="book"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                    }}>
-                    My Bookings:{' '}
-                  </Text>
+          {(role === 'mechanic' || role === 'customer') && (
+            <>
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.container}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="book"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        My Bookings:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('My_Bookings')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
 
-              <View style={styles.rightContainer}>
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('My_Bookings')}>
-                    <Feather
-                      name="chevron-right"
-                      size={30}
-                      color={COLORS.primary}
-                    />
-                  </TouchableOpacity>
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
+                  },
+                ]}>
+                <View style={styles.container}>
+                  <View style={styles.leftContainer}>
+                    <View style={styles.iconContainer}>
+                      <Feather
+                        name="grid"
+                        size={25}
+                        style={[
+                          styles.icon,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? COLORS.white
+                                : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark' ? COLORS.white : COLORS.dark,
+                          fontSize: width * 0.045,
+                          marginLeft: 10,
+                        }}>
+                        Services History:{' '}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.rightContainer}>
+                    <View style={styles.iconContainer}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Services')}>
+                        <Feather
+                          name="chevron-right"
+                          size={30}
+                          color={COLORS.primary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
               </View>
-            </View>
-          </View>
-
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor:
-                  colorScheme === 'dark' ? COLORS.lightDark : COLORS.white,
-              },
-            ]}>
-            <View style={styles.container}>
-              <View style={styles.leftContainer}>
-                <View style={styles.iconContainer}>
-                  <Feather
-                    name="grid"
-                    size={25}
-                    style={[
-                      styles.icon,
-                      {
-                        color:
-                          colorScheme === 'dark'
-                            ? COLORS.white
-                            : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === 'dark' ? COLORS.white : COLORS.dark,
-                      fontSize: width * 0.045,
-                      marginLeft: 10,
-                    }}>
-                    Services History:{' '}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.rightContainer}>
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('Services')}>
-                    <Feather
-                      name="chevron-right"
-                      size={30}
-                      color={COLORS.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-
+            </>
+          )
+          }
 
           {role === 'mechanic' && (
             <>

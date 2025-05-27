@@ -19,40 +19,49 @@ const UserManagement = ({ navigation }) => {
   const [showCustomers, setShowCustomers] = useState(false);
   const [showSellers, setShowSellers] = useState(false);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-
-        if (!token) {
-          navigation.replace('Signin');
-          return;
-        }
-
-        const response = await axios.get(
-          `${Base_Endpoint}/api/users/admin/get-Users`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const users = response.data.users;
-
-        // Filter users based on role
-        setMechanics(users.filter(user => user.role === 'mechanic'));
-        setCustomers(users.filter(user => user.role === 'customer'));
-        setSellers(users.filter(user => user.role === 'seller'));
-      } catch (error) {
-        console.log('Error fetching users:', error);
+ const fetchUsers = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        navigation.replace('Signin');
+        return;
       }
-    };
+      const response = await axios.get(
+        `${Base_Endpoint}/api/users/admin/get-Users`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const users = response.data.users;
+      setMechanics(users.filter(user => user.role === 'mechanic'));
+      setCustomers(users.filter(user => user.role === 'customer'));
+      setSellers(users.filter(user => user.role === 'seller'));
+    } catch (error) {
+      console.log('Error fetching users:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchUsers();
   }, []);
 
-  const renderUserItem = ({ item }) => {
+ const handleBlockUnblock = async (user) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const url = `${Base_Endpoint}/api/users/${user.blocked ? 'unblock-user' : 'block-user'}/${user._id}`;
+      await axios.put(url, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Refresh users after block/unblock
+      fetchUsers();
+    } catch (error) {
+      console.log('Error blocking/unblocking user:', error);
+    }
+  };
+
+const renderUserItem = ({ item }) => {
     return (
       <View style={styles.userItem}>
         <Image
@@ -67,9 +76,22 @@ const UserManagement = ({ navigation }) => {
         <Text style={styles.userEmail}>{item.email}</Text>
         {(item.role === 'mechanic' || item.role === 'seller') && (
           <Text style={styles.userRating}>
-            <Feather name="star" size={14} color={COLORS.warning} /> {item.averageRating.toFixed(1)}
+            <Feather name="star" size={14} color={COLORS.warning} /> {item.averageRating?.toFixed(1)}
           </Text>
         )}
+        <TouchableOpacity
+          style={{
+            marginTop: 8,
+            backgroundColor: item.blocked ? COLORS.warning : COLORS.primary,
+            padding: 8,
+            borderRadius: 6,
+          }}
+          onPress={() => handleBlockUnblock(item)}
+        >
+          <Text style={{ color: COLORS.white, textAlign: 'center' }}>
+            {item.blocked ? 'Unblock' : 'Block'}
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   };

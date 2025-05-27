@@ -9,7 +9,10 @@ router.post("/signup", profileImageUpload.upload, userController.signup);
 router.post("/signin", userController.login);
 router.post('/update-fcm-token', authMiddleware, userController.updateFcmToken);
 
-
+// ...existing code...
+router.put("/block-user/:id", authMiddleware, userController.blockUser);
+router.put("/unblock-user/:id", authMiddleware, userController.unblockUser);
+// ...existing code...
 router.get("/get-users", authMiddleware, userController.getUsers);
 
 router.get("/admin/get-Users", authMiddleware, userController.getUsersToAdmin);
