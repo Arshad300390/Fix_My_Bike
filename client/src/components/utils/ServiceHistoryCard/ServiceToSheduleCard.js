@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants/Constants';
 import Feather from 'react-native-vector-icons/Feather';
 
+// Single Card Component
 const ServiceToSheduleCard = ({
   item,
   role,
@@ -15,11 +16,16 @@ const ServiceToSheduleCard = ({
   ...props
 }) => {
   const [expanded, setExpanded] = useState(false);
-const isReviewed = userReviews.some(
-    review => review.itemId?.toString() === item._id?.toString() && review.itemType === 'Service'
-);
+
+  // Check if reviewed
+  const isReviewed = userReviews.some(
+    review =>
+      review.itemId?.toString() === item?._id?.toString() &&
+      review.itemType === 'Service'
+  );
+
   const toggleExpand = () => setExpanded(!expanded);
-  console.log(item);
+console.log('item', item);
   return (
     <View style={styles.card}>
       <View style={styles.rowBetween}>
@@ -36,7 +42,7 @@ const isReviewed = userReviews.some(
       <Text style={styles.details}>Bike: {item.bikeName}</Text>
       <Text style={styles.details}>Comments: {item.comments}</Text>
       <Text style={styles.price}>Total Price: ${item.totalPrice}</Text>
-     <View style={styles.statusReviewRow}>
+      <View style={styles.statusReviewRow}>
         <Text
           style={[
             styles.status,
@@ -76,9 +82,9 @@ const isReviewed = userReviews.some(
       {item.status === 'pending' && (
         <TouchableOpacity
           style={styles.showInProgressButton}
-          onPress={() => onSchedule(item._id, 'completed')}
+          onPress={() => onSchedule && onSchedule(item._id, 'completed')}
         >
-          <Text style={styles.showInProgressButtonText}>Schedule Date</Text>
+          <Text style={styles.showInProgressButtonText}>Schedule</Text>
         </TouchableOpacity>
       )}
 
@@ -200,13 +206,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// List wrapper for scrollability
-export default function ServiceToSheduleCardList({ data, role, navigation, ...props }) {
-  return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-      {data.map(item => (
-        <ServiceToSheduleCard key={item._id} item={item} role={role} navigation={navigation} {...props} />
-      ))}
-    </ScrollView>
-  );
-}
+export default ServiceToSheduleCard;

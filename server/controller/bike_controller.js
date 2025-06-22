@@ -39,10 +39,12 @@ const addBike = async (req, res, next) => {
 };
 
 const getUserBikes = async (req, res, next) => {
+  console.log('backend hit');
   try {
     const userId = req.params.id;
 
     const bikes = await Bike.find({ user: userId });
+    console.log("Fetching bikes for user ID:", bikes);
 
     if (!bikes.length) {
       return next(new HttpError("No bikes found for this user.", 404));

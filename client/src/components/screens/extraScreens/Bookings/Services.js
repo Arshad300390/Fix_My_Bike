@@ -15,11 +15,10 @@ import Feather from 'react-native-vector-icons/Feather';
 import { COLORS, FONTS } from '../../../constants/Constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ServicesHistoryContainer from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
 const { width, height } = Dimensions.get('window');
 import BASE_URL from '../../../constants/BASE_URL';
 const { Base_Endpoint } = BASE_URL;
-import ServiceToSheduleCardList from '../../../utils/ServiceHistoryCard/ServiceToSheduleCard';
+import ServiceHistoryCard from '../../../utils/ServiceHistoryCard/ServiceHistoryCard';
 
 
 
@@ -31,52 +30,52 @@ const Services = () => {
 
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-const [userReviews, setUserReviews] = useState([]);
+  const [userReviews, setUserReviews] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
-       try {
-         const token = await AsyncStorage.getItem('token');
-         const response = await axios({
-           method: 'GET',
-           url: `${Base_Endpoint}/api/users/get-users`,
-           headers: {
-             'Authorization': `Bearer ${token}`,
-           },
-         });
-         setRole(response.data.User.role);
-       } catch (error) {
-         console.error('Error fetching user role:', error.message);
-       }
-     };
-     fetchUser();
-   }, []);
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const response = await axios({
+          method: 'GET',
+          url: `${Base_Endpoint}/api/users/get-users`,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setRole(response.data.User.role);
+      } catch (error) {
+        console.error('Error fetching user role:', error.message);
+      }
+    };
+    fetchUser();
+  }, []);
 
 
-useEffect(() => {
-  const fetchReviews = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const response = await axios({
-        method: 'GET',
-        url: `${Base_Endpoint}/api/reviews/get-all-reviews`, // Adjust endpoint as needed
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      setUserReviews(response.data); // Adjust according to your API response
-    } catch (error) {
-      console.error('Error fetching user reviews:', error.message);
-      setUserReviews([]);
-    }
-  };
-  fetchReviews();
-}, []);
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const response = await axios({
+          method: 'GET',
+          url: `${Base_Endpoint}/api/reviews/get-all-reviews`, // Adjust endpoint as needed
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setUserReviews(response.data); // Adjust according to your API response
+      } catch (error) {
+        console.error('Error fetching user reviews:', error.message);
+        setUserReviews([]);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   useEffect(() => {
     const fetchServices = async () => {
       console.log('Fetching services for role:', role);
-      if (!role) {return;}
+      if (!role) { return; }
       const url =
         role === 'mechanic'
           ? `${Base_Endpoint}/api/history`
@@ -141,7 +140,7 @@ useEffect(() => {
             styles.headerTitleText,
             { color: colorScheme === 'dark' ? COLORS.white : COLORS.dark },
           ]}>
-             {
+          {
             role === 'mechanic' ? 'Bookings' : 'My Booking History'
           }
         </Text>
@@ -151,26 +150,31 @@ useEffect(() => {
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color={COLORS.white} />
           </View>
-         ) : services.length === 0 ? ( 
+        ) : services.length === 0 ? (
           <View style={styles.noBookingsContainer}>
             <Text style={styles.noBookingsText}>No History available</Text>
           </View>
         ) : (
-          // <FlatList
-          //   data={services}
-          //   scrollEnabled={false}
-          //   keyExtractor={(item) => item._id.toString()}
-          //   renderItem={({ item }) => (
-          //     <ServicesHistoryContainer item={item} />
-          //   )}
-          //   contentContainerStyle={styles.bookingContainer}
-          // />
-           <ServiceToSheduleCardList
-           data={services}
-           role={role}
-           navigation={navigation}
-           userReviews={userReviews}
-           />
+          <FlatList
+            data={services}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => (
+              <ServiceHistoryCard
+                item={item}
+                role={role}
+                onShowInProgress={(id, status, userId) => {
+                  // Optional: handle in-progress logic
+                }}
+                onComplete={(id, status, userId) => {
+                  // Optional: handle complete logic
+                }}
+              />
+            )}
+            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 10 }}
+            showsVerticalScrollIndicator={false}
+          />
+
+
         )
       }
     </SafeAreaView>

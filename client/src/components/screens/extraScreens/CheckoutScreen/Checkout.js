@@ -137,7 +137,7 @@ const Checkout = ({ route }) => {
         return;
       }
 
-      const response = await fetch(`${Base_Endpoint}api/checkout/create`, {
+      const response = await fetch(`${Base_Endpoint}/api/checkout/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

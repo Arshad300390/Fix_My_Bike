@@ -150,7 +150,6 @@ const getNotSheduleBookings = async (req, res, next) => {
         { mechanicId: null } // No mechanic assigned
       ]
     });
-
     res.status(200).json({
       count: bookings.length,
       Bookings: bookings, // Always send the array, even if it's empty

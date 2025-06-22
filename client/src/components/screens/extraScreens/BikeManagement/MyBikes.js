@@ -24,6 +24,7 @@ const {Base_Endpoint} = BASE_URL;
 const {width} = Dimensions.get('window');
 
 const MyBikes = () => {
+  console.log(Base_Endpoint, 'Base_Endpoint');
   const [bikes, setBikes] = useState([]);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,7 +52,7 @@ const MyBikes = () => {
 
     try {
       const userResponse = await axios.get(
-        '${Base_Endpoint}/api/users/get-users',
+        `${Base_Endpoint}/api/users/get-users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -76,6 +77,7 @@ const MyBikes = () => {
       );
 
       const fetchedBikes = bikesResponse.data.Bikes;
+      console.log('Fetched Bikes:', fetchedBikes);
       setBikes(fetchedBikes || []);
     } catch (error) {
       console.error('Error Fetching Bikes', error);

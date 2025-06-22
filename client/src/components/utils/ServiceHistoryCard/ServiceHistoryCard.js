@@ -1,26 +1,36 @@
+
+
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants/Constants';
+import Feather from 'react-native-vector-icons/Feather'; // Make sure this is installed
 
-const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, onSchedule }) => {
+const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const toggleExpand = () => {
-    setExpanded(!expanded);
-  };
-  console.log('complete item ', item);
-  //console.log(item.status);
+  const toggleExpand = () => setExpanded(!expanded);
+
   return (
-    <TouchableOpacity onPress={toggleExpand} style={styles.card}>
-      <Text style={styles.serviceName}>Service Name: {item.serviceName}</Text>
-      {
-        item.mechanicName && (
-          <Text style={styles.mechanicName}>Mechanic Name: {item.mechanicName}</Text>
-        )
-      }
+    <View style={styles.card}>
+      <View style={styles.headerRow}>
+        <Text style={styles.serviceName}>Service: {item.serviceName}</Text>
+        <TouchableOpacity onPress={toggleExpand}>
+          <Feather
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={24}
+            color={COLORS.primary}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {item.mechanicName && (
+        <Text style={styles.mechanicName}>Mechanic: {item.mechanicName}</Text>
+      )}
+
       <Text style={styles.details}>Bike: {item.bikeName}</Text>
       <Text style={styles.details}>Comments: {item.comments}</Text>
       <Text style={styles.price}>Total Price: {item.totalPrice}</Text>
+
       <Text
         style={[
           styles.status,
@@ -29,12 +39,13 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
       >
         Status: {item.status}
       </Text>
+
       <Text style={styles.timestamp}>
         ScheduleDate: {item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : 'Not Scheduled Yet'}
       </Text>
+
       {role === 'mechanic' && item.scheduleDate && (
         <View style={styles.buttonContainer}>
-          {/* Show "In Progress" button only if the status is "pending" */}
           {item.status === 'accepted' && (
             <TouchableOpacity
               style={styles.showInProgressButton}
@@ -55,105 +66,108 @@ const ServiceHistoryCard = ({ item, role, onShowInProgress, onComplete, status, 
         </View>
       )}
 
-      {/* Conditional rendering for additional information */}
       {expanded && (
         <View style={styles.additionalInfo}>
           <Text style={styles.details}>Bike Company: {item.bikeCompanyName}</Text>
           <Text style={styles.details}>Bike Model: {item.bikeModel}</Text>
-          <Text style={styles.details}>Bike Registration: {item.bikeRegNumber}</Text>
-          <Text style={styles.details}>Service Location: {item.dropOff}</Text>
+          <Text style={styles.details}>Registration #: {item.bikeRegNumber}</Text>
+          <Text style={styles.details}>Drop-off: {item.dropOff}</Text>
           <Text style={styles.details}>Address: {item.address}</Text>
         </View>
       )}
-    </TouchableOpacity>
+    </View>
   );
 };
+
 export default ServiceHistoryCard;
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.white,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 16,
-    marginVertical: 8,
+    marginVertical: 10,
+    marginHorizontal: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 8,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
     elevation: 5,
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.primary,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   serviceName: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
     color: COLORS.dark,
+    flex: 1,
+    flexWrap: 'wrap',
+  },
+  mechanicName: {
+    color: COLORS.primary,
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 4,
   },
   details: {
     fontSize: 14,
     color: COLORS.dark,
     marginVertical: 2,
   },
-  mechanicName: {
-    color: COLORS.primary,
-    fontSize: 18,
-    fontWeight: 'bold',
-    padding: 8,
-    borderRadius: 5,
-    textAlign: 'center',
-  },
   price: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: COLORS.primary,
+    marginTop: 4,
   },
   status: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginTop: 8,
+    marginTop: 6,
   },
   timestamp: {
     fontSize: 12,
-    color: COLORS.dark,
+    color: COLORS.gray,
     marginTop: 4,
   },
   additionalInfo: {
-    marginTop: 10,
+    marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: COLORS.lightGray,
+    backgroundColor: COLORS.lightGray,
+    padding: 10,
+    borderRadius: 6,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
-    paddingHorizontal: 26,
+    justifyContent: 'flex-end',
+    gap: 10,
+    marginTop: 12,
   },
   showInProgressButton: {
-    marginTop: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
     backgroundColor: COLORS.primary,
-    borderRadius: 5,
-    alignSelf: 'flex-end', // Position the button on the right side
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
   },
   showInProgressButtonText: {
     color: COLORS.white,
-    fontSize: 14,
     fontWeight: 'bold',
   },
   completeButton: {
-    marginTop: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: COLORS.success, // Adjust color as needed
-    borderRadius: 5,
-    alignSelf: 'flex-end', // Position the button on the right side
+    backgroundColor: COLORS.success,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
   },
   completeButtonText: {
     color: COLORS.white,
-    fontSize: 14,
     fontWeight: 'bold',
-  },
-  disabledButton: {
-    backgroundColor: COLORS.lightGray,
   },
 });

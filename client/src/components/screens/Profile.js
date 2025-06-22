@@ -389,7 +389,7 @@ const Profile = () => {
             </View>
           </View> */}
 
-          {(role === 'mechanic' || role === 'customer') && (
+          {( role === 'customer') && (
             <>
               <View
                 style={[
@@ -609,7 +609,7 @@ const Profile = () => {
               </View>
             </>
           )}
-
+       { role === 'seller' && (
           <View
             style={[
               styles.card,
@@ -662,7 +662,7 @@ const Profile = () => {
               </View>
             </View>
           </View>
-
+        )}
 
           <View
             style={[
