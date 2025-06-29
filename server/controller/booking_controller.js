@@ -30,13 +30,15 @@ const createBooking = async (req, res, next) => {
     if (service_id) {
       const shop_owner = await Service.findById(service_id).select('shop_owner');
       if (shop_owner) {
-        const mechanic = await User.findById(mechanicId).select("full_name phone_number");
+        const mechanic = await User.findById(shop_owner.shop_owner).select("full_name phone_number");
+        console.log("mechanic", mechanic);
         mechanicName = mechanic.full_name;
         mechanicNumber = mechanic.phone_number;
         mechanicId = mechanic._id;
       }
 
     }
+    
     const bookingData = {
       userId: req.userId,
       serviceName,
